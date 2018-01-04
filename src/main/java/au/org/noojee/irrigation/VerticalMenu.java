@@ -6,6 +6,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import au.org.noojee.irrigation.views.ConfigurationView;
+import au.org.noojee.irrigation.views.IrrigationView;
+import au.org.noojee.irrigation.views.LightingView;
+import au.org.noojee.irrigation.views.ScheduleView;
+
 public class VerticalMenu extends VerticalLayout
 {
 	private static final long serialVersionUID = 1L;

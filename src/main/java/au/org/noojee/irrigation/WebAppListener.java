@@ -4,6 +4,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -17,6 +20,8 @@ import com.pi4j.io.gpio.RaspiPin;
 @WebListener
 public class WebAppListener implements ServletContextListener
 {
+	Logger logger = LogManager.getLogger();
+	
 	public WebAppListener()
 	{
 		
@@ -25,7 +30,11 @@ public class WebAppListener implements ServletContextListener
 	@Override
 	public void contextInitialized(ServletContextEvent sce)
 	{
-		System.out.println("My Vaadin web app is starting. ");
+		logger.info("Irrigation Manager is starting. ");
+		
+		System.out.println("PI PLATFORM: " + System.getenv("PI4J_PLATFORM"));
+		System.out.println("Simulated PLATFORM - simulated: " + System.getenv("SimulatedPlatform"));
+		
 
 		// create gpio controller
 		final GpioController gpio = GpioFactory.getInstance();
@@ -42,7 +51,7 @@ public class WebAppListener implements ServletContextListener
 	@Override
 	public void contextDestroyed(ServletContextEvent sce)
 	{
-		System.out.println("Irriguation Manager is shutting down.");
+		logger.info("Irrigation Manager is shutting down.");
 		// stop all GPIO activity/threads by shutting down the GPIO controller
 		// (this method will forcefully shutdown all GPIO monitoring threads and
 		// scheduled tasks)

@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation;
+package au.org.noojee.irrigation.types;
 
 import java.time.Duration;
 import java.time.LocalDate;

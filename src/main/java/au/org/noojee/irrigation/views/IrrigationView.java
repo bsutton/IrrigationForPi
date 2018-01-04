@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation;
+package au.org.noojee.irrigation.views;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,8 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
+
+import au.org.noojee.irrigation.types.GardenBed;
 
 public class IrrigationView extends VerticalLayout implements View {
 

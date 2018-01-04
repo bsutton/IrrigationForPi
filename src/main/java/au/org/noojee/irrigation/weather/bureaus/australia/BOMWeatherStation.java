@@ -15,12 +15,12 @@ import com.google.gson.Gson;
 
 import au.org.noojee.irrigation.IrrigationException;
 import au.org.noojee.irrigation.weather.WeatherForecast;
+import au.org.noojee.irrigation.weather.bureaus.WeatherStation;
 import au.org.noojee.irrigation.weather.bureaus.australia.json.JSONWeatherStationData;
 
-public enum BOMWeatherStation
+public enum BOMWeatherStation implements WeatherStation
 {
 	ViewBank("IDCJAC0009", "http://www.bom.gov.au/fwo/IDV60801/IDV60801.95874.json", "");
-	
 
 	Logger logger = LogManager.getLogger();
 	private URL observationURL;
@@ -70,7 +70,7 @@ public enum BOMWeatherStation
 			
 			logger.error("Raw JSON data: " + result);
 
-			Gson gson = BureauOfMeterology.getGson();
+			Gson gson = BureauOfMeterologyAustralia.getGson();
 
 			JSONWeatherStationData data = gson.fromJson(result, JSONWeatherStationData.class);
 			bomObeservations = new BOMObservations(data.getObservations());

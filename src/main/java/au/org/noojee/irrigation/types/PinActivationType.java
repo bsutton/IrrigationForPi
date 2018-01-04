@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation;
+package au.org.noojee.irrigation.types;
 
 public enum PinActivationType
 {

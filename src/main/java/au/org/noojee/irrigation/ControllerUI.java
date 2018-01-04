@@ -11,6 +11,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import au.org.noojee.irrigation.views.ConfigurationView;
+import au.org.noojee.irrigation.views.IrrigationView;
+import au.org.noojee.irrigation.views.LightingView;
+import au.org.noojee.irrigation.views.ScheduleView;
+import au.org.noojee.irrigation.views.TouchConfigurationView;
+
 /**
  * This UI is the application entry point. A UI may either represent a browser window (or tab) or some part of an HTML
  * page where a Vaadin application is embedded.
@@ -19,7 +25,7 @@ import com.vaadin.ui.VerticalLayout;
  * to the user interface and initialize non-component functionality.
  */
 @Theme("mytheme")
-public class MyUI extends UI
+public class ControllerUI extends UI
 {
 
 	private static final long serialVersionUID = 1L;
@@ -40,14 +46,14 @@ public class MyUI extends UI
 		nav.addView(LightingView.NAME, new LightingView());
 		nav.addView(ScheduleView.NAME, new ScheduleView());
 		nav.addView(ConfigurationView.NAME, new ConfigurationView());
-
-		this.setContent(layout);
+		nav.addView(TouchConfigurationView.NAME, new TouchConfigurationView());
+		
 
 	}
 
-	@WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
-	@VaadinServletConfiguration(ui = MyUI.class, productionMode = false)
-	public static class MyUIServlet extends VaadinServlet
+	@WebServlet(urlPatterns = "/*", name = "PiIrrigation", asyncSupported = true)
+	@VaadinServletConfiguration(ui = ControllerUI.class, productionMode = false)
+	public static class PiIrrigationServlet extends VaadinServlet
 	{
 
 		private static final long serialVersionUID = 1L;

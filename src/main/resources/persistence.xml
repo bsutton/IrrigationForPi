@@ -1,0 +1,13 @@
+<persistence-unit name="MyAppPU" transaction-type="RESOURCE_LOCAL">    
+    <!-- This is where you mention your JPA runtime provider e.g. it's EclipseLink here -->
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>    
+
+
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/IrrigationForPi"/>
+      <property name="javax.persistence.jdbc.password" value="a password goes here"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
+      <property name="javax.persistence.jdbc.user" value="irrigation4pi"/>
+    </properties>
+
+</persistence-unit>

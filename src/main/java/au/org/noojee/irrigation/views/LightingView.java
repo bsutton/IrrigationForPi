@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation;
+package au.org.noojee.irrigation.views;
 
 import com.vaadin.navigator.View;
 import com.vaadin.ui.VerticalLayout;

@@ -4,6 +4,8 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +16,7 @@ import com.google.gson.JsonParseException;
 
 import au.org.noojee.irrigation.weather.WeatherForecast;
 import au.org.noojee.irrigation.weather.bureaus.WeatherBureau;
+import au.org.noojee.irrigation.weather.bureaus.WeatherStation;
 import au.org.noojee.irrigation.weather.units.Humidity;
 import au.org.noojee.irrigation.weather.units.Latitude;
 import au.org.noojee.irrigation.weather.units.Longitude;
@@ -28,23 +31,55 @@ import au.org.noojee.irrigation.weather.units.WindDirection;
  * 
  * @author bsutton
  */
-public class BureauOfMeterology implements WeatherBureau
+
+public class BureauOfMeterologyAustralia implements WeatherBureau
 { 
 
 	// JSON data being fetched for view bank from. 
 	// http://reg.bom.gov.au/products/IDV60901/IDV60901.95874.shtml
-
 	
-	BOMWeatherStation station;
+	// This csv contains rainfall data:
+	// http://reg.bom.gov.au/climate/dwo/201712/text/IDCJDW3079.201712.csv
+	
+	static final String COUNTRY_NAME = "Australia";
+
+	WeatherStation defaultStation;
 
 	static private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	
 
+	public BureauOfMeterologyAustralia()
+	{
+		
+	}
+
+	public String getCountryName()
+	{
+		return COUNTRY_NAME;
+	}
 	WeatherForecast fetchForecast(LocalDate date)
 	{
-		return station.fetchForecast(date);
+		return defaultStation.fetchForecast(date);
 
 	}
 
+	//@Override
+	public void setDefaultStation(WeatherStation station)
+	{
+		this.defaultStation = station;
+		
+	}
+	
+	
+	@Override
+	public List<WeatherStation> getStations()
+	{
+		// register your list of weather stations here.
+		return Arrays.asList(BOMWeatherStation.values());
+	}
+
+
+	
 	public static Gson getGson()
 	{
 
@@ -151,5 +186,6 @@ public class BureauOfMeterology implements WeatherBureau
 
 		return gson;
 	}
+
 
 }
