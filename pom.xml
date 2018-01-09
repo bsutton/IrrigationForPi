@@ -14,14 +14,12 @@
 	</prerequisites>
 
 	<properties>
-		<vaadin.version>8.1.5</vaadin.version>
-		<vaadin.plugin.version>8.1.5</vaadin.plugin.version>
-		<jetty.plugin.version>9.4.8.v20171121</jetty.plugin.version>
-
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<vaadin.version>8.1.5</vaadin.version>
+		<vaadin.plugin.version>8.1.5</vaadin.plugin.version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- If there are no local customizations, this can also be "fetch" or 
 			"cdn" -->
 		<vaadin.widgetset.mode>local</vaadin.widgetset.mode>
@@ -52,6 +50,7 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-push</artifactId>
@@ -63,6 +62,13 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-themes</artifactId>
+		</dependency>
+
+		<!--  on/off toggle -->
+		<dependency>
+			<groupId>org.vaadin.teemu</groupId>
+			<artifactId>switch</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 
 
@@ -92,7 +98,6 @@
 			<artifactId>log4j-core</artifactId>
 			<version>2.9.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.pi4j</groupId>
 			<artifactId>pi4j-core</artifactId>
@@ -107,26 +112,13 @@
 			<scope>test</scope>
 		</dependency>
 
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.1.0</version>
-			<!-- removed for jetty -->
-			<!-- scope>provided</scope -->
-		</dependency>
-
-		<!-- jetty server requires this for push to work. -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-continuation</artifactId>
-			<version>9.0.0.v20130308</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-websocket -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-websocket</artifactId>
-			<version>8.2.0.v20160908</version>
+			<!-- tomcat provides this -->
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- JPA -->
@@ -143,9 +135,33 @@
 			<version>2.2</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjrt -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.13</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.13</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.derby/derby -->
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>10.14.1.0</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
+
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -191,19 +207,11 @@
 				</configuration>
 			</plugin>
 
-			<!-- The Jetty plugin allows us to easily test the development build by 
-				running jetty:run on the command line. -->
-			<plugin>
-				<groupId>org.eclipse.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>${jetty.plugin.version}</version>
-				<configuration>
-					<scanIntervalSeconds>2</scanIntervalSeconds>
-				</configuration>
-			</plugin>
-
-
 		</plugins>
+		<pluginManagement>
+			<plugins>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<profiles>

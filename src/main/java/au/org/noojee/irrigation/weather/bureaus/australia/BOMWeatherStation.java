@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 
-import au.org.noojee.irrigation.IrrigationException;
+import au.org.noojee.irrigation.util.IrrigationException;
 import au.org.noojee.irrigation.weather.WeatherForecast;
 import au.org.noojee.irrigation.weather.bureaus.WeatherStation;
 import au.org.noojee.irrigation.weather.bureaus.australia.json.JSONWeatherStationData;

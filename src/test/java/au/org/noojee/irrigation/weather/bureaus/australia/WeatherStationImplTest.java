@@ -1,17 +1,5 @@
 package au.org.noojee.irrigation.weather.bureaus.australia;
 
-import java.net.MalformedURLException;
-import java.time.LocalDate;
-import java.util.List;
-
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.junit.Test;
-
-import au.org.noojee.irrigation.weather.WeatherForecast;
-import au.org.noojee.irrigation.weather.bureaus.WeatherBureau;
-import au.org.noojee.irrigation.weather.bureaus.WeatherBureaus;
-
 public class WeatherStationImplTest
 {
 /*

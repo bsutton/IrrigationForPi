@@ -1,5 +1,6 @@
 package au.org.noojee.irrigation.types;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -7,7 +8,7 @@ import java.math.BigDecimal;
  * @author bsutton
  *
  */
-public class Amperage
+public class Amperage implements Serializable
 {
 
 	BigDecimal quanity;

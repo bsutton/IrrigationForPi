@@ -11,7 +11,6 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -31,7 +30,7 @@ import au.org.noojee.irrigation.weather.bureaus.WeatherBureau;
 import au.org.noojee.irrigation.weather.bureaus.WeatherBureaus;
 import au.org.noojee.irrigation.weather.bureaus.WeatherStation;
 
-public class ConfigurationView extends VerticalLayout implements View
+public class ConfigurationView extends VerticalLayout implements SmartView
 {
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "Configurations";
@@ -169,5 +168,13 @@ public class ConfigurationView extends VerticalLayout implements View
 			gpioPin.low();
 		}
 	}
+	
+	@Override
+	public String getName()
+	{
+		return NAME;
+	}
+
+
 
 }

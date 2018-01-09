@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 
 import au.org.noojee.irrigation.types.GardenBed;
 
-public class IrrigationView extends VerticalLayout implements View {
+public class IrrigationView extends VerticalLayout implements SmartView {
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "Irrigation";
@@ -24,7 +23,7 @@ public class IrrigationView extends VerticalLayout implements View {
 	
 	@Override
 	public void enter(ViewChangeEvent event) {
-		View.super.enter(event);
+		SmartView.super.enter(event);
 		
 		
 		 if (grid == null)
@@ -36,6 +35,12 @@ public class IrrigationView extends VerticalLayout implements View {
 		
 		
 		
+	}
+
+	@Override
+	public String getName()
+	{
+		return NAME;
 	}
 
 }

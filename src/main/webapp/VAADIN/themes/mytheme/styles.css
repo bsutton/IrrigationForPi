@@ -14779,3 +14779,13 @@ div.v-layout.v-horizontal.v-widget {
 	width: 19px;
 	overflow: hidden;
 }
+
+.mytheme .i4p-heading[width-range="0-700"] {
+	font-weight: bold;
+	font-size: 40px;
+	line-height: 50px;
+}
+
+.mytheme .i4p-button[width-range="0-1080"] {
+	height: 60px;
+}

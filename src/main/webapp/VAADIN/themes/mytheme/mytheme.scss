@@ -35,4 +35,17 @@
   @include valo;
 
   // Insert your own theme rules here
+  
+  .i4p-heading[width-range="0-700"]
+  {	
+        font-weight: bold;
+        font-size: 40px;
+        line-height: 50px
+  }
+  
+  .i4p-button[width-range="0-1080"]
+  {	
+  		// width: 200px;
+       height: 60px;
+  }
 }

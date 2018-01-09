@@ -43,6 +43,13 @@ Download the latest irrigation-XX.XX.XX.war file.
 Rename the war to:
 irrigation.war
 
+Create a directory for the derby db at:
+
+mkdir -p /home/pi/irrigationDb
+
+Set the permissions to:
+sudo chown tomcat8:tomcat8 /home/pi/irrigationDb
+
 Copy the war file into the tomcat 8 webapp directory.
 
 cp irrigation.war /var/lib/tomcat8/webapps

@@ -1,10 +1,25 @@
+Overview
+
+IrrigationForPi is a web app designed to allow you to control external lighting and irrigation systems from a mobile device.
+
+The app allows you to configure Pins on the Pi to control various devices such as lights and values for an irrigation system.
+
+In theory the app can be used to control any device attached to a Pi but it has specific interfaces that are fashioned around 
+configuring irrigation and lighting systems.
+
+It only takes a few minutes to get this web app up and running so give it a try :)
+
+Contributes to this project are strongly encouraged so post your patches.
+
+
+
 Installation
 
 We recommend that you use tomcat to run the irrigation control on your raspberry pi using raspbarian.
 
 To install using tomcat 8 
 
-If youare using a different version of tomcat then substitute '8' for your version no. in each of the below commands.
+If you are using a different version of tomcat then substitute '8' for your version no. in each of the below commands.
 
 
 sudo apt-get install tomcat8
@@ -40,4 +55,11 @@ You can also test each pin as you define it.
 
 
 
+ 
+Technology
+IrrigationForPi uses the following technology (if you care about such things). You don't need to know this to use or install the app.
+Java 8
+Tomcat 8
+EclipseLink (JPA)
+Derby (database).
  
