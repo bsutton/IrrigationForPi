@@ -53,7 +53,7 @@ public class WebAppListener implements ServletContextListener
 		// Set default states for pins.
 		for (Pin pin : RaspiPin.allPins())
 		{
-			PinState offState = PinState.LOW;
+			PinState offState = PinState.HIGH;
 			au.org.noojee.irrigation.entities.Pin configuredPin = getConfiguredPin(pin, pins);
 			if (configuredPin != null)
 				offState = configuredPin.getPinActiviationType().getOffState();
