@@ -1,7 +1,7 @@
-myapplication
+IrrigationPi
 ==============
 
-Template for a simple Vaadin application that only requires a Servlet 3.0 container to run.
+An irrigation and out door lighting controller for the Raspbery PI.
 
 
 Workflow
@@ -9,44 +9,68 @@ Workflow
 
 To compile the entire project, run "mvn install".
 
-To run the application, run "mvn jetty:run" and open http://localhost:8080/ .
+Overview
 
-To produce a deployable production mode WAR:
-- change productionMode to true in the servlet class configuration (nested in the UI class)
-- run "mvn clean package"
-- test the war file with "mvn jetty:run-war"
+IrrigationForPi is a web app designed to allow you to control external lighting and irrigation systems from a mobile device.
 
-Client-Side compilation
--------------------------
+The app allows you to configure Pins on the Pi to control various devices such as lights and values for an irrigation system.
 
-The generated maven project is using an automatically generated widgetset by default. 
-When you add a dependency that needs client-side compilation, the maven plugin will 
-automatically generate it for you. Your own client-side customizations can be added into
-package "client".
+In theory the app can be used to control any device attached to a Pi but it has specific interfaces that are fashioned around 
+configuring irrigation and lighting systems.
 
-Debugging client side code
-  - run "mvn vaadin:run-codeserver" on a separate console while the application is running
-  - activate Super Dev Mode in the debug window of the application
+It only takes a few minutes to get this web app up and running so give it a try :)
 
-Developing a theme using the runtime compiler
--------------------------
+Contributes to this project are strongly encouraged so post your patches.
 
-When developing the theme, Vaadin can be configured to compile the SASS based
-theme at runtime in the server. This way you can just modify the scss files in
-your IDE and reload the browser to see changes.
 
-To use the runtime compilation, open pom.xml and comment out the compile-theme 
-goal from vaadin-maven-plugin configuration. To remove a possibly existing 
-pre-compiled theme, run "mvn clean package" once.
 
-When using the runtime compiler, running the application in the "run" mode 
-(rather than in "debug" mode) can speed up consecutive theme compilations
-significantly.
+Installation
 
-It is highly recommended to disable runtime compilation for production WAR files.
+We recommend that you use tomcat to run the irrigation control on your raspberry pi using raspbarian.
 
-Using Vaadin pre-releases
--------------------------
+To install using tomcat 8 
 
-If Vaadin pre-releases are not enabled by default, use the Maven parameter
-"-P vaadin-prerelease" or change the activation default value of the profile in pom.xml .
+If you are using a different version of tomcat then substitute '8' for your version no. in each of the below commands.
+
+
+sudo apt-get install tomcat8
+
+# To provide tomcat access to gpio pins
+
+sudo adduser tomcat8 gpio
+
+Download the latest irrigation-XX.XX.XX.war file.
+Rename the war to:
+irrigation.war
+
+Copy the war file into the tomcat 8 webapp directory.
+
+cp irrigation.war /var/lib/tomcat8/webapps
+
+Start tomcat
+
+sudo service tomcat8 start
+
+Tail the tomcat log to check that everything starts ok.
+
+tail -f /var/log/tomcat8/catalina.out
+
+You now should have a operation web application.
+You can access the web app via:
+
+http://<pi host name or ip>:8080/irrigation
+
+Now that your system is up and running you need to click the 'Configuration' button and
+define each of your Pin mappings.
+You can also test each pin as you define it.
+
+
+
+ 
+Technology
+IrrigationForPi uses the following technology (if you care about such things). You don't need to know this to use or install the app.
+Java 8
+Tomcat 8
+EclipseLink (JPA)
+Derby (database).
+ 
