@@ -17,17 +17,19 @@ import au.org.noojee.irrigation.types.EndPointType;
 import au.org.noojee.irrigation.types.PinActivationType;
 import au.org.noojee.irrigation.types.PinStatus;
 
+
 @Entity
-public class Pin
+public class EndPoint
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     // Name of the device attached to the pin.
-	private String deviceName;
-	private PinActivationType activationType;
+	private String endPointName;
 	private EndPointType endPointType;
+	private PinActivationType activationType;
+
 	
 	// We store the gpio pin no. here.
 	private int pinNo;
@@ -48,12 +50,14 @@ public class Pin
 			setPinLow();
 	}
 	
-	public void setOff()
+	public Void setOff()
 	{
 		if (activationType == PinActivationType.HIGH_IS_ON)
 			setPinLow();
 		else 
 			setPinHigh();
+		return null;
+		
 	}
 	
 	
@@ -70,18 +74,6 @@ public class Pin
 		this.pinNo = piPin.getAddress();
 	}
 
-	private com.pi4j.io.gpio.GpioPinDigitalOutput getPiPin(int pinNo)
-	{
-		final GpioController gpio = GpioFactory.getInstance();
-		com.pi4j.io.gpio.Pin internalPin = PinProvider.getPinByAddress(pinNo);
-
-		GpioPinDigitalOutput gpioPin = (GpioPinDigitalOutput) gpio.getProvisionedPin(internalPin);
-		
-		return gpioPin;
-
-		
-	}
-
 	public com.pi4j.io.gpio.Pin getPiPin()
 	{
 		return 	PinProvider.getPinByAddress(pinNo);
@@ -95,9 +87,9 @@ public class Pin
 		
 	}
 
-	public void setDeviceName(String deviceName)
+	public void setEndPointName(String endPointName)
 	{
-		this.deviceName = deviceName;
+		this.endPointName = endPointName;
 	}
 
 	public void setPinActiviationType(PinActivationType pinActiviationType)
@@ -126,9 +118,9 @@ public class Pin
 		this.startupInterval = startupInterval;
 	}
 	
-	public String getDeviceName()
+	public String getEndPointName()
 	{
-		return this.deviceName;
+		return this.endPointName;
 	}
 
 	public long getId()
@@ -136,12 +128,6 @@ public class Pin
 		return id;
 	}
 
-	@Override
-	public String toString()
-	{
-		return "Pin [id=" + id + ", deviceName=" + deviceName + ", activationType=" + activationType + ", endPointType="
-				+ endPointType + ", pinNo=" + pinNo + "]";
-	}
 
 	public EndPointType getEndPointType()
 	{
@@ -170,6 +156,25 @@ public class Pin
 
 
 
-	
+
+	private com.pi4j.io.gpio.GpioPinDigitalOutput getPiPin(int pinNo)
+	{
+		final GpioController gpio = GpioFactory.getInstance();
+		com.pi4j.io.gpio.Pin internalPin = PinProvider.getPinByAddress(pinNo);
+
+		GpioPinDigitalOutput gpioPin = (GpioPinDigitalOutput) gpio.getProvisionedPin(internalPin);
+		
+		return gpioPin;
+
+		
+	}
+
+	@Override
+	public String toString()
+	{
+		return "EndPoint [id=" + id + ", endPointName=" + endPointName + ", endPointType=" + endPointType
+				+ ", activationType=" + activationType + ", pinNo=" + pinNo + ", startAmps=" + startAmps
+				+ ", runningAmps=" + runningAmps + ", startupInterval=" + startupInterval + "]";
+	}
 
 }

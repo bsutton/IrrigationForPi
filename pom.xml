@@ -50,7 +50,7 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-push</artifactId>
@@ -64,7 +64,7 @@
 			<artifactId>vaadin-themes</artifactId>
 		</dependency>
 
-		<!--  on/off toggle -->
+		<!-- on/off toggle -->
 		<dependency>
 			<groupId>org.vaadin.teemu</groupId>
 			<artifactId>switch</artifactId>
@@ -154,6 +154,26 @@
 			<groupId>org.apache.derby</groupId>
 			<artifactId>derby</artifactId>
 			<version>10.14.1.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.oltu.oauth2/org.apache.oltu.oauth2.authzserver -->
+		<dependency>
+			<groupId>org.apache.oltu.oauth2</groupId>
+			<artifactId>org.apache.oltu.oauth2.authzserver</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.appreciated</groupId>
+			<artifactId>app-layout-addon</artifactId>
+			<version>0.9.19</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-io -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
 		</dependency>
 
 

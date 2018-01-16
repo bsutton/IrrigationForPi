@@ -9,7 +9,9 @@
 			here -->
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
-		<class>au.org.noojee.irrigation.entities.Pin</class>
+		<class>au.org.noojee.irrigation.entities.EndPoint</class>
+		<class>au.org.noojee.irrigation.entities.GardenBed</class>
+		<class>au.org.noojee.irrigation.entities.History</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
@@ -18,7 +20,7 @@
 			<property name="javax.persistence.jdbc.user" value="irrigation4pi" />
 			<property name="eclipselink.ddl-generation.output-mode" value="database" />
 			<!-- property name="eclipselink.ddl-generation" value="drop-and-create-tables"/-->
-			<property name="eclipselink.ddl-generation" value="create-tables"/>
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
 			<property name="eclipselink.logging.level" value="FINE" />
 		</properties>
 	</persistence-unit>

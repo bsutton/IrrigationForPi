@@ -7,11 +7,10 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import au.org.noojee.irrigation.views.ConfigurationView;
-import au.org.noojee.irrigation.views.IrrigationView;
+import au.org.noojee.irrigation.views.EndPointConfigurationView;
+import au.org.noojee.irrigation.views.GardenBedConfigurationView;
 import au.org.noojee.irrigation.views.LightingView;
 import au.org.noojee.irrigation.views.ScheduleView;
-import au.org.noojee.irrigation.views.TouchConfigurationView;
 
 public class VerticalMenu extends VerticalLayout
 {
@@ -24,7 +23,7 @@ public class VerticalMenu extends VerticalLayout
 		irrigation.addStyleName(ValoTheme.BUTTON_HUGE);
 		this.addComponent(irrigation);
 		irrigation.addClickListener(l -> {
-			UI.getCurrent().getNavigator().navigateTo(IrrigationView.NAME);
+			UI.getCurrent().getNavigator().navigateTo(GardenBedConfigurationView.NAME);
 		});
 
 		
@@ -49,14 +48,14 @@ public class VerticalMenu extends VerticalLayout
 		configuration.addStyleName(ValoTheme.BUTTON_HUGE);
 		this.addComponent(configuration);
 		configuration.addClickListener(l -> {
-			UI.getCurrent().getNavigator().navigateTo(ConfigurationView.NAME);
+			UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
 		});
 		
 		Button touchConfiguration = new Button("", VaadinIcons.COG);
 		touchConfiguration.addStyleName(ValoTheme.BUTTON_HUGE);
 		this.addComponent(touchConfiguration);
 		touchConfiguration.addClickListener(l -> {
-			UI.getCurrent().getNavigator().navigateTo(TouchConfigurationView.NAME);
+			UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
 		});
 
 		// Use an arbitary button to control the width of the menu bar.

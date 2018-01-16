@@ -2,25 +2,34 @@ package au.org.noojee.irrigation;
 
 import java.util.HashMap;
 
-import javax.servlet.annotation.WebServlet;
-
+import com.github.appreciated.app.layout.behaviour.AppLayout;
+import com.github.appreciated.app.layout.behaviour.Behaviour;
+import com.github.appreciated.app.layout.builder.AppLayoutBuilder;
+import com.github.appreciated.app.layout.builder.AppLayoutBuilder.Position;
+import com.github.appreciated.app.layout.builder.design.AppBarDesign;
+import com.github.appreciated.app.layout.builder.elements.SubmenuBuilder;
+import com.github.appreciated.app.layout.component.MenuHeader;
+import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.annotations.Viewport;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import au.org.noojee.irrigation.entities.EntityManagerUtil;
-import au.org.noojee.irrigation.views.ConfigurationView;
-import au.org.noojee.irrigation.views.DefinePinView;
-import au.org.noojee.irrigation.views.IrrigationView;
+import au.org.noojee.irrigation.views.EndPointConfigurationView;
+import au.org.noojee.irrigation.views.GardenBedConfigurationView;
+import au.org.noojee.irrigation.views.GardenBedView;
+import au.org.noojee.irrigation.views.HistoryView;
 import au.org.noojee.irrigation.views.LightingView;
+import au.org.noojee.irrigation.views.OverviewView;
 import au.org.noojee.irrigation.views.ScheduleView;
 import au.org.noojee.irrigation.views.SmartView;
-import au.org.noojee.irrigation.views.TouchConfigurationView;
+import au.org.noojee.irrigation.views.editors.EndPointEditorView;
+import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window (or tab) or some part of an HTML
@@ -30,6 +39,12 @@ import au.org.noojee.irrigation.views.TouchConfigurationView;
  * to the user interface and initialize non-component functionality.
  */
 @Theme("mytheme")
+// Turns our web app in to a Progress Web App
+// Read article at: https://vaadin.com/blog/progressive-web-apps-in-java
+@JavaScript("vaadin://js/app.js")
+
+@Viewport("width=device-width, initial-scale=1.0")
+
 public class ControllerUI extends UI
 {
 
@@ -39,6 +54,62 @@ public class ControllerUI extends UI
 
 	@Override
 	protected void init(VaadinRequest vaadinRequest)
+	{
+		// DefaultBadgeHolder holder = new DefaultBadgeHolder(); // I can indicate updates in another "navigatable"
+		// element
+		// holder.increase();
+		//
+
+		OverviewView overviewView = new OverviewView(); 
+		GardenBedView gardenBedView = new GardenBedView(); 
+		LightingView lightingView = new LightingView();
+		ScheduleView scheduleView = new ScheduleView();
+		HistoryView historyView = new HistoryView();
+		EndPointConfigurationView endPointConfigurationView = new EndPointConfigurationView();
+		GardenBedConfigurationView gardenBedConfigurationView = new GardenBedConfigurationView();
+		// Non-menu views:
+		EndPointEditorView endPointEditor = new EndPointEditorView();
+		GardenBedEditorView gardenBedEditor = new GardenBedEditorView();
+
+		AppLayout layout = AppLayoutBuilder.get(Behaviour.LEFT_RESPONSIVE)
+				.withTitle("Pi-gation")
+				.withDefaultNavigationView(overviewView)
+				.withDesign(AppBarDesign.MATERIAL)
+				.add(new MenuHeader("Irrigation & Lighting", new ThemeResource("icons/pi-gation.png")), Position.HEADER)
+				.add(OverviewView.NAME, VaadinIcons.HOME, overviewView)
+				.add(GardenBedView.NAME, VaadinIcons.CLOUD, gardenBedView)
+				.add(LightingView.NAME, VaadinIcons.LIGHTBULB, lightingView)
+				.add(ScheduleView.NAME, VaadinIcons.CLOCK, scheduleView)
+				.add(HistoryView.NAME, VaadinIcons.CHART_LINE, historyView)
+				.add(SubmenuBuilder.get("Configuration", VaadinIcons.COG)
+						.add(EndPointConfigurationView.NAME, VaadinIcons.CONNECT, endPointConfigurationView)
+						.add(GardenBedConfigurationView.NAME, VaadinIcons.CLOUD, gardenBedConfigurationView)
+						.build(), Position.FOOTER)
+				.build();
+
+		UI.getCurrent().getNavigator().addView(GardenBedConfigurationView.NAME, gardenBedConfigurationView);
+		/*
+		 * .addClickable("Click Me", VaadinIcons.QUESTION, clickEvent -> { }) .add("Preferences", VaadinIcons.COG,
+		 * View6.class, FOOTER)
+		 */
+		layout.setSizeFull();
+
+		addView(gardenBedView);
+		addView(lightingView);
+		addView(scheduleView);
+		addView(endPointConfigurationView);
+		addView(gardenBedConfigurationView);
+		// Non-menu views:
+		addView(endPointEditor);
+		UI.getCurrent().getNavigator().addView(EndPointEditorView.NAME, endPointEditor);
+		addView(gardenBedEditor);
+		UI.getCurrent().getNavigator().addView(GardenBedEditorView.NAME, gardenBedEditor);
+
+		setContent(layout);
+
+	}
+
+	void fred()
 	{
 		final HorizontalLayout page = new HorizontalLayout();
 		this.setContent(page);
@@ -52,43 +123,33 @@ public class ControllerUI extends UI
 		viewLayout.setSizeFull();
 		viewLayout.setMargin(false);
 		page.addComponent(viewLayout);
-		
+
 		page.setExpandRatio(viewLayout, 1);
 
 		nav = new Navigator(this, viewLayout);
 
-		addView(new IrrigationView(), true);
-		addView(new LightingView(), false);
-		addView(new ScheduleView(), false);
-		addView(new ConfigurationView(), false);
-		addView(new TouchConfigurationView(), false);
-		// 	Non-menu views:
-		addView(new DefinePinView(), false);
+		addView(new GardenBedConfigurationView());
+		addView(new LightingView());
+		addView(new ScheduleView());
+		addView(new EndPointConfigurationView());
+		addView(new EndPointConfigurationView());
+		// Non-menu views:
+		addView(new EndPointEditorView());
 
 	}
-	
-	void addView(SmartView view, boolean defaultView)
+
+	void addView(SmartView view)
 	{
 		views.put(view.getName(), view);
-		
-		if (defaultView)
-			nav.addView("", view);
-		
-		nav.addView(view.getName(), view);
 
+		// if (defaultView)
+		// nav.addView("", view);
+		//
+		// nav.addView(view.getName(), view);
+		//
 	}
 
-	@WebServlet(urlPatterns = "/*", name = "PiIrrigation", asyncSupported = true)
-	@VaadinServletConfiguration(ui = ControllerUI.class, productionMode = false)
-	public static class PiIrrigationServlet extends VaadinServlet
-	{
-
-		private static final long serialVersionUID = 1L;
-
-
-	}
-
-	public  SmartView getView(String name)
+	public SmartView getView(String name)
 	{
 		return views.get(name);
 	}

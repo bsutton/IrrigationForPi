@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import au.org.noojee.irrigation.entities.Pin;
+import au.org.noojee.irrigation.entities.EndPoint;
 
 public class PinDependancy implements PinRelationship
 {
@@ -19,7 +19,7 @@ public class PinDependancy implements PinRelationship
 		LeadingDelay, LagDelay
 	}
 
-	Pin primaryPin;
+	EndPoint primaryPin;
 
 	/*
 	 * Describes how the primary Pin is dependent on the relatedPins.
@@ -29,7 +29,7 @@ public class PinDependancy implements PinRelationship
 	/**
 	 * the list of pins that the primary pin is dependant on.
 	 */
-	List<Pin> relatedPins;
+	List<EndPoint> relatedPins;
 
 	/*
 	 * the duration of the lead or lag delay.
@@ -48,14 +48,14 @@ public class PinDependancy implements PinRelationship
 						case LagDelay:
 							primaryPin.setOn();
 							Thread.sleep(interval.getSeconds() * 1000);
-							for (Pin pin : relatedPins)
+							for (EndPoint pin : relatedPins)
 							{
 								pin.setOn();
 							}
 							break;
 
 						case LeadingDelay:
-							for (Pin pin : relatedPins)
+							for (EndPoint pin : relatedPins)
 							{
 								pin.setOn();
 							}

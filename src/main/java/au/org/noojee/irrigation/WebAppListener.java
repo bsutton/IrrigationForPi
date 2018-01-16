@@ -16,7 +16,7 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
-import au.org.noojee.irrigation.dao.PinDao;
+import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.entities.EntityManagerUtil;
 
 /**
@@ -47,14 +47,14 @@ public class WebAppListener implements ServletContextListener
 		// create gpio controller
 		final GpioController gpio = GpioFactory.getInstance();
 		
-		PinDao daoPin = new PinDao();
-		List<au.org.noojee.irrigation.entities.Pin> pins = daoPin.getAll();
+		EndPointDao daoPin = new EndPointDao();
+		List<au.org.noojee.irrigation.entities.EndPoint> pins = daoPin.getAll();
 		
 		// Set default states for pins.
 		for (Pin pin : RaspiPin.allPins())
 		{
 			PinState offState = PinState.HIGH;
-			au.org.noojee.irrigation.entities.Pin configuredPin = getConfiguredPin(pin, pins);
+			au.org.noojee.irrigation.entities.EndPoint configuredPin = getConfiguredPin(pin, pins);
 			if (configuredPin != null)
 				offState = configuredPin.getPinActiviationType().getOffState();
 				
@@ -64,11 +64,11 @@ public class WebAppListener implements ServletContextListener
 
 	}
 	
-	au.org.noojee.irrigation.entities.Pin getConfiguredPin(Pin pin, List<au.org.noojee.irrigation.entities.Pin> pins)
+	au.org.noojee.irrigation.entities.EndPoint getConfiguredPin(Pin pin, List<au.org.noojee.irrigation.entities.EndPoint> pins)
 	{
-		au.org.noojee.irrigation.entities.Pin configuredPin = null;
+		au.org.noojee.irrigation.entities.EndPoint configuredPin = null;
 		
-		for (au.org.noojee.irrigation.entities.Pin checkPin : pins)
+		for (au.org.noojee.irrigation.entities.EndPoint checkPin : pins)
 		{
 			if (checkPin.getPinNo() == pin.getAddress())
 			{

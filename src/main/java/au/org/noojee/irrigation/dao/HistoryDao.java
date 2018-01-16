@@ -6,57 +6,57 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import au.org.noojee.irrigation.entities.EntityManagerUtil;
+import au.org.noojee.irrigation.entities.History;
 import au.org.noojee.irrigation.entities.InjectEntity;
-import au.org.noojee.irrigation.entities.Pin;
 import au.org.noojee.irrigation.entities.Transaction;
 
-public class PinDao
+public class HistoryDao
 {
 
 	@SuppressWarnings("unchecked")
 	@InjectEntity
-	public List<Pin> getAll()
+	public List<History> getAll()
 	{
 		EntityManager em = EntityManagerUtil.getEntityManager();
 
-		Query query = em.createQuery("SELECT e FROM Pin e");
-		return (List<Pin>) query.getResultList();
+		Query query = em.createQuery("SELECT e FROM History e");
+		return (List<History>) query.getResultList();
 	}
 
-	public void persist(Pin pin)
+	public void persist(History History)
 	{
 		EntityManager em = EntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
-			em.persist(pin);
+			em.persist(History);
 			tran.commit();
 		}
 
 	}
 
-	public void delete(Pin pin)
+	public void delete(History History)
 	{
 		EntityManager em = EntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
 			// make certain we are deleting an attached entity.
-			pin = em.find(Pin.class, pin.getId());
+			History = em.find(History.class, History.getId());
 
-			em.remove(pin);
+			em.remove(History);
 			tran.commit();
 		}
 
 	}
 
-	public void merge(Pin pin)
+	public void merge(History History)
 	{
 		EntityManager em = EntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
-			em.merge(pin);
+			em.merge(History);
 			tran.commit();
 		}
 		

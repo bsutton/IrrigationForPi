@@ -1,0 +1,45 @@
+Male 1
+Persona dour
+Invocation Name: piegation.
+
+Water garden Bed <garden Bed>
+Water <garden bed>
+Start Watering garden Bed <garden Bed>
+
+Response
+- alright if I have to
+- you know I've got better things to do than water your weeds, but alright.
+- watering seems more like something a person of your intellectual capacity should be doing. Yes I'm watering your garden.
+
+
+Stop watering the garden - stops all watering
+Stop watering <garden bed>
+Cancel watering
+Cancel watering <garden bed>
+Stop Watering
+
+Response
+Yeah, right, ok, sure...
+
+Done
+
+Talk clearly <wo|man>, I've got no idea what you are saying.
+Can't do that, won't do that, try something else.
+
+
+Invokation
+You speak, me water.
+Yes, I'm the pie-gation system, get on with it.
+
+The garden doesn't need watering, its raining you idiot.
+Oh, so now you decide to water the garden. 
+Watering now is not going to resurect your dead plants.
+You know if you set up a schedule you wouldn't need to remember to water your plants.
+
+> Help
+< Say 'Water' followed by the name of the garden bed to water a single garden bed.
+< Say Water to water all garden beds.
+< Say 'Stop Watering' to stop all watering.
+< Say 'Stop Watering' followed by the garden bed name to stop watering a specific garden bed.
+
+

@@ -1,12 +1,12 @@
 package au.org.noojee.irrigation.types;
 
-import au.org.noojee.irrigation.entities.Pin;
+import au.org.noojee.irrigation.entities.EndPoint;
 
 public enum PinStatus
 {
 	ON, OFF;
 
-	public static PinStatus getStatus(Pin pin, boolean isHigh)
+	public static PinStatus getStatus(EndPoint pin, boolean isHigh)
 	{
 		PinStatus status;
 		if (pin.getPinActiviationType() == PinActivationType.LOW_IS_ON)
