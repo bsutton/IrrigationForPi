@@ -78,6 +78,109 @@ You can access the web app via:
 
 `http://<pi host name or ip>:8080/irrigation`
 
+Enable SSL
+=================
+If you want to install the web app as a 'desktop' app on your mobile device you will need to enable SSL (we strongly recommend this regardless).
+
+To enable SSL.
+
+Install Certbot and enable keys
+===============================
+The LetsEncrypt project provides free SSL certificates.
+To generate a certificate you need to install certbot.
+
+`sudo apt install certbot`
+
+Install Apache
+
+`sudo apt install apache2`
+
+Start the Apache2 service
+
+`sudo service apache2 start`
+
+Install Certbot and enable keys
+===============================
+The LetsEncrypt project provides free SSL certificates.
+To generate a certificate you need to install certbot.
+
+`sudo apt install certbot`
+
+Generate the keys:
+
+Run Certbot to generate the keys and validate your server.
+NOTE: the above apache web server MUST be visible publicly for the doman
+name you use in the following certbot line as your server is used to validate 
+that you are the owner.
+
+Replace <fqdn> with the fully qualified domain name of your apache server.
+Replace <email> with your email address.
+
+sudo certbot certonly  --webroot -w /var/lib/tomcat8/webapps/ROOT  -d <fqdn> -m <email>
+
+Copy the following file to /etc/apache2/sites-enabled/irrigation.conf
+
+```
+<!-- This first Virtual host just forces all request to use HTTPS -->
+<VirtualHost *:80>
+        ServerAdmin bsutton@noojee.com.au
+        ServerName home.noojee.com.au
+        <IfModule mod_rewrite.c>
+            # Redirect request to SSL port.
+            RewriteEngine on
+            RewriteCond %{HTTPS} off
+            RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+        </IfModule>
+</VirtualHost>
+
+<VirtualHost *:443>
+        ServerAdmin bsutton@noojee.com.au
+        ServerName home.noojee.com.au
+    SSLEngine On
+
+    <!-- As we are using SSL you need an SSL cert. We use certbot from LetsEncrypt -->
+    SSLCertificateFile /etc/letsencrypt/csr/0000_csr-certbot.pem
+    SSLCertificateKeyFile /etc/letsencrypt/keys/0000_key-certbot.pem
+
+    <!-- The path to your irrigation instance -->
+    DocumentRoot /var/lib/tomcat8/webapps/irrigation
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+    </Directory>
+    <Directory /var/lib/tomcat8/webapps/irrigation/>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    ErrorLog /var/log/apache2/error.log
+
+    # Possible values include: debug, info, notice, warn, error, crit,
+    # alert, emerg.
+    LogLevel warn
+
+    CustomLog /var/log/apache2/access.log combined
+
+    ProxyRequests Off
+    ProxyPreserveHost On
+    ProxyPassReverse /irrigation http://127.0.0.1:8080/irrigation
+    ProxyPass /irrigation http://127.0.0.1:8080/irrigation
+    <Location />
+        Order Allow,Deny
+        Allow from AlL
+    </Location>
+    RewriteEngine On
+    RewriteRule ^$   /irrigation/ [R]
+    RewriteRule ^/$  /irrigation/ [R]
+</VirtualHost>
+
+```
+
+
+
+
 Now that your system is up and running you need to click the 'Configuration' button and
 define each of your End Point mappings.
 
