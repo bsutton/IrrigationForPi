@@ -91,6 +91,9 @@ Install Apache
 
 `sudo a2enmod ssl`
 
+We use the proxy to talk to tomcat.
+`sudo a2enmod proxy`
+
 Start the Apache2 service
 
 `sudo service apache2 start`
