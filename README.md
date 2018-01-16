@@ -94,9 +94,21 @@ Install Apache
 We use the proxy to talk to tomcat.
 `sudo a2enmod proxy`
 
+`sudo a2enmod rewrite`
+
 Start the Apache2 service
 
 `sudo service apache2 start`
+
+Enter the PI's host name in 
+`/etc/hostname`
+
+Set the ServerName in:
+`/etc/apache2/apache2.conf`
+
+Just add the following at the end of the file replacing <hostname> with your host name.
+
+`ServerName <hostname>`
 
 Install Certbot and enable keys
 ===============================
