@@ -1,5 +1,5 @@
 var CACHE_NAME = 'sw-ex';
-var CACHE_VERSION = 2;
+var CACHE_VERSION = 6;
 
 var filesToCache = [
 //  '/',
@@ -9,6 +9,7 @@ var filesToCache = [
   '/irrigation/VAADIN/themes/mytheme/styles.css?v=8.1.5',
   '/irrigation/VAADIN/themes/mytheme/icons/pi-gation.png',
   '/irrigation/images/touch/chrome-touch-icon-192x192.png',
+  '/irrigation/images/touch/chrome-touch-icon-512x512.png',
   '/irrigation/VAADIN/widgetsets/AppWidgetset/switch/styles.css',
   '/irrigation/VAADIN/themes/valo/shared/img/spinner.gif',
   '/irrigation/VAADIN/themes/valo/fonts/open-sans/OpenSans-Light-webfont.woff',

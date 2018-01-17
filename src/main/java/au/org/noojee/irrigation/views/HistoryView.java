@@ -1,13 +1,19 @@
 package au.org.noojee.irrigation.views;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 import au.org.noojee.irrigation.dao.HistoryDao;
+import au.org.noojee.irrigation.entities.GardenBed;
 import au.org.noojee.irrigation.entities.History;
+import au.org.noojee.irrigation.util.Formatters;
 
 public class HistoryView   extends VerticalLayout implements SmartView {
 
@@ -18,19 +24,50 @@ public class HistoryView   extends VerticalLayout implements SmartView {
 	public void enter(ViewChangeEvent event)
 	{
 		SmartView.super.enter(event);
+		this.removeAllComponents();
+		
+		HorizontalLayout headingLayout =new HorizontalLayout();
+		this.addComponent(headingLayout);
+		
+		Label startDateHeading =new Label("Date/Time");
+		headingLayout.addComponent(startDateHeading);
+		startDateHeading.setWidth("40mm");
+		startDateHeading.addStyleName(ValoTheme.LABEL_H3);
+
+		
+		Label durationHeading =new Label("Duration");
+		headingLayout.addComponent(durationHeading);
+		durationHeading.setWidth("20mm");
+		durationHeading.addStyleName(ValoTheme.LABEL_H3);
+		
+		Label gardenHeading =new Label("Garden Bed");
+		headingLayout.addComponent(gardenHeading);
+		gardenHeading.addStyleName(ValoTheme.LABEL_H3);
 		
 		List<History> histories;
 		
 		HistoryDao daoHistory =new HistoryDao();
 		
 		histories =daoHistory.getAll();
-		VerticalLayout historyLayout =new VerticalLayout();
 		
 		for (History history : histories)
 		{
 			HorizontalLayout historyHorizontal =new HorizontalLayout();
-			historyLayout.addComponent(historyHorizontal);
+			this.addComponent(historyHorizontal);
 			//Label 
+			LocalDateTime startDate = history.getStartDate();
+			Label startDateLabel =new Label(Formatters.format(startDate));
+			historyHorizontal.addComponent(startDateLabel);
+			startDateLabel.setWidth("40mm");
+			
+			Duration duration = history.getDuration();
+			Label durationLabel =new Label(Formatters.format(duration));
+			historyHorizontal.addComponent(durationLabel);
+			durationLabel.setWidth("20mm");
+			
+			GardenBed gardenBed = history.getGardenBed();
+			Label gardenLabel =new Label(gardenBed.getName());
+			historyHorizontal.addComponent(gardenLabel);
 		}
 	}
 

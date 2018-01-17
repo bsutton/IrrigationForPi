@@ -41,7 +41,7 @@ import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 @Theme("mytheme")
 // Turns our web app in to a Progress Web App
 // Read article at: https://vaadin.com/blog/progressive-web-apps-in-java
-@JavaScript("vaadin://js/app.js")
+// @JavaScript("vaadin://js/app.js")
 
 @Viewport("width=device-width, initial-scale=1.0")
 
@@ -80,10 +80,11 @@ public class ControllerUI extends UI
 				.add(GardenBedView.NAME, VaadinIcons.CLOUD, gardenBedView)
 				.add(LightingView.NAME, VaadinIcons.LIGHTBULB, lightingView)
 				.add(ScheduleView.NAME, VaadinIcons.CLOCK, scheduleView)
-				.add(HistoryView.NAME, VaadinIcons.CHART_LINE, historyView)
+				.add(HistoryView.NAME, VaadinIcons.TIME_BACKWARD, historyView)
 				.add(SubmenuBuilder.get("Configuration", VaadinIcons.COG)
 						.add(EndPointConfigurationView.NAME, VaadinIcons.CONNECT, endPointConfigurationView)
-						.add(GardenBedConfigurationView.NAME, VaadinIcons.CLOUD, gardenBedConfigurationView)
+						.add(GardenBedConfigurationView.LABEL, 
+								GardenBedConfigurationView.NAME, VaadinIcons.CLOUD, gardenBedConfigurationView)
 						.build(), Position.FOOTER)
 				.build();
 

@@ -92,24 +92,20 @@ public class PiIrrigationServlet extends VaadinServlet
 					public void modifyBootstrapPage(BootstrapPageResponse response)
 					{
 						Element head = response.getDocument()
-							.head();
-						
-						
-							head.prependElement("meta")
-							.attr("name", "theme-color")
-							.attr("content","#00b4f0");
+								.head();
 
-							head.prependElement("link")
-							.attr("rel", "manifest")
-							.attr("href","VAADIN/manifest.json");
+						head.prependElement("meta")
+								.attr("name", "theme-color")
+								.attr("content", "#00b4f0");
 
-						/*
-						@MetaTags({
-							@Meta(name="theme-color", content="#00b4f0")
-						})
-						@Link(rel="manifest", href="VAADIN/manifest.json")
-						*/
+						head.prependElement("link")
+								.attr("rel", "manifest")
+								.attr("href", "VAADIN/manifest.json");
 
+						Element body = response.getDocument().body();
+						body.appendElement("script")
+								.attr("type", "text/javascript")
+								.attr("src", "./VAADIN/js/app.js");
 					}
 				});
 			}

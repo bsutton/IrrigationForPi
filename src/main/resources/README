@@ -17,6 +17,10 @@ Installation
 
 We recommend that you use tomcat to run the irrigation control on your raspberry pi using raspbarian.
 
+## Set the correct timezone
+
+`sudo dpkg-reconfigure tzdata`
+
 To install using tomcat 8 
 
 If you are using a different version of tomcat then substitute '8' for your version no. in each of the below commands.

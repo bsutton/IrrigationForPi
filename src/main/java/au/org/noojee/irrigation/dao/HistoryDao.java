@@ -19,7 +19,7 @@ public class HistoryDao
 	{
 		EntityManager em = EntityManagerUtil.getEntityManager();
 
-		Query query = em.createQuery("SELECT e FROM History e");
+		Query query = em.createQuery("SELECT e FROM History e order by e.wateringEvent desc");
 		return (List<History>) query.getResultList();
 	}
 
