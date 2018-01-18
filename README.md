@@ -78,6 +78,140 @@ You can access the web app via:
 
 `http://<pi host name or ip>:8080/irrigation`
 
+Enable SSL
+=================
+If you want to install the web app as a 'desktop' app on your mobile device you will need to enable SSL (we strongly recommend this regardless).
+
+To enable SSL.
+
+Install Apache
+===============
+
+`sudo apt install apache2`
+
+`sudo a2enmod ssl`
+
+We use the proxy to talk to tomcat.
+`sudo a2enmod proxy`
+`sudo a2enmod proxy_http`
+`sudo a2enmod rewrite`
+
+Start the Apache2 service
+
+`sudo service apache2 start`
+
+Enter the PI's host name in 
+`/etc/hostname`
+
+Set the ServerName in:
+`/etc/apache2/apache2.conf`
+
+Just add the following at the end of the file replacing <hostname> with your host name.
+
+`ServerName <hostname>`
+
+Install Certbot and enable keys
+===============================
+The LetsEncrypt project provides free SSL certificates.
+To generate a certificate you need to install certbot.
+
+`sudo apt install certbot python-certbot-apache`
+
+# Generate the keys:
+
+Run Certbot to generate the keys and validate your sanyerver.
+NOTE: the above apache web server MUST be visible publicly for the doman
+name you use in the following certbot line as your server is used to validate 
+that you are the owner.
+
+# Enable Port forward
+If you are running your raspberry pi on your home network you will need to set up a port forward on your router to the raspberry pi.
+You will need to port forward both port 80 and port 443.
+
+Copy the following into the file to /etc/apache2/sites-enabled/irrigation.conf
+
+```
+# This first Virtual host just forces all request to use HTTPS 
+<VirtualHost *:80>any
+        ServerAdmin <your email address>
+        ServerName <fqdn to your pi>
+        <IfModule mod_rewrite.c>
+            # Redirect request to SSL port.
+            RewriteEngine on
+            RewriteCond %{HTTPS} off
+            RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+        </IfModule>
+</VirtualHost>
+```
+
+# Generate you certificates
+Run certbot to generate your certificate an install it into apache.
+
+First ensure that apache2 is running
+
+`sudo service apache2 start`
+
+Now generate and install the certificates.
+`sudo certbot  --apache  -d <fqnd of pi> -m <email>`
+
+Replace <fqdn> with the fully qualified domain name of your Pi.
+Replace <email> with your email address.
+
+Certbot will have generated a new file for the SSL module:
+
+`/etc/apache2/sites-enabled/irrigation-le-ssl.conf`
+
+Edit this file and adjust it so that 
+```
+
+<VirtualHost *:443>
+        ServerAdmin <you email address>
+        ServerName <fqdn of your pi>
+
+    # As we are using SSL you need an SSL cert. We use certbot from LetsEncrypt
+    SSLCertificateFile /etc/letsencrypt/csr/0000_csr-certbot.pem
+    SSLCertificateKeyFile /etc/letsencrypt/keys/0000_key-certbot.pem
+
+    # The path to your irrigation instance
+    DocumentRoot /var/lib/tomcat8/webapps/irrigation
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+    </Directory>
+    <Directory /var/lib/tomcat8/webapps/irrigation/>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride None
+        Order allow,deny
+        allow from all
+    </Directory>
+
+    ErrorLog /var/log/apache2/error.log
+
+    # Possible values include: debug, info, notice, warn, error, crit,
+    # alert, emerg.
+    LogLevel warn
+
+    CustomLog /var/log/apache2/access.log combined
+
+    ProxyRequests Off
+    ProxyPreserveHost On
+    ProxyPassReverse /irrigation http://127.0.0.1:8080/irrigation
+    ProxyPass /irrigation http://127.0.0.1:8080/irrigation
+    <Location />
+        Order Allow,Deny
+        Allow from AlL
+    </Location>
+    RewriteEngine On
+    RewriteRule ^$   /irrigation/ [R]
+    RewriteRule ^/$  /irrigation/ [R]
+</VirtualHost>
+
+```
+
+# Restart Apache
+
+`sudo service apache2 restart'
+
 Now that your system is up and running you need to click the 'Configuration' button and
 define each of your End Point mappings.
 
