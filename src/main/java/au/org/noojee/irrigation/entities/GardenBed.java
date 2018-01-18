@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import au.org.noojee.irrigation.dao.GardenBedDao;
 import au.org.noojee.irrigation.dao.HistoryDao;
 import au.org.noojee.irrigation.types.PinStatus;
+import au.org.noojee.irrigation.types.ValveController;
 
 @Entity
 public class GardenBed
@@ -108,19 +109,8 @@ public class GardenBed
 
 	public void turnOff()
 	{
-		Duration delay = Duration.ofSeconds(0);
-		if (masterValve != null)
-		{
-			masterValve.setOff();
-
-			// If we have a master valve we want to turn it off first
-			// and let the line de-pressurise before we turn off the
-			// beds own valve.
-			delay = Duration.ofSeconds(30);
-
-		}
-		Delay.delay(delay, valve, valve -> valve.setOff());
-
+		ValveController.turnOff(this);
+	
 		if (this.currentHistory != null)
 		{
 			this.currentHistory.endWateringEvent();
@@ -143,15 +133,8 @@ public class GardenBed
 		// save the last watering event.
 		GardenBedDao daoGardenBed = new GardenBedDao();
 		daoGardenBed.merge(this);
-		valve.setOn();
-
-		if (masterValve != null)
-		{
-			// We wait two seconds before turning on the master valve
-			// to ensur that the bed valve is on so that we
-			// keep the line de-pressurised.
-			Delay.delay(Duration.ofSeconds(2), masterValve, masterValve -> masterValve.setOff());
-		}
+		
+		ValveController.turnOn(this);
 
 	}
 

@@ -1,5 +1,9 @@
+/**
+ * Logic to load the service worker which makes this a progressive web app.
+ */
+
 if ('serviceWorker' in navigator) {
-	navigator.serviceWorker.register('./sw.js', { scope: './' }).then((reg) => {
+	navigator.serviceWorker.register('./ServiceWorker.js', { scope: '/' }).then((reg) => {
 		if (reg.installing) {
 			console.log('Service worker installing');
 		} else if(reg.waiting) {

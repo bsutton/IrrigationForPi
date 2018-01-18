@@ -16817,6 +16817,12 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 50px;
 }
 
+.mytheme .i4p-label[width-range="0-700"] {
+	font-weight: bold;
+	font-size: 20px;
+	line-height: 22px;
+}
+
 .mytheme .i4p-button[width-range="0-1080"] {
 	height: 50px;
 }

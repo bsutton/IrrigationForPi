@@ -109,7 +109,6 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 		endPointGrid.setHeightUndefined();
 		endPointGrid.setColumns(3);
 
-		int row = 0;
 
 		for (EndPoint endPoint : endPoints)
 		{

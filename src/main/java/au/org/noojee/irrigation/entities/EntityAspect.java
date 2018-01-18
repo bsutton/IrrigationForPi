@@ -41,7 +41,7 @@ public class EntityAspect
 		try
 		{
 
-			EntityManager entityManager = threadLocalEM.get();
+			//EntityManager entityManager = threadLocalEM.get();
 			EntityTransaction tran = threadLocalTransaction.get();
 			
 			boolean alreadyActive = tran.isActive();

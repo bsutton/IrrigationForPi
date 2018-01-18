@@ -38,7 +38,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	private TextField endPointName;
 	private ComboBox<EndPointType> endPointType;
 	private ComboBox<PinActivationType> activationType;
-	private ComboBox<com.pi4j.io.gpio.Pin> piPin;
+	private ComboBox<com.pi4j.io.gpio.Pin> piPinComboBox;
 
 	private Binder<EndPoint> binder = new Binder<>(EndPoint.class);
 	private boolean isEdit = false;
@@ -85,7 +85,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		.asRequired("Please select a End Point Type")
 		.bind(EndPoint::getEndPointType, EndPoint::setEndPointType);
 		
-		binder.forField(this.piPin)
+		binder.forField(this.piPinComboBox)
 		.asRequired("Please select a pin")
 		.bind(EndPoint::getPiPin, EndPoint::setPiPin);
 		
@@ -98,23 +98,23 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	}
 
 
-	public void setBean(EndPoint pin)
+	public void setBean(EndPoint endPoint)
 	{
 		// make certain the UI is initialised.
 		getViewComponent();
 		
-		if (pin != null)
+		if (endPoint != null)
 		{
 			this.isEdit = true;
-			this.editedEndPoint = pin;
+			this.editedEndPoint = endPoint;
 
 			this.deleteButton.setData(this.editedEndPoint);
 			this.deleteButton.setVisible(true);
 
-			this.endPointName.setValue(pin.getEndPointName());
-			this.endPointType.setValue(pin.getEndPointType());
-			this.activationType.setValue(pin.getPinActiviationType());
-			this.piPin.setValue(pin.getPiPin());
+			this.endPointName.setValue(endPoint.getEndPointName());
+			this.endPointType.setValue(endPoint.getEndPointType());
+			this.activationType.setValue(endPoint.getPinActiviationType());
+			this.piPinComboBox.setValue(endPoint.getPiPin());
 			
 
 		}
@@ -124,7 +124,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.endPointName.setValue("");
 			this.endPointType.setValue(EndPointType.Valve);
 			this.activationType.setValue(PinActivationType.HIGH_IS_ON);
-			this.piPin.setSelectedItem(null);
+			this.piPinComboBox.setSelectedItem(null);
 			
 
 			this.isEdit = false;
@@ -168,11 +168,11 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		List<com.pi4j.io.gpio.Pin> gpioPins = Arrays.asList(RaspiPin.allPins());
 		gpioPins = gpioPins.stream().sorted((l, r) -> l.getAddress() - r.getAddress()).collect(Collectors.toList());
 
-		piPin = new ComboBox<>("Pin");
-		this.addComponent(piPin);
-		piPin.setDataProvider(new ListDataProvider<com.pi4j.io.gpio.Pin>(gpioPins));
-		piPin.setTextInputAllowed(false);
-		piPin.setEmptySelectionAllowed(false);
+		piPinComboBox = new ComboBox<>("Pin");
+		this.addComponent(piPinComboBox);
+		piPinComboBox.setDataProvider(new ListDataProvider<com.pi4j.io.gpio.Pin>(gpioPins));
+		piPinComboBox.setTextInputAllowed(false);
+		piPinComboBox.setEmptySelectionAllowed(false);
 
 		activationType = new ComboBox<>("Activation");
 		this.addComponent(activationType);
@@ -245,7 +245,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			endPoint.setEndPointName(this.endPointName.getValue());
 			endPoint.setEndPointType(this.endPointType.getValue());
 			endPoint.setPinActiviationType(this.activationType.getValue());
-			endPoint.setPiPin(this.piPin.getValue());
+			endPoint.setPiPin(this.piPinComboBox.getValue());
 			if (this.isEdit)
 				daoEndPoint.merge(endPoint);
 			else

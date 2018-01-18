@@ -7,6 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -21,6 +24,8 @@ import au.org.noojee.irrigation.types.PinStatus;
 @Entity
 public class EndPoint
 {
+	private static final Logger logger = LogManager.getLogger();
+	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -42,20 +47,28 @@ public class EndPoint
 	// the current draw settles to the 'runningAmps'
 	private Duration startupInterval;
 	
-	public void setOn()
+	public Void setOn()
 	{
 		if (activationType == PinActivationType.HIGH_IS_ON)
 			setPinHigh();
 		else 
 			setPinLow();
+		
+		logger.error("Pin " + pinNo + " for EndPoint: " + this.endPointName + " set On.");
+		
+		return null;
 	}
 	
 	public Void setOff()
 	{
+		
 		if (activationType == PinActivationType.HIGH_IS_ON)
 			setPinLow();
 		else 
 			setPinHigh();
+
+		logger.error("Pin " + pinNo + " for EndPoint: " + this.endPointName + " set Off.");
+
 		return null;
 		
 	}

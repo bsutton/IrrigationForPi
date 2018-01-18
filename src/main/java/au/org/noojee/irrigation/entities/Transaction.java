@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 public class Transaction implements AutoCloseable
 {
 	Logger logger = LogManager.getLogger();
-	private EntityManager em;
 	private EntityTransaction transaction;
 
 	public Transaction(EntityManager em)

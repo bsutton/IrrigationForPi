@@ -38,11 +38,21 @@ public class PiIrrigationServlet extends VaadinServlet
 		getService().addSessionInitListener(new SessionInitListener()
 		{
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void sessionInit(SessionInitEvent event) throws ServiceException
 			{
 				event.getSession().addRequestHandler(new RequestHandler()
 				{
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
 
 					@Override
 					public boolean handleRequest(VaadinSession session, VaadinRequest request,
@@ -55,10 +65,11 @@ public class PiIrrigationServlet extends VaadinServlet
 						// * Logic for implementation of Progress Web App
 						// sw.js is the required service worker.
 
-						if (pathInfo.endsWith("sw.js"))
+						if (pathInfo.endsWith("ServiceWorker.js"))
 						{
+							response.setHeader("Service-Worker-Allowed", "/");
 							response.setContentType("application/javascript");
-							in = getClass().getResourceAsStream("/sw.js");
+							in = getClass().getResourceAsStream("/ServiceWorker.js");
 						}
 
 						if (in != null)
@@ -80,11 +91,13 @@ public class PiIrrigationServlet extends VaadinServlet
 
 				event.getSession().addBootstrapListener(new BootstrapListener()
 				{
+					private static final long serialVersionUID = 1L;
+
 					@Override
 					public void modifyBootstrapFragment(
 							BootstrapFragmentResponse response)
 					{
-						// TODO Auto-generated method stub
+						// NOOP
 
 					}
 
@@ -93,19 +106,33 @@ public class PiIrrigationServlet extends VaadinServlet
 					{
 						Element head = response.getDocument()
 								.head();
+ 
+						/** Add tags to make this a PWA app **/
+						
+						/** Give our app a title */
+						head.prependElement("title").appendText("Pi-Gation");
 
+						
+						/** Icon for the home screen */
+						head.prependElement("link")
+						.attr("src", "/irrigation/VAADIN/themes/mytheme/images/pi-gation-192x192.png");
+
+						
+						/** Set the theme colour **/
 						head.prependElement("meta")
 								.attr("name", "theme-color")
 								.attr("content", "#00b4f0");
 
+						/** link to the manifest for the pwa **/
 						head.prependElement("link")
 								.attr("rel", "manifest")
 								.attr("href", "VAADIN/manifest.json");
 
+						/** Add the ProgressiveApp.js to the bottom of the page */
 						Element body = response.getDocument().body();
 						body.appendElement("script")
 								.attr("type", "text/javascript")
-								.attr("src", "./VAADIN/js/app.js");
+								.attr("src", "./VAADIN/js/ProgressiveApp.js");
 					}
 				});
 			}

@@ -9,7 +9,7 @@ import com.github.appreciated.app.layout.builder.AppLayoutBuilder.Position;
 import com.github.appreciated.app.layout.builder.design.AppBarDesign;
 import com.github.appreciated.app.layout.builder.elements.SubmenuBuilder;
 import com.github.appreciated.app.layout.component.MenuHeader;
-import com.vaadin.annotations.JavaScript;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.icons.VaadinIcons;
@@ -107,35 +107,6 @@ public class ControllerUI extends UI
 		UI.getCurrent().getNavigator().addView(GardenBedEditorView.NAME, gardenBedEditor);
 
 		setContent(layout);
-
-	}
-
-	void fred()
-	{
-		final HorizontalLayout page = new HorizontalLayout();
-		this.setContent(page);
-
-		page.setSizeFull();
-		page.setMargin(false);
-
-		page.addComponent(new VerticalMenu());
-		VerticalLayout viewLayout = new VerticalLayout();
-		viewLayout.setId("ViewContainer");
-		viewLayout.setSizeFull();
-		viewLayout.setMargin(false);
-		page.addComponent(viewLayout);
-
-		page.setExpandRatio(viewLayout, 1);
-
-		nav = new Navigator(this, viewLayout);
-
-		addView(new GardenBedConfigurationView());
-		addView(new LightingView());
-		addView(new ScheduleView());
-		addView(new EndPointConfigurationView());
-		addView(new EndPointConfigurationView());
-		// Non-menu views:
-		addView(new EndPointEditorView());
 
 	}
 

@@ -10,12 +10,12 @@
 	
 	"icons": [
 		{
-			"src": "/irrigation/images/pi-gation-192x192.png",
+			"src": "/irrigation/VAADIN/themes/mytheme/images/pi-gation-192x192.png",
 			"sizes": "192x192",
 			"type": "image/png"
 		},
 		{
-			"src": "/irrigation/images/pi-gation-512x512.png",
+			"src": "/irrigation/VAADIN/themes/mytheme/images/pi-gation-512x512.png",
 			"sizes": "512x512",
 			"type": "image/png"
 		}

@@ -32,7 +32,6 @@ public class EndPointDao
 
 	
 	
-	@SuppressWarnings("unchecked")
 	public List<EndPoint> getMasterValves()
 	{
 		return getAllByType(EndPointType.MasterValve);

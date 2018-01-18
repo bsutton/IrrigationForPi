@@ -90,7 +90,6 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 		gardenBedGrid.setHeightUndefined();
 		gardenBedGrid.setColumns(3);
 
-		int row = 0;
 
 		for (GardenBed gardenBed : gardenBeds)
 		{

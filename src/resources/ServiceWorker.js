@@ -1,5 +1,5 @@
-var CACHE_NAME = 'sw-ex';
-var CACHE_VERSION = 6;
+var CACHE_NAME = 'serviceworker-ex';
+var CACHE_VERSION = 8;
 
 var filesToCache = [
 //  '/',
