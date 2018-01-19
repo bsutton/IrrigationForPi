@@ -2,10 +2,12 @@ package au.org.noojee.irrigation.entities;
 
 import java.time.Duration;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,6 +24,7 @@ import au.org.noojee.irrigation.types.PinStatus;
 
 
 @Entity
+@Table(name="tblEndPoint")
 public class EndPoint
 {
 	private static final Logger logger = LogManager.getLogger();
@@ -31,6 +34,7 @@ public class EndPoint
     private long id;
 
     // Name of the device attached to the pin.
+    @Column(unique=true)
 	private String endPointName;
 	private EndPointType endPointType;
 	private PinActivationType activationType;

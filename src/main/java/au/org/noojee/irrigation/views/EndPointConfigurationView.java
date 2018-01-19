@@ -35,7 +35,8 @@ import au.org.noojee.irrigation.weather.bureaus.WeatherStation;
 public class EndPointConfigurationView extends VerticalLayout implements SmartView
 {
 	private static final long serialVersionUID = 1L;
-	public static final String NAME = "End Points";
+	public static final String NAME = "EndPoints";
+	public static final String LABEL = "End Points";
 
 	private ComboBox<WeatherStation> weatherStation;
 	private ComboBox<WeatherBureau> weatherBureau;

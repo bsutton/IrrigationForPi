@@ -24,7 +24,7 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 
 @WebServlet(urlPatterns = "/*", name = "PiIrrigation", asyncSupported = true)
-@VaadinServletConfiguration(ui = ControllerUI.class, productionMode = false)
+@VaadinServletConfiguration(ui = ControllerUI.class, productionMode = true)
 public class PiIrrigationServlet extends VaadinServlet
 {
 

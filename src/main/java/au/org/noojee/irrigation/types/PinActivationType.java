@@ -8,6 +8,7 @@ public enum PinActivationType
 	
 	private String label;
 	private PinState onState;
+
 	private PinState offState;
 	
 	PinActivationType(String label, PinState onState, PinState offState)
@@ -22,4 +23,14 @@ public enum PinActivationType
 		return this.offState;
 	}
 	
+	public String getLabel()
+	{
+		return label;
+	}
+
+	public PinState getOnState()
+	{
+		return onState;
+	}
+
 }

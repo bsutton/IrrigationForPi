@@ -5,10 +5,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import au.org.noojee.irrigation.entities.EntityManagerUtil;
 import au.org.noojee.irrigation.entities.History;
-import au.org.noojee.irrigation.entities.InjectEntity;
-import au.org.noojee.irrigation.entities.Transaction;
 
 public class HistoryDao
 {

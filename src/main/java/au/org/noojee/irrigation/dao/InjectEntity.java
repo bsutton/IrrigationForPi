@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation.entities;
+package au.org.noojee.irrigation.dao;
 
 
 /**

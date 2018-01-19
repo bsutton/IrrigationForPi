@@ -32,7 +32,7 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 {
 
 	private static final long serialVersionUID = 1L;
-	public static final String NAME = "Garden Bed Editor";
+	public static final String NAME = "GardenBedEditor";
 	private boolean uiBuilt = false;
 	private TextField gardenBedName;
 	private ComboBox<EndPoint> valveCombo;

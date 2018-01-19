@@ -1,5 +1,7 @@
 package au.org.noojee.irrigation.types;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import com.pi4j.io.gpio.GpioController;
@@ -9,13 +11,12 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
-import au.org.noojee.irrigation.WebAppListener;
 import au.org.noojee.irrigation.entities.EndPoint;
-import au.org.noojee.irrigation.entities.EntityManagerUtil;
 import au.org.noojee.irrigation.entities.GardenBed;
 
 class ValveControllerTest
 {
+	Logger logger = LogManager.getLogger();
 
 	@Test
 	void test() throws InterruptedException
@@ -45,19 +46,60 @@ class ValveControllerTest
 
 
 		GardenBed bed1 = new GardenBed();
+		bed1.setName("bed1");
 		bed1.setMasterValve(masterValve);
 		bed1.setValve(valve1);
 
 		GardenBed bed2 = new GardenBed();
+		bed2.setName("bed2");
 		bed2.setMasterValve(masterValve);
 		bed2.setValve(valve2);
 
+		int step = 0;
+		logger.error("step " + step++);
 		ValveController.turnOn(bed1);
+		logger.error("step " + step++);
 		ValveController.turnOn(bed2);
+		
 		Thread.sleep(3000);
+		logger.error("step " + step++);
 		ValveController.turnOff(bed1);
 		Thread.sleep(10000);
+		logger.error("step " + step++);
 		ValveController.turnOff(bed2);
+		logger.error("step " + step++);
+		ValveController.turnOn(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOff(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOn(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOff(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOn(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOff(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOn(bed2);
+		logger.error("step " + step++);
+		ValveController.turnOff(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOn(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOn(bed2);
+		logger.error("step " + step++);
+		ValveController.turnOff(bed2);
+		logger.error("step " + step++);
+		ValveController.turnOff(bed1);
+		logger.error("step " + step++);
+		ValveController.turnOn(bed1);
+		logger.error("step " + step);
+		ValveController.turnOn(bed2);
+		logger.error("step " + step);
+		ValveController.turnOff(bed1);
+		logger.error("step " + step);
+		ValveController.turnOff(bed2);
+		
 		
 		// wait for things to finish.
 		Thread.sleep(40000);

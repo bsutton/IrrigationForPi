@@ -20,7 +20,8 @@ public class GardenBedView extends VerticalLayout implements SmartView
 {
 
 	private static final long serialVersionUID = 1L;
-	public static final String NAME = "Garden Beds";
+	public static final String NAME = "GardenBeds";
+	public static final String LABEL = "Garden Beds";
 
 	@Override
 	public void enter(ViewChangeEvent event)

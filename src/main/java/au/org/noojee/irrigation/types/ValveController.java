@@ -9,9 +9,9 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import au.org.noojee.irrigation.entities.Delay;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
+import au.org.noojee.irrigation.util.Delay;
 
 /**
  * We need special logic for a Master Values as a master valve must be on if any if its Valves are on.
@@ -36,7 +36,8 @@ public class ValveController
 	 */
 	public static synchronized void turnOff(GardenBed gardenBed)
 	{
-
+		logger.error("Turning " + gardenBed.getName() + " Off." );
+		
 		Duration delay = Duration.ofSeconds(0);
 
 		EndPoint valve = gardenBed.getValve();
@@ -60,17 +61,17 @@ public class ValveController
 			// else if (gardenBeds.size() > 1)
 			// Other beds are running off this master valve so we can't turn the master valve off.
 			// Just remove this garden bed from the list of running garden beds.
-				
 			
-			runningGardenBeds.remove(gardenBed);
-
+			gardenBeds.remove(gardenBed);
 		}
+
 		Delay.delay(delay, valve, v -> v.setOff());
 
 	}
 
 	public static synchronized void turnOn(GardenBed gardenBed)
 	{
+		logger.error("Turning " + gardenBed.getName() + " On." );
 		EndPoint valve = gardenBed.getValve();
 		EndPoint masterValve = gardenBed.getMasterValve();
 		

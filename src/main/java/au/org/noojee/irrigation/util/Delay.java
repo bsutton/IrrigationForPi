@@ -1,7 +1,9 @@
-package au.org.noojee.irrigation.entities;
+package au.org.noojee.irrigation.util;
 
 import java.time.Duration;
 import java.util.function.Function;
+
+import au.org.noojee.irrigation.entities.EndPoint;
 
 
 public class Delay 

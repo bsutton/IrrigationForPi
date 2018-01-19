@@ -6,9 +6,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import au.org.noojee.irrigation.entities.EndPoint;
-import au.org.noojee.irrigation.entities.EntityManagerUtil;
-import au.org.noojee.irrigation.entities.InjectEntity;
-import au.org.noojee.irrigation.entities.Transaction;
 import au.org.noojee.irrigation.types.EndPointType;
 
 public class EndPointDao

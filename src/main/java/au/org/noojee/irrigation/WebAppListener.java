@@ -19,8 +19,8 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
 import au.org.noojee.irrigation.dao.EndPointDao;
+import au.org.noojee.irrigation.dao.EntityManagerUtil;
 import au.org.noojee.irrigation.entities.EndPoint;
-import au.org.noojee.irrigation.entities.EntityManagerUtil;
 
 /**
  * @author Brett Sutton

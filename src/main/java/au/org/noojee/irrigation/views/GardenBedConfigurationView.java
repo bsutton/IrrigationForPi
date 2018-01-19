@@ -31,7 +31,7 @@ import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 public class GardenBedConfigurationView extends VerticalLayout implements SmartView
 {
 	private static final long serialVersionUID = 1L;
-	public static final String NAME = "Garden Bed Configuration";
+	public static final String NAME = "GardenBedConfiguration";
 	public static final String LABEL = "Garden Beds";
 
 	private GridLayout gardenBedGrid;

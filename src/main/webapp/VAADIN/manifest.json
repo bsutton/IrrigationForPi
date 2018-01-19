@@ -3,7 +3,7 @@
 	"short_name": "Pi-gation",
 	"name": "Pi-gation",
 	"display": "standalone",
-	"start_url": "/irrigation",
+	"start_url": "/irrigation/Overview",
 	"theme_color": "#404549",
 	"background_color": "#34373b",
 	"orientation": "portrait",

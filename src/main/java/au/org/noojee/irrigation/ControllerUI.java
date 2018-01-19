@@ -8,17 +8,18 @@ import com.github.appreciated.app.layout.builder.AppLayoutBuilder;
 import com.github.appreciated.app.layout.builder.AppLayoutBuilder.Position;
 import com.github.appreciated.app.layout.builder.design.AppBarDesign;
 import com.github.appreciated.app.layout.builder.elements.SubmenuBuilder;
+import com.github.appreciated.app.layout.builder.entities.DefaultBadgeHolder;
 import com.github.appreciated.app.layout.component.MenuHeader;
-
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.PushStateNavigation;
+import com.vaadin.navigator.View;
+import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 import au.org.noojee.irrigation.views.EndPointConfigurationView;
 import au.org.noojee.irrigation.views.GardenBedConfigurationView;
@@ -44,7 +45,7 @@ import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 // @JavaScript("vaadin://js/app.js")
 
 @Viewport("width=device-width, initial-scale=1.0")
-
+@PushStateNavigation
 public class ControllerUI extends UI
 {
 
@@ -77,7 +78,7 @@ public class ControllerUI extends UI
 				.withDesign(AppBarDesign.MATERIAL)
 				.add(new MenuHeader("Irrigation & Lighting", new ThemeResource("icons/pi-gation.png")), Position.HEADER)
 				.add(OverviewView.NAME, VaadinIcons.HOME, overviewView)
-				.add(GardenBedView.NAME, VaadinIcons.CLOUD, gardenBedView)
+				.add(GardenBedView.LABEL, GardenBedView.NAME, VaadinIcons.CLOUD, null, gardenBedView, Position.DEFAULT)
 				.add(LightingView.NAME, VaadinIcons.LIGHTBULB, lightingView)
 				.add(ScheduleView.NAME, VaadinIcons.CLOCK, scheduleView)
 				.add(HistoryView.NAME, VaadinIcons.TIME_BACKWARD, historyView)
