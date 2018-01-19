@@ -62,8 +62,10 @@ public class PiIrrigationServlet extends VaadinServlet
 						String pathInfo = request.getPathInfo();
 						InputStream in = null;
 
-						// * Logic for implementation of Progress Web App
-						// sw.js is the required service worker.
+						// Logic for implementation of Progress Web App
+						// ServiceWorker.js is the required service worker.
+						// Read article at: https://vaadin.com/blog/progressive-web-apps-in-java
+						// and 
 
 						if (pathInfo.endsWith("ServiceWorker.js"))
 						{

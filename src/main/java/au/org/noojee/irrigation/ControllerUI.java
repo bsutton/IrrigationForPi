@@ -40,10 +40,6 @@ import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
  * to the user interface and initialize non-component functionality.
  */
 @Theme("mytheme")
-// Turns our web app in to a Progress Web App
-// Read article at: https://vaadin.com/blog/progressive-web-apps-in-java
-// @JavaScript("vaadin://js/app.js")
-
 @Viewport("width=device-width, initial-scale=1.0")
 @PushStateNavigation
 public class ControllerUI extends UI
