@@ -19,7 +19,7 @@ It only takes a few minutes to get this web app up and running so give it a try 
 
 Contributes to this project are strongly encouraged so post your patches.
 
-You can read the Pi-gation [user manual here](Home)
+You can read the Pi-gation [user manual here](https://github.com/bsutton/IrrigationForPi/wiki)
 
 Build
 =======
