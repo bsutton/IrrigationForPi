@@ -8,9 +8,9 @@ To use Pi-gation you need a Raspberry PI, one or more relay boards wired up to d
 Overview
 ========
 
-IrrigationForPi is a web app designed to allow you to control external lighting and irrigation systems from a mobile device.
+Pi-gation is a web app designed to allow you to control external lighting and irrigation systems from a mobile device.
 
-The app allows you to configure Pins on the Pi to control various devices such as lights and valves for an irrigation system.
+The app allows you to configure Pins on the Pi to control various devices such as Lights and Valves for an irrigation system.
 
 In theory the app can be used to control any device attached to a Pi but it has specific interfaces that are fashioned around 
 configuring irrigation and lighting systems.
@@ -18,6 +18,8 @@ configuring irrigation and lighting systems.
 It only takes a few minutes to get this web app up and running so give it a try :)
 
 Contributes to this project are strongly encouraged so post your patches.
+
+You can read the Pi-gation [user manual here](Home)
 
 Build
 =======
