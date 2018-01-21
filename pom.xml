@@ -104,7 +104,15 @@
 			<version>1.2-SNAPSHOT</version>
 		</dependency>
 
-	
+		<!-- junit tests -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.0.1</version>
+			<scope>test</scope>
+		</dependency>
+
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>

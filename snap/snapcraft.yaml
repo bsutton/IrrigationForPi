@@ -14,7 +14,17 @@ description: |
 grade: devel # must be 'stable' to release into candidate/stable channels
 confinement: devmode # use 'strict' once you have the right plugs and slots
 
+apps:
+  pi-gation:
+    command: java -Duser.home=$HOME -jar $SNAP/jar/torgo-1.7.1.jar "$@"
+    plugs: [network]
+
 parts:
-  my-part:
+  pi-gation:
     # See 'snapcraft plugins'
-    plugin: nil
+    plugin: maven
+    source: https://github.com/bsutton/IrrigationForPi.git
+    maven-options:
+      [-DskipTests=true]
+    stage-packages: 
+      - default-jre
