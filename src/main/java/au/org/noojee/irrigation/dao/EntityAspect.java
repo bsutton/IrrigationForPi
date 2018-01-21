@@ -24,7 +24,7 @@ public class EntityAspect
 {
 	private static final Logger logger = LogManager.getLogger();
 
-	private static ThreadLocal<EntityManager> threadLocalEM = ThreadLocal.withInitial(() -> EntityManagerUtil.createEntityManager());
+	private static ThreadLocal<EntityManager> threadLocalEM = ThreadLocal.withInitial(() -> MyEntityManagerUtil.createEntityManager());
 	private static ThreadLocal<EntityTransaction> threadLocalTransaction = ThreadLocal.withInitial(() -> threadLocalEM.get().getTransaction());
 
 	// Defines a pointcut where the @InjectEntity exists

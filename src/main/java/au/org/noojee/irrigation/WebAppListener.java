@@ -19,8 +19,9 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
 import au.org.noojee.irrigation.dao.EndPointDao;
-import au.org.noojee.irrigation.dao.EntityManagerUtil;
+import au.org.noojee.irrigation.dao.MyEntityManagerUtil;
 import au.org.noojee.irrigation.entities.EndPoint;
+import au.org.noojee.irrigation.types.ValveController;
 
 /**
  * @author Brett Sutton
@@ -43,9 +44,11 @@ public class WebAppListener implements ServletContextListener
 		System.out.println("PI PLATFORM: " + System.getenv("PI4J_PLATFORM"));
 		System.out.println("Simulated PLATFORM - simulated: " + System.getenv("SimulatedPlatform"));
 
-		EntityManagerUtil.init();
+		MyEntityManagerUtil.init();
 
 		provisionPins();
+		
+		ValveController.init();
 
 	}
 
@@ -54,8 +57,8 @@ public class WebAppListener implements ServletContextListener
 		// create gpio controller
 		final GpioController gpio = GpioFactory.getInstance();
 
-		EndPointDao daoPin = new EndPointDao();
-		List<au.org.noojee.irrigation.entities.EndPoint> pins = daoPin.getAll();
+		EndPointDao daoEndPoint = new EndPointDao();
+		List<au.org.noojee.irrigation.entities.EndPoint> pins = daoEndPoint.getAll();
 
 		// Set default states for pins.
 		for (Pin pin : RaspiPin.allPins())
@@ -97,28 +100,9 @@ public class WebAppListener implements ServletContextListener
 
 		gpio.shutdown();
 
-		databaseShutdown();
+		MyEntityManagerUtil.databaseShutdown();
 
 	}
 
-	private void databaseShutdown()
-	{
-		final String SHUTDOWN_CODE = "XJ015";
-		System.out.println("SHUTTING DOWN");
-
-		try
-		{
-			DriverManager.getConnection("jdbc:derby:;shutdown=true");
-		}
-		catch (SQLException e)
-		{
-			// Derby 10.9.1.0 shutdown raises a SQLException with code "XJ015"
-			if (!SHUTDOWN_CODE.equals(e.getSQLState()))
-			{
-				e.printStackTrace();
-			}
-		}
-
-	}
 
 }

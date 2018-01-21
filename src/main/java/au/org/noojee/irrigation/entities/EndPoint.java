@@ -27,6 +27,8 @@ import au.org.noojee.irrigation.types.PinStatus;
 @Table(name="tblEndPoint")
 public class EndPoint
 {
+
+
 	private static final Logger logger = LogManager.getLogger();
 	
     @Id
@@ -41,7 +43,24 @@ public class EndPoint
 
 	
 	// We store the gpio pin no. here.
+	@Column(unique=true)
 	private int pinNo;
+	
+	// If we are a master valve we offer an option to bleed the pressure from the line
+	// by turning the master valve off before we turn the garden bed valve off.
+	private boolean bleedLine = false;
+	
+	public boolean isBleedLine()
+	{
+		return bleedLine;
+	}
+
+	public void setBleedLine(boolean bleadLine)
+	{
+		this.bleedLine = bleadLine;
+	}
+
+
 	
 	// The amount of current activating this pin causes the device to draw.
 	private Amperage startAmps;
@@ -171,6 +190,10 @@ public class EndPoint
 		return this.pinNo;
 	}
 
+	public boolean isOn()
+	{
+		return getCurrentStatus() == PinStatus.ON;
+	}
 
 
 
@@ -182,9 +205,33 @@ public class EndPoint
 		GpioPinDigitalOutput gpioPin = (GpioPinDigitalOutput) gpio.getProvisionedPin(internalPin);
 		
 		return gpioPin;
-
-		
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		EndPoint other = (EndPoint) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+
 
 	@Override
 	public String toString()
@@ -193,5 +240,11 @@ public class EndPoint
 				+ ", activationType=" + activationType + ", pinNo=" + pinNo + ", startAmps=" + startAmps
 				+ ", runningAmps=" + runningAmps + ", startupInterval=" + startupInterval + "]";
 	}
+
+	public boolean isOff()
+	{
+		return !isOn();
+	}
+
 
 }

@@ -1,5 +1,7 @@
 package au.org.noojee.irrigation.dao;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import javax.persistence.EntityManager;
@@ -9,7 +11,7 @@ import javax.persistence.Persistence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class EntityManagerUtil
+public class MyEntityManagerUtil
 {
 	private static final Logger logger = LogManager.getLogger();
 	private static EntityManagerFactory emf = null;
@@ -17,10 +19,15 @@ public class EntityManagerUtil
 	
 	public static void init()
 	{
+		init("IrrigationForPiPU");
+	}
+	
+	public static void init(String persistenceUnitName)
+	{
 		try
 		{
 			if (emf == null)
-				emf = Persistence.createEntityManagerFactory("IrrigationForPiPU");
+				emf = Persistence.createEntityManagerFactory(persistenceUnitName);
 			else
 			{
 				logger.error("Someone is trying to initialise EntityManagerUtil a second time." 
@@ -59,4 +66,26 @@ public class EntityManagerUtil
 		return em;
 		*/
 	}
+
+	public static void databaseShutdown()
+	{
+		final String SHUTDOWN_CODE = "XJ015";
+		System.out.println("SHUTTING DOWN");
+
+		try
+		{
+			DriverManager.getConnection("jdbc:derby:;shutdown=true");
+		}
+		catch (SQLException e)
+		{
+			// Derby 10.9.1.0 shutdown raises a SQLException with code "XJ015"
+			if (!SHUTDOWN_CODE.equals(e.getSQLState()))
+			{
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	
 }

@@ -25,7 +25,10 @@ import com.vaadin.ui.themes.ValoTheme;
 import au.org.noojee.irrigation.ControllerUI;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.GardenBedDao;
+import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
+import au.org.noojee.irrigation.types.ValveController;
+import au.org.noojee.irrigation.views.editors.EndPointEditorView;
 import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 
 public class GardenBedConfigurationView extends VerticalLayout implements SmartView
@@ -90,7 +93,6 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 		gardenBedGrid.setHeightUndefined();
 		gardenBedGrid.setColumns(3);
 
-
 		for (GardenBed gardenBed : gardenBeds)
 		{
 
@@ -137,34 +139,52 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 
 	private void editGardenBed(ClickEvent e)
 	{
-		GardenBed gardenBed = (GardenBed) e.getButton().getData();
+		if (ValveController.isAnyValveRunning())
+			Notification.show("Can't add Garden Bed", "You can't edit an GardenBed whilst any valves are on.",
+					Type.ERROR_MESSAGE);
+		else
+		{
 
-		GardenBedEditorView editGardenBedView = (GardenBedEditorView) ((ControllerUI) UI.getCurrent())
-				.getView(GardenBedEditorView.NAME);
-		editGardenBedView.setBean(gardenBed);
+			GardenBed gardenBed = (GardenBed) e.getButton().getData();
 
-		UI.getCurrent().getNavigator().navigateTo(GardenBedEditorView.NAME);
+			GardenBedEditorView editGardenBedView = (GardenBedEditorView) ((ControllerUI) UI.getCurrent())
+					.getView(GardenBedEditorView.NAME);
+			editGardenBedView.setBean(gardenBed);
+
+			UI.getCurrent().getNavigator().navigateTo(GardenBedEditorView.NAME);
+			// re-initialise the valve controller now we have changed a valve
+			ValveController.init();
+		}
+
 	}
 
 	private void addGardenBed()
 	{
-		// Check that we have at least one valve configured
-
-		EndPointDao daoEndPoint = new EndPointDao();
-		if (daoEndPoint.getAllValves().size() == 0)
-		{
-			Notification.show("Unable to Add Garden Beds"
-					, "You must configure at least one 'Valve' via the 'End Point' configuration before you can add a garden bed."
-					, Type.ERROR_MESSAGE);
-		}
+		if (ValveController.isAnyValveRunning())
+			Notification.show("Can't add Garden Bed", "You can't add an GardenBed whilst any valves are on.",
+					Type.ERROR_MESSAGE);
 		else
 		{
-			GardenBedEditorView editGardenBedView = (GardenBedEditorView) ((ControllerUI) UI.getCurrent())
-					.getView(GardenBedEditorView.NAME);
+			// Check that we have at least one valve configured
 
-			editGardenBedView.setBean(null);
+			EndPointDao daoEndPoint = new EndPointDao();
+			if (daoEndPoint.getAllValves().size() == 0)
+			{
+				Notification.show("Unable to Add Garden Beds",
+						"You must configure at least one 'Valve' via the 'End Point' configuration before you can add a garden bed.",
+						Type.ERROR_MESSAGE);
+			}
+			else
+			{
+				GardenBedEditorView editGardenBedView = (GardenBedEditorView) ((ControllerUI) UI.getCurrent())
+						.getView(GardenBedEditorView.NAME);
 
-			UI.getCurrent().getNavigator().navigateTo(GardenBedEditorView.NAME);
+				editGardenBedView.setBean(null);
+
+				UI.getCurrent().getNavigator().navigateTo(GardenBedEditorView.NAME);
+			}
+			// re-initialise the valve controller now we have changed a valve
+			ValveController.init();
 		}
 
 	}

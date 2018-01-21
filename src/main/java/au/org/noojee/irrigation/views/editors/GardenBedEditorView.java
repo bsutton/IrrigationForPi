@@ -37,7 +37,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 	private TextField gardenBedName;
 	private ComboBox<EndPoint> valveCombo;
 	private ComboBox<EndPoint> masterValveCombo;
-	private CheckBox bleedLineCheckbox;
 
 
 	private Binder<GardenBed> binder = new Binder<>(GardenBed.class);
@@ -117,7 +116,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 			this.valveCombo.setValue(gardenBed.getValve());
 			
 			this.masterValveCombo.setValue(gardenBed.getMasterValve());
-			this.bleedLineCheckbox.setValue(gardenBed.isBleedLine());
 
 		}
 		else
@@ -127,7 +125,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 			
 			this.masterValveCombo.setValue(null);
 			this.valveCombo.setValue(null);
-			this.bleedLineCheckbox.setValue(false);
 
 
 			this.isEdit = false;
@@ -174,14 +171,8 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 		this.masterValveCombo.setItemCaptionGenerator(EndPoint::getEndPointName);
 		this.masterValveCombo.setEmptySelectionAllowed(true);
 		this.masterValveCombo.setTextInputAllowed(false);
-		this.masterValveCombo.addValueChangeListener(e -> masterValveSelected(e));
 		this.masterValveCombo.setWidth(60.0f, Unit.MM);
 		
-		
-		bleedLineCheckbox = new CheckBox("Bleed line (Recommended)");
-		this.addComponent(bleedLineCheckbox);
-			
-
 		VerticalLayout spacer = new VerticalLayout();
 		this.addComponent(spacer);
 		spacer.setSizeFull();
@@ -214,18 +205,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 	}
 
 	
-	private void masterValveSelected(ValueChangeEvent<EndPoint> e)
-	{
-		if (e.getValue() == null)
-		{
-			bleedLineCheckbox.setVisible(false);
-		}
-		else
-		{
-			bleedLineCheckbox.setVisible(true);
-			
-		}
-	}
 
 	
 	private void deleteGardenBed(ClickEvent e)
@@ -258,7 +237,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 			gardenBed.setName(this.gardenBedName.getValue());
 			gardenBed.setValve(this.valveCombo.getValue());
 			gardenBed.setMasterValve(this.masterValveCombo.getValue());
-			gardenBed.setBleedLine(this.bleedLineCheckbox.getValue());
 
 			if (this.isEdit)
 				daoGardenBed.merge(gardenBed);

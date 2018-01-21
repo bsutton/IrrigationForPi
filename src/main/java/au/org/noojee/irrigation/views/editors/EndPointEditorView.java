@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.pi4j.io.gpio.RaspiPin;
 import com.vaadin.data.Binder;
+import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.icons.VaadinIcons;
@@ -14,6 +15,7 @@ import com.vaadin.server.Responsive;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -39,6 +41,8 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	private ComboBox<EndPointType> endPointType;
 	private ComboBox<PinActivationType> activationType;
 	private ComboBox<com.pi4j.io.gpio.Pin> piPinComboBox;
+	private CheckBox bleedLineCheckbox;
+
 
 	private Binder<EndPoint> binder = new Binder<>(EndPoint.class);
 	private boolean isEdit = false;
@@ -93,6 +97,8 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		.asRequired("Please set the Activation Type")
 		.bind(EndPoint::getPinActiviationType, EndPoint::setPinActiviationType);
 		
+
+		
 		
 		
 	}
@@ -116,6 +122,9 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.activationType.setValue(endPoint.getPinActiviationType());
 			this.piPinComboBox.setValue(endPoint.getPiPin());
 			
+			this.bleedLineCheckbox.setValue(endPoint.isBleedLine());
+
+			
 
 		}
 		else
@@ -125,6 +134,8 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.endPointType.setValue(EndPointType.Valve);
 			this.activationType.setValue(PinActivationType.HIGH_IS_ON);
 			this.piPinComboBox.setSelectedItem(null);
+			this.bleedLineCheckbox.setValue(false);
+
 			
 
 			this.isEdit = false;
@@ -163,6 +174,14 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		endPointType.setDataProvider(new ListDataProvider<EndPointType>(Arrays.asList(EndPointType.values())));
 		endPointType.setEmptySelectionAllowed(false);
 		endPointType.setTextInputAllowed(false);
+		endPointType.addValueChangeListener(e -> masterValveSelected(e));
+
+		
+		
+		bleedLineCheckbox = new CheckBox("Bleed line (Recommended)");
+		this.addComponent(bleedLineCheckbox);
+		this.setVisible(false);
+
 		
 
 		List<com.pi4j.io.gpio.Pin> gpioPins = Arrays.asList(RaspiPin.allPins());
@@ -224,11 +243,25 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
 	}
 
+	private void masterValveSelected(ValueChangeEvent<EndPointType> e)
+	{
+		if (e.getValue() == null)
+		{
+			bleedLineCheckbox.setVisible(false);
+		}
+		else
+		{
+			bleedLineCheckbox.setVisible(true);
+			
+		}
+	}
+
 	private void cancel()
 	{
 		UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
 	}
 
+	
 	private void save()
 	{
 		if (binder.validate().isOk())
@@ -244,6 +277,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 
 			endPoint.setEndPointName(this.endPointName.getValue());
 			endPoint.setEndPointType(this.endPointType.getValue());
+			endPoint.setBleedLine(this.bleedLineCheckbox.getValue());
 			endPoint.setPinActiviationType(this.activationType.getValue());
 			endPoint.setPiPin(this.piPinComboBox.getValue());
 			if (this.isEdit)

@@ -15,42 +15,49 @@ public class EndPointDao
 	@InjectEntity
 	public List<EndPoint> getAll()
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		Query query = em.createQuery("SELECT e FROM EndPoint e order by LOWER(e.endPointName)");
 		return (List<EndPoint>) query.getResultList();
 	}
-	
-	
+
 	public List<EndPoint> getAllValves()
 	{
 		return getAllByType(EndPointType.Valve);
 	}
 
-	
-	
 	public List<EndPoint> getMasterValves()
 	{
 		return getAllByType(EndPointType.MasterValve);
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	public List<EndPoint> getAllByType(EndPointType type)
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
-		Query query = em.createQuery("SELECT e FROM EndPoint e where e.endPointType = :type order by LOWER(e.endPointName)");
+		Query query = em
+				.createQuery("SELECT e FROM EndPoint e where e.endPointType = :type order by LOWER(e.endPointName)");
 		query.setParameter("type", type);
-		
+
 		return (List<EndPoint>) query.getResultList();
 	}
 
+	public void deleteAll()
+	{
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
+		try (Transaction tran = new Transaction(em))
+		{
+			Query q2 = em.createQuery("DELETE FROM EndPoint e");
+			q2.executeUpdate();
+			tran.commit();
+		}
+	}
 
 	public void persist(EndPoint endPoint)
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
@@ -62,7 +69,7 @@ public class EndPointDao
 
 	public void delete(EndPoint endPoint)
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
@@ -77,17 +84,14 @@ public class EndPointDao
 
 	public void merge(EndPoint endPoint)
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
 			em.merge(endPoint);
 			tran.commit();
 		}
-		
+
 	}
-
-
-
 
 }

@@ -18,6 +18,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -27,6 +29,7 @@ import au.org.noojee.irrigation.ControllerUI;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.types.PinStatus;
+import au.org.noojee.irrigation.types.ValveController;
 import au.org.noojee.irrigation.views.editors.EndPointEditorView;
 import au.org.noojee.irrigation.weather.bureaus.WeatherBureau;
 import au.org.noojee.irrigation.weather.bureaus.WeatherBureaus;
@@ -75,7 +78,7 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 		Responsive.makeResponsive(weatherStation);
 
 		this.addComponent(weatherBureau);
-		
+
 		Panel scrollPanel = new Panel();
 		this.addComponent(scrollPanel);
 		scrollPanel.setSizeFull();
@@ -110,7 +113,6 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 		endPointGrid.setHeightUndefined();
 		endPointGrid.setColumns(3);
 
-
 		for (EndPoint endPoint : endPoints)
 		{
 
@@ -129,7 +131,6 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 			editButton.setData(endPoint);
 			editButton.addClickListener(e -> editEndPoint(e));
 			endPointGrid.addComponent(editButton);
-
 
 		}
 
@@ -165,23 +166,42 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 		endPoint.setOn();
 	}
 
-
 	private void editEndPoint(ClickEvent e)
 	{
-		EndPoint endPoint = (EndPoint) e.getButton().getData();
+		if (ValveController.isAnyValveRunning())
+			Notification.show("Can't add EndPoint", "You can't edit an EndPoint whilst any valves are on.",
+					Type.ERROR_MESSAGE);
+		else
+		{
+			EndPoint endPoint = (EndPoint) e.getButton().getData();
 
-		EndPointEditorView defineEndPointView = (EndPointEditorView) ((ControllerUI) UI.getCurrent()).getView(EndPointEditorView.NAME);
-		defineEndPointView.setBean(endPoint);
-		UI.getCurrent().getNavigator().navigateTo(EndPointEditorView.NAME);
+			EndPointEditorView defineEndPointView = (EndPointEditorView) ((ControllerUI) UI.getCurrent())
+					.getView(EndPointEditorView.NAME);
+			defineEndPointView.setBean(endPoint);
+			UI.getCurrent().getNavigator().navigateTo(EndPointEditorView.NAME);
+			
+			// re-initialise the valve controller now we have changed a valve
+			ValveController.init();
+		}
 	}
 
 	private void addEndPoint()
 	{
-		EndPointEditorView defineEndPointView = (EndPointEditorView) ((ControllerUI) UI.getCurrent()).getView(EndPointEditorView.NAME);
+		if (ValveController.isAnyValveRunning())
+			Notification.show("Can't add EndPoint", "You can't add an EndPoint whilst any valves are on.",
+					Type.ERROR_MESSAGE);
+		{
+			EndPointEditorView defineEndPointView = (EndPointEditorView) ((ControllerUI) UI.getCurrent())
+					.getView(EndPointEditorView.NAME);
 
-		defineEndPointView.setBean(null);
+			defineEndPointView.setBean(null);
 
-		UI.getCurrent().getNavigator().navigateTo(EndPointEditorView.NAME);
+			UI.getCurrent().getNavigator().navigateTo(EndPointEditorView.NAME);
+
+			// re-initialise the valve controller now we have added more valves
+			ValveController.init();
+
+		}
 
 	}
 

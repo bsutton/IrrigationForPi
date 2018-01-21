@@ -2,7 +2,7 @@ package au.org.noojee.irrigation.types;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -11,16 +11,28 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
+import au.org.noojee.irrigation.dao.EndPointDao;
+import au.org.noojee.irrigation.dao.GardenBedDao;
+import au.org.noojee.irrigation.dao.MyEntityManagerUtil;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
 
-class ValveControllerTest
+public class ValveControllerTest
 {
-	Logger logger = LogManager.getLogger();
+	static Logger logger = LogManager.getLogger();
 
 	@Test
-	void test() throws InterruptedException
+	public void test() throws InterruptedException
 	{
+		MyEntityManagerUtil.init("TestIrrigationForPiPU");
+
+		
+		EndPointDao daoEndPoint = new EndPointDao();
+		GardenBedDao daoGardenBed = new GardenBedDao();
+
+		daoGardenBed.deleteAll();
+		daoEndPoint.deleteAll();
+		
 		final GpioController gpio = GpioFactory.getInstance();
 
 		for (Pin pin : RaspiPin.allPins())
@@ -32,77 +44,140 @@ class ValveControllerTest
 		}
 
 		Pin[] pins = RaspiPin.allPins();
+		
 		EndPoint masterValve = new EndPoint();
 		masterValve.setEndPointName("Master Valve");
 		masterValve.setPiPin(pins[0]);
+		masterValve.setEndPointType(EndPointType.MasterValve);
+		masterValve.setPinActiviationType(PinActivationType.LOW_IS_ON);
+		daoEndPoint.persist(masterValve);
 
 		EndPoint valve1 = new EndPoint();
 		valve1.setEndPointName("Bed1");
 		valve1.setPiPin(pins[1]);
+		valve1.setEndPointType(EndPointType.Valve);
+		valve1.setPinActiviationType(PinActivationType.LOW_IS_ON);
+		daoEndPoint.persist(valve1);
 		
 		EndPoint valve2 = new EndPoint();
 		valve2.setEndPointName("Bed2");
 		valve2.setPiPin(pins[2]);
+		valve2.setEndPointType(EndPointType.Valve);
+		valve2.setPinActiviationType(PinActivationType.LOW_IS_ON);
+		daoEndPoint.persist(valve2);
 
 
 		GardenBed bed1 = new GardenBed();
 		bed1.setName("bed1");
 		bed1.setMasterValve(masterValve);
 		bed1.setValve(valve1);
+		daoGardenBed.persist(bed1);
 
 		GardenBed bed2 = new GardenBed();
 		bed2.setName("bed2");
 		bed2.setMasterValve(masterValve);
 		bed2.setValve(valve2);
+		daoGardenBed.persist(bed2);
 
-		int step = 0;
-		logger.error("step " + step++);
-		ValveController.turnOn(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOn(bed2);
+		logger.error("Running NO bleed line test");
+//		runTestSequence(bed1, bed2), masterValve;
 		
-		Thread.sleep(3000);
-		logger.error("step " + step++);
-		ValveController.turnOff(bed1);
-		Thread.sleep(10000);
-		logger.error("step " + step++);
-		ValveController.turnOff(bed2);
-		logger.error("step " + step++);
-		ValveController.turnOn(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOff(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOn(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOff(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOn(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOff(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOn(bed2);
-		logger.error("step " + step++);
-		ValveController.turnOff(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOn(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOn(bed2);
-		logger.error("step " + step++);
-		ValveController.turnOff(bed2);
-		logger.error("step " + step++);
-		ValveController.turnOff(bed1);
-		logger.error("step " + step++);
-		ValveController.turnOn(bed1);
-		logger.error("step " + step);
-		ValveController.turnOn(bed2);
-		logger.error("step " + step);
-		ValveController.turnOff(bed1);
-		logger.error("step " + step);
-		ValveController.turnOff(bed2);
+		// Now turn bleedline on
 		
+		masterValve.setBleedLine(true);
+		daoEndPoint.merge(masterValve);
+		
+		logger.error("Running bleed line test");
+		runTestSequence(bed1, bed2, masterValve);
 		
 		// wait for things to finish.
 		Thread.sleep(40000);
+
+		
+		MyEntityManagerUtil.databaseShutdown();
+
+	}
+
+	private void runTestSequence(GardenBed bed1, GardenBed bed2, EndPoint masterValve) throws InterruptedException
+	{
+		// Now we have created the beds and the valves we can init the controller.
+		ValveController.init();
+
+
+		logger.error("step 1");
+		bed1.turnOn();
+		assert(masterValve.isOn());
+		logger.error("step 2");
+		bed2.turnOn();
+		assert(masterValve.isOn());
+		logger.error("step 3");
+		bed1.turnOff();
+		assert(masterValve.isOff());
+		if (masterValve.isBleedLine())
+			assert(bed1.getValve().isOn());
+		else
+			assert(bed1.getValve().isOff());
+		Thread.sleep(32000);
+		assert(bed1.getValve().isOff());
+		logger.error("step 4");
+		bed2.turnOff();
+		assert(masterValve.isOff());
+		logger.error("step 5");
+		bed1.turnOn();
+		assert(masterValve.isOn());
+		logger.error("step 6");
+		bed1.turnOff();
+		assert(masterValve.isOff());
+		logger.error("step 7");
+		bed1.turnOn();
+		logger.error("step 8");
+		bed1.turnOff();
+		assert(masterValve.isOff());
+		logger.error("step 9");
+		bed1.turnOn();
+		logger.error("step 10");
+		bed1.turnOff();
+		logger.error("step 11");
+		bed2.turnOn();
+		logger.error("step 12");
+		bed1.turnOff();
+		assert(masterValve.isOff());
+		logger.error("step 13");
+		bed1.turnOn();
+		logger.error("step 14");
+		bed2.turnOn();
+		logger.error("step 15");
+		bed2.turnOff();
+		assert(masterValve.isOn());
+		logger.error("step 16");
+		bed1.turnOff();
+		assert(masterValve.isOff());
+		logger.error("step 17");
+		bed1.turnOn();
+		assert(masterValve.isOn());
+		logger.error("step 18");
+		bed2.turnOn();
+		assert(masterValve.isOn());
+		logger.error("step 19");
+		bed1.turnOff();
+		assert(masterValve.isOn());
+		logger.error("step 20");
+		bed2.turnOff();
+		assert(masterValve.isOff());
+		
+		
+	}
+	
+	public static void main(String[] args) 
+	{
+		try
+		{
+			new ValveControllerTest().test();
+		}
+		catch (InterruptedException e)
+		{
+			logger.error(e,e);
+		}
 	}
 
 }

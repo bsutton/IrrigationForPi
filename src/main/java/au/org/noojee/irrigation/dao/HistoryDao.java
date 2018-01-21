@@ -14,7 +14,7 @@ public class HistoryDao
 	@InjectEntity
 	public List<History> getAll()
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		Query query = em.createQuery("SELECT e FROM History e order by e.wateringEvent desc");
 		return (List<History>) query.getResultList();
@@ -22,7 +22,7 @@ public class HistoryDao
 
 	public void persist(History History)
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
@@ -34,7 +34,7 @@ public class HistoryDao
 
 	public void delete(History History)
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
@@ -49,7 +49,7 @@ public class HistoryDao
 
 	public void merge(History History)
 	{
-		EntityManager em = EntityManagerUtil.getEntityManager();
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{

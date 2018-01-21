@@ -18,6 +18,8 @@ import au.org.noojee.irrigation.types.ValveController;
 @Table(name="tblGardenBed")
 public class GardenBed
 {
+
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -38,9 +40,6 @@ public class GardenBed
 	// activated to turn this garden bed on.
 	EndPoint masterValve;
 
-	// If we have a master valve we offer an option to bleed the pressure from the line
-	// by turning the master valve off before we turn the garden bed valve off.
-	private boolean bleedLine = false;
 
 	transient private History currentHistory;
 
@@ -100,15 +99,6 @@ public class GardenBed
 		this.masterValve = masterValve;
 	}
 
-	public boolean isBleedLine()
-	{
-		return bleedLine;
-	}
-
-	public void setBleedLine(boolean bleadLine)
-	{
-		this.bleedLine = bleadLine;
-	}
 
 	public void turnOff()
 	{
@@ -150,5 +140,39 @@ public class GardenBed
 	{
 		return this.valve.getCurrentStatus() == PinStatus.ON;
 	}
+	
+	
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		GardenBed other = (GardenBed) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "GardenBed [id=" + id + ", name=" + name + ", desription=" + desription + ", lastWatering="
+				+ lastWatering + ", nextWatering=" + nextWatering + ", mostiureContent=" + mostiureContent + ", valve="
+				+ valve + ", masterValve=" + masterValve + "]";
+	}
+
 
 }
