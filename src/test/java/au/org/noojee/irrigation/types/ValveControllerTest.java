@@ -2,7 +2,7 @@ package au.org.noojee.irrigation.types;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -167,17 +167,17 @@ public class ValveControllerTest
 		
 		
 	}
-	
-	public static void main(String[] args) 
-	{
-		try
-		{
-			new ValveControllerTest().test();
-		}
-		catch (InterruptedException e)
-		{
-			logger.error(e,e);
-		}
-	}
-
+//	
+//	public static void main(String[] args) 
+//	{
+//		try
+//		{
+//			new ValveControllerTest().test();
+//		}
+//		catch (InterruptedException e)
+//		{
+//			logger.error(e,e);
+//		}
+//	}
+//
 }
