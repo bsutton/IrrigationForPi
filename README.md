@@ -5,6 +5,23 @@ An irrigation and out door lighting controller for the Raspbery PI.
 To use Pi-gation you need a Raspberry PI, one or more relay boards wired up to digital IO pins and some Solinoid valves or lights that you want to control.
 
 
+WARNING WARNING
+===============
+
+Water can be surprisingly destructive. Even a small leak can do a lot of damage.
+
+Pi-gation is a work in progress, so there are REAL risks that it may do something wrong that could end up with a serious water flow for extended periods!!!
+
+If you should choose to use Pi-gation you MUST only do so at your OWN RISK.
+
+I make no warranties that Pi-gation is fit for purpose and I guarentee you that it has LOTS OF BUGS.
+
+So use it carefully and monitor its operation carefully until you are comfortable it is operating correctly in your environment.
+
+During early operation you should be turning the master tap OFF when you are not physically monitoring your watering system.
+
+
+
 Overview
 ========
 
