@@ -16,7 +16,6 @@ import au.org.noojee.irrigation.dao.GardenBedDao;
 import au.org.noojee.irrigation.dao.MyEntityManagerUtil;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
-import junit.framework.Assert;
 
 public class ValveControllerTest
 {
@@ -87,8 +86,8 @@ public class ValveControllerTest
 			assert bed1.getValve().isOff() : "bed 1 should be off";
 			assert bed1.getValve().isOff() : "bed 2 should be off";
 			assert masterValve.isOff() : "master valve should be off";
-			
-			
+		
+	
 
 			// Now turn bleedline on
 
