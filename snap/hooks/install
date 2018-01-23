@@ -1,0 +1,27 @@
+#!/bin/sh
+#set -x
+
+# CONFIG FILE PATH
+CONFIG_FILE=$SNAP_DATA/config
+
+# CONFIG OPTIONS: db-username, db-password, https-port
+OPTIONS="db-username db-password https-port"
+
+promptUser=y
+
+while [ $promptUser = y ]
+do
+	read -p "Enter new database username: " db_username
+	read -p "Enter new database password: " db_password
+	read -p "Enter listen port for https: " https_port
+	
+	read -p "Keep these values? (Y/N): " confirm 
+
+	if [ $confirm = y ] || [ $confirm = Y ]; then
+		promptUser=n
+	fi
+done
+
+snap set pi-gation db-username="$db_username"
+snap set pi-gation db-password="$db_password"
+snap set pi-gation https-port="$https_port"

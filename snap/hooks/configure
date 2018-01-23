@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# CONFIG FILE PATH
+CONFIG_FILE=$SNAP_DATA/config
+
+# CONFIG OPTIONS: db-username, db-password, https-port
+OPTIONS="db-username db-password https-port"
+
+# add or replace an option inside the config file. 
+# Create the file if doesn't exist
+
+refresh_opt_in_config() 
+{
+    opt=$1
+    value="$2"
+    replace_line="$opt=$value"
+    if $(grep -q "$opt=" $CONFIG_FILE); then
+        sed "s/^$opt=.*/$replace_line/" $CONFIG_FILE 2>/dev/null >${CONFIG_FILE}.new
+        mv -f ${CONFIG_FILE}.new $CONFIG_FILE 2>/dev/null
+    else
+        echo $replace_line >> $CONFIG_FILE
+    fi
+}
+
+# Iterate through the config options array
+for opt in $OPTIONS
+    do
+    # Use snapctl to get the value registered by the snap set command
+    refresh_opt_in_config $opt $(snapctl get $opt)
+done
+

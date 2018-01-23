@@ -25,10 +25,8 @@ import com.vaadin.ui.themes.ValoTheme;
 import au.org.noojee.irrigation.ControllerUI;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.GardenBedDao;
-import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
 import au.org.noojee.irrigation.types.ValveController;
-import au.org.noojee.irrigation.views.editors.EndPointEditorView;
 import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 
 public class GardenBedConfigurationView extends VerticalLayout implements SmartView

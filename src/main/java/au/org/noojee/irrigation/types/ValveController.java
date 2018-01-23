@@ -46,6 +46,9 @@ public class ValveController
 		
 		List<EndPoint> masterValves = daoEndPoint.getMasterValves(); 
 		
+		// If a valve is edit we get re-initialised so need to clear out the controllers.
+		masterValveControllers.clear();
+		
 		for (EndPoint masterValve : masterValves)
 		{
 			MasterValveController controller = new MasterValveController(masterValve);

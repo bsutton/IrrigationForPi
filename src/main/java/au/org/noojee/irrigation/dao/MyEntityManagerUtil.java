@@ -1,8 +1,11 @@
 package au.org.noojee.irrigation.dao;
 
+import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -15,25 +18,65 @@ public class MyEntityManagerUtil
 {
 	private static final Logger logger = LogManager.getLogger();
 	private static EntityManagerFactory emf = null;
-	
-	
+
 	public static void init()
 	{
-		init("IrrigationForPiPU");
+		init("Production");
 	}
-	
+
+	public static void initTest()
+	{
+		init("Test");
+	}
+
 	public static void init(String persistenceUnitName)
 	{
 		try
 		{
 			if (emf == null)
-				emf = Persistence.createEntityManagerFactory(persistenceUnitName);
+			{
+				/*
+				 * <property name="javax.persistence.jdbc.url"
+				 * value="jdbc:derby:/home/pi/irrigationDb/IrrigationForPi;create=true" /> <property
+				 * name="javax.persistence.jdbc.password" value="a password goes here" /> <property
+				 * name="javax.persistence.jdbc.user" value="irrigation4pi" />
+				 */
+				
+				// Default path.
+				File rootPath = new File("/home/pi/irrigationDb");
+				
+				// If we are running under snap then use the snap data path
+				String snapPath = System.getenv("SNAP_DATA");
+				if (snapPath != null)
+					rootPath = new File(snapPath);
+				
+				File dbPath = new File(rootPath, persistenceUnitName);
+				
+				String username = System.getenv("pi_gation_db_username");
+				String password = System.getenv("pi_gation_db_password");
+				
+				if (username == null)
+					throw new RuntimeException("You must create an environment variable pi-gation-db-username which contains the db username");
+
+				if (password == null)
+					throw new RuntimeException("You must create an environment variable pi-gation-db-password which contains the db password");
+
+				String jdbcURL = "jdbc:derby:" + dbPath.getAbsolutePath() + ";create=true";
+
+				Map<String, String> properties = new HashMap<>();
+
+				properties.put("javax.persistence.jdbc.url", jdbcURL);
+				properties.put("javax.persistence.jdbc.password", password);
+				properties.put("javax.persistence.jdbc.user", username);
+
+				emf = Persistence.createEntityManagerFactory(persistenceUnitName, properties);
+			}
 			else
 			{
-				logger.error("Someone is trying to initialise EntityManagerUtil a second time." 
+				logger.error("Someone is trying to initialise EntityManagerUtil a second time."
 						+ Arrays.toString(Thread.currentThread().getStackTrace()));
 			}
-			
+
 		}
 		catch (Throwable e)
 		{
@@ -41,30 +84,18 @@ public class MyEntityManagerUtil
 			throw e;
 		}
 	}
-	
+
 	static EntityManager createEntityManager()
 	{
 		if (emf == null)
 			throw new IllegalStateException("Call EntityManagerUtil.init() on program startup");
 		return emf.createEntityManager();
 	}
-	
+
 	public static EntityManager getEntityManager()
 	{
-		
-		return emf.createEntityManager();
-		
-		// should really use a new entity manager per servlet request.
-		// rather than creating one every time we hit the db. 
-		// But for the moment this is easy.
-		// If we get aspects working we can probably work out what request we are in.
-		/*
-		EntityManager em = EntityAspect.getThreadEntityManager();
-		
-		logger.error("Active Em=" + em.toString() + " from thread: " + Thread.currentThread().getId());
-		logger.error("Owning factory is: " + em.getEntityManagerFactory().toString());
-		return em;
-		*/
+
+			return emf.createEntityManager();
 	}
 
 	public static void databaseShutdown()
@@ -87,5 +118,4 @@ public class MyEntityManagerUtil
 
 	}
 
-	
 }

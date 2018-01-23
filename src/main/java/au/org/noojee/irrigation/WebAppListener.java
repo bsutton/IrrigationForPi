@@ -1,7 +1,5 @@
 package au.org.noojee.irrigation;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.ServletContextEvent;

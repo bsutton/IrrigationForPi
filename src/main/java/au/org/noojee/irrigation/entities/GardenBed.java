@@ -141,6 +141,13 @@ public class GardenBed
 		return this.valve.getCurrentStatus() == PinStatus.ON;
 	}
 	
+	public boolean isOff()
+	{
+		
+		return !isOn();
+	}
+
+	
 	
 	@Override
 	public int hashCode()
@@ -173,6 +180,7 @@ public class GardenBed
 				+ lastWatering + ", nextWatering=" + nextWatering + ", mostiureContent=" + mostiureContent + ", valve="
 				+ valve + ", masterValve=" + masterValve + "]";
 	}
+
 
 
 }

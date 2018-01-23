@@ -2,6 +2,7 @@ package au.org.noojee.irrigation.types;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +32,7 @@ public class MasterValveController
 	// the GardenBed we are currently using to bleed out the line.
 	// This will be null if we are not currently bleeding a line.
 	private GardenBed bleedOutVia = null;
+	private Future<Void> bleedOutFuture = null;
 
 	MasterValveController(EndPoint masterValve)
 	{
@@ -51,7 +53,7 @@ public class MasterValveController
 	{
 		logger.error("Turning " + gardenBed.getName() + " Off.");
 
-		assert (gardenBed.getMasterValve() == this.masterValve);
+		assert (gardenBed.getMasterValve().equals(this.masterValve));
 
 
 		EndPoint gardenBedValve = gardenBed.getValve();
@@ -59,10 +61,10 @@ public class MasterValveController
 		if (this.masterValve.isBleedLine())
 		{
 			// If we are turning off a valve we should never be in bleed mode
-			// i.e. we can't bleed a line when a valve owned by this master valve is running.
+			// i.e. we can't bleed a line when a valve owned by this master valve is also running.
 			assert (bleedOutVia == null);
 
-			if (!isNoOtherValveRunning(gardenBed))
+			if (!isOtherValveRunning(gardenBed))
 			{
 				// No other valve is running so we need to go into bleed mode
 				this.bleedOutVia = gardenBed;
@@ -70,9 +72,10 @@ public class MasterValveController
 				// Turn off the master valve which will start the line bleed out.
 				this.masterValve.setOff();
 
+				
 				// let the line bleed for 30 seconds then turn of the garden beds valve.
 				logger.error("Bleeding Line via Valve: " + gardenBedValve);
-				Delay.delay(Duration.ofSeconds(30), gardenBedValve, v -> bleedLine(v));
+				bleedOutFuture = Delay.delay(Duration.ofSeconds(30), gardenBedValve, v -> bleedLine(v));
 			}
 			else
 			{
@@ -86,7 +89,7 @@ public class MasterValveController
 			// The master valve doesn't need to be bleed
 			// But we only turn the master valve off if no other
 			// valves down stream of this master valve are running.
-			if (!isNoOtherValveRunning(gardenBed))
+			if (!isOtherValveRunning(gardenBed))
 				this.masterValve.setOff();
 
 			// We always try to create a gap between tranistioning valves
@@ -104,13 +107,15 @@ public class MasterValveController
 	{
 		bleedOutValve.setOff();
 		
-		assert(bleedOutValve == this.bleedOutVia.getValve());
+		assert(bleedOutValve.equals(this.bleedOutVia.getValve()));
+		logger.error("Setting bleedOutVia to null");
 		this.bleedOutVia = null;
+		this.bleedOutFuture = null;
 		
 		return null;
 	}
 
-	private boolean isNoOtherValveRunning(GardenBed gardenBed)
+	private boolean isOtherValveRunning(GardenBed gardenBed)
 	{
 		boolean foundRunningValve = false;
 		
@@ -132,7 +137,7 @@ public class MasterValveController
 	{
 		logger.error("Turning " + gardenBed.getName() + " On.");
 
-		assert (gardenBed.getMasterValve() == this.masterValve);
+		assert (gardenBed.getMasterValve().equals(this.masterValve));
 
 		EndPoint gardenBedValve = gardenBed.getValve();
 
@@ -149,6 +154,10 @@ public class MasterValveController
 				// We must turn that line off before we turn the master valve on
 				// or that bed will suddenly start to be watered again.
 				this.bleedOutVia.getValve().setOff();
+				
+				logger.error("Setting bleedOutVia to null");
+				// We need to cancel the outstanding bleed 
+				this.bleedOutFuture.cancel(true);
 				this.bleedOutVia = null;
 			}
 			this.masterValve.setOn();

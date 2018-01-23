@@ -1,8 +1,9 @@
 name: pi-gation # you probably want to 'snapcraft register <name>'
 version: '0.1' # just for humans, typically '1.2+git' or '1.3.2'
 summary: Irrigation an lighting controller for Raspberry Pi
-description: |
-  Pi-gation is a web app designed to allow you to control external lighting and irrigation systems from a mobile device.
+description: | 
+  Pi-gation is a web app designed to allow you to control external lighting 
+  and irrigation systems from a mobile device.
   
   The app allows you to configure Pins on the Pi to control various devices 
   such as Lights and Valves for an irrigation system.
@@ -13,18 +14,84 @@ description: |
 
 grade: devel # must be 'stable' to release into candidate/stable channels
 confinement: devmode # use 'strict' once you have the right plugs and slots
+  
 
 apps:
   pi-gation:
-    command: java -Duser.home=$HOME -jar $SNAP/jar/torgo-1.7.1.jar "$@"
-    plugs: [network]
+    command: pi-gation-launch
+    daemon: simple
+    plugs: [network, network-bind]
 
-parts:
-  pi-gation:
-    # See 'snapcraft plugins'
+    ## When 'on' is supported for environment we can remove the custom
+    ## launcher.
+      #environment:
+        #PI4J_PLATFORM: 
+      #- on arm64: 'RaspberryPi GPIO Provider' 
+      #- else: 'Simulated'
+        #SimulatedPlatform: 
+      #- on arm64: '' 
+      #- else: 'RaspberryPi GPIO Provider'
+
+hooks:
+  install:
+    plugs: []
+
+  configure:
+    plugs: []
+
+parts: 
+  # build the web app
+  pi-gation-webapp:
     plugin: maven
     source: https://github.com/bsutton/IrrigationForPi.git
     maven-options:
       [-DskipTests=true]
-    stage-packages: 
-      - default-jre
+    #install: |
+     #cp target/irrigation-1.0-SNAPSHOT.war ./stage/war/pi-gation.war
+    organize:
+      war/irrigation-1.0-SNAPSHOT.war : webapps/pi-gation.war
+      #src/script/pi-gation-launch : pi-gation-launch
+    after: [tomcat]
+
+  # copy the war to webapps and rename it as we go.
+  #pi-gation-war:
+    #plugin: dump
+    #source: ./stage/war/
+    #./parts/pi-gation-webapp/install/stage/war/
+    #organize:
+      #irrigation-1.0-SNAPSHOT.war : webapps/pi-gation.war
+    #after: [tomcat, pi-gation-webapp]
+  
+  pi-gation-launch:
+    plugin: dump
+    organize:
+      src/script/pi-gation-launch : pi-gation-launch
+    after: [tomcat, pi-gation-webapp]
+
+    #install: |
+      #cat <<EOF > $SNAPCRAFT_PART_INSTALL/pi-gation-launch
+      ##!/bin/sh
+      #ARCH=`uname -m`
+      #if [ "$SNAP_ARCH" != "arm64" ] && [ "$SNAP_ARCH" != "armhf" ]; then
+          ## Run the simulator as we are not on RPi hardware
+          #export PI4J_PLATFORM="Simulated"
+          #export SimulatedPlatform="RaspberryPi GPIO Provider"
+      #fi
+      #export pi_gation_db_username="`snap get pi-gation db-username`"
+      #export pi_gation_db_password="`snap get pi-gation db-password`"
+      #export pi_gation_https_port="`snap get pi-gation https_port`"
+      #$SNAP/tomcat-launch
+      #EOF
+
+
+# https://kyrofa.com/posts/snapping-nextcloud-the-web-server  
+  #apache:
+    #plugin: apache
+    #stage-packages: [apache2]
+    #after: [tomcat]
+
+  #apache:
+    #command: webserver pi-gation
+    #daemon: simple
+    #restart-condition: always
+    #plugs: [network-bind]
