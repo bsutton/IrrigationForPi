@@ -28,6 +28,7 @@ import au.org.noojee.irrigation.types.ValveController;
 public class WebAppListener implements ServletContextListener
 {
 	Logger logger = LogManager.getLogger();
+	private boolean databaseInitialised;
 
 	public WebAppListener()
 	{
@@ -44,8 +45,10 @@ public class WebAppListener implements ServletContextListener
 
 		MyEntityManagerUtil.init();
 
+		databaseInitialised = true;
+
 		provisionPins();
-		
+
 		ValveController.init();
 
 	}
@@ -98,9 +101,11 @@ public class WebAppListener implements ServletContextListener
 
 		gpio.shutdown();
 
-		MyEntityManagerUtil.databaseShutdown();
+		// Only shutdown the db if we actually got to the point of initialising it.
+		if (databaseInitialised)
+			MyEntityManagerUtil.databaseShutdown();
 
+		LogManager.shutdown();
 	}
-
 
 }

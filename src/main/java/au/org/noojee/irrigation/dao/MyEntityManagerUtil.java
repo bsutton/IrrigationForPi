@@ -56,10 +56,10 @@ public class MyEntityManagerUtil
 				String password = System.getenv("pi_gation_db_password");
 				
 				if (username == null)
-					throw new RuntimeException("You must create an environment variable pi-gation-db-username which contains the db username");
+					throw new RuntimeException("You must create an environment variable pi_gation_db_username which contains the db username");
 
 				if (password == null)
-					throw new RuntimeException("You must create an environment variable pi-gation-db-password which contains the db password");
+					throw new RuntimeException("You must create an environment variable pi_gation_db_password which contains the db password");
 
 				String jdbcURL = "jdbc:derby:" + dbPath.getAbsolutePath() + ";create=true";
 
@@ -101,7 +101,7 @@ public class MyEntityManagerUtil
 	public static void databaseShutdown()
 	{
 		final String SHUTDOWN_CODE = "XJ015";
-		System.out.println("SHUTTING DOWN");
+		logger.info("Shutting Down Derby Database connection.");
 
 		try
 		{
