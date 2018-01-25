@@ -179,9 +179,6 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 					.getView(EndPointEditorView.NAME);
 			defineEndPointView.setBean(endPoint);
 			UI.getCurrent().getNavigator().navigateTo(EndPointEditorView.NAME);
-			
-			// re-initialise the valve controller now we have changed a valve
-			ValveController.init();
 		}
 	}
 
@@ -190,6 +187,7 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 		if (ValveController.isAnyValveRunning())
 			Notification.show("Can't add EndPoint", "You can't add an EndPoint whilst any valves are on.",
 					Type.ERROR_MESSAGE);
+		else
 		{
 			EndPointEditorView defineEndPointView = (EndPointEditorView) ((ControllerUI) UI.getCurrent())
 					.getView(EndPointEditorView.NAME);
@@ -197,10 +195,6 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 			defineEndPointView.setBean(null);
 
 			UI.getCurrent().getNavigator().navigateTo(EndPointEditorView.NAME);
-
-			// re-initialise the valve controller now we have added more valves
-			ValveController.init();
-
 		}
 
 	}

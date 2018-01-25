@@ -5,6 +5,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import com.pi4j.io.gpio.Pin;
+
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
 
@@ -34,6 +36,30 @@ public class GardenBedDao
 		query.setParameter("masterValve", masterValve);
 		
 		return (List<GardenBed>) query.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<GardenBed> getByValve(EndPoint valve)
+	{
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
+
+		Query query = em.createQuery("SELECT e FROM GardenBed e where e.valve = :valve");
+		query.setParameter("valve", valve);
+		
+		return (List<GardenBed>) query.getResultList();
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	public List<EndPoint> getByPin(Pin piPin)
+	{
+		EntityManager em = MyEntityManagerUtil.getEntityManager();
+
+		Query query = em
+				.createQuery("SELECT e FROM EndPoint e where e.pinNo = :pinNo order by LOWER(e.endPointName)");
+		query.setParameter("pinNo", piPin.getAddress());
+
+		return (List<EndPoint>) query.getResultList();
 	}
 
 	public void deleteAll()
@@ -87,6 +113,7 @@ public class GardenBedDao
 		}
 		
 	}
+
 
 
 }

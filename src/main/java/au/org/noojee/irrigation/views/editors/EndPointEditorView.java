@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue.ValueChangeEvent;
@@ -19,6 +20,9 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -28,6 +32,7 @@ import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.types.EndPointType;
 import au.org.noojee.irrigation.types.PinActivationType;
+import au.org.noojee.irrigation.types.ValveController;
 import au.org.noojee.irrigation.views.EndPointConfigurationView;
 import au.org.noojee.irrigation.views.SmartView;
 
@@ -43,7 +48,6 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	private ComboBox<com.pi4j.io.gpio.Pin> piPinComboBox;
 	private CheckBox bleedLineCheckbox;
 
-
 	private Binder<EndPoint> binder = new Binder<>(EndPoint.class);
 	private boolean isEdit = false;
 	private EndPoint editedEndPoint;
@@ -52,7 +56,6 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	public EndPointEditorView()
 	{
 	}
-	
 
 	@Override
 	public void enter(ViewChangeEvent event)
@@ -60,7 +63,6 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		SmartView.super.enter(event);
 		endPointName.focus();
 	}
-
 
 	@Override
 	public Component getViewComponent()
@@ -72,43 +74,36 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.uiBuilt = true;
 		}
 
-
 		return this;
 	}
 
 	private void bindFields()
 	{
 		binder.bindInstanceFields(this);
-		
+
 		binder.forField(this.endPointName)
-		.asRequired("Please enter a Label for this End Point.")
-		.bind(EndPoint::getEndPointName, EndPoint::setEndPointName);
-		
-		
+				.asRequired("Please enter a Label for this End Point.")
+				.bind(EndPoint::getEndPointName, EndPoint::setEndPointName);
+
 		binder.forField(this.endPointType)
-		.asRequired("Please select a End Point Type")
-		.bind(EndPoint::getEndPointType, EndPoint::setEndPointType);
-		
+				.asRequired("Please select a End Point Type")
+				.bind(EndPoint::getEndPointType, EndPoint::setEndPointType);
+
 		binder.forField(this.piPinComboBox)
-		.asRequired("Please select a pin")
-		.bind(EndPoint::getPiPin, EndPoint::setPiPin);
-		
+				.asRequired("Please select a pin")
+				.bind(EndPoint::getPiPin, EndPoint::setPiPin);
+
 		binder.forField(this.activationType)
-		.asRequired("Please set the Activation Type")
-		.bind(EndPoint::getPinActiviationType, EndPoint::setPinActiviationType);
-		
+				.asRequired("Please set the Activation Type")
+				.bind(EndPoint::getPinActiviationType, EndPoint::setPinActiviationType);
 
-		
-		
-		
 	}
-
 
 	public void setBean(EndPoint endPoint)
 	{
 		// make certain the UI is initialised.
 		getViewComponent();
-		
+
 		if (endPoint != null)
 		{
 			this.isEdit = true;
@@ -121,10 +116,8 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.endPointType.setValue(endPoint.getEndPointType());
 			this.activationType.setValue(endPoint.getPinActiviationType());
 			this.piPinComboBox.setValue(endPoint.getPiPin());
-			
-			this.bleedLineCheckbox.setValue(endPoint.isBleedLine());
 
-			
+			this.bleedLineCheckbox.setValue(endPoint.isBleedLine());
 
 		}
 		else
@@ -136,7 +129,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.piPinComboBox.setSelectedItem(null);
 			this.bleedLineCheckbox.setValue(false);
 
-			
+			this.editedEndPoint = null;
 
 			this.isEdit = false;
 		}
@@ -147,17 +140,23 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	{
 		this.setSizeFull();
 
+		Label headingLabel = new Label("End Point");
+		headingLabel.setStyleName("i4p-heading");
+		Responsive.makeResponsive(headingLabel);
+		this.addComponent(headingLabel);
+		this.setComponentAlignment(headingLabel, Alignment.TOP_CENTER);
+
 		HorizontalLayout topLine = new HorizontalLayout();
 		this.addComponent(topLine);
 		topLine.setWidth("100%");
-		
+
 		endPointName = new TextField("Label");
 		topLine.addComponent(endPointName);
 		topLine.setComponentAlignment(endPointName, Alignment.MIDDLE_LEFT);
 		endPointName.setWidth("100%");
 		endPointName.setStyleName("i4p-label");
 		Responsive.makeResponsive(endPointName);
-		
+
 		deleteButton = new Button("Delete", VaadinIcons.MINUS_CIRCLE);
 		topLine.addComponent(deleteButton);
 		topLine.setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
@@ -167,8 +166,6 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		deleteButton.addStyleName(ValoTheme.BUTTON_DANGER);
 		deleteButton.addClickListener(e -> deleteEndPoint(e));
 
-
-
 		endPointType = new ComboBox<>("Type");
 		this.addComponent(endPointType);
 		endPointType.setDataProvider(new ListDataProvider<EndPointType>(Arrays.asList(EndPointType.values())));
@@ -176,13 +173,9 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		endPointType.setTextInputAllowed(false);
 		endPointType.addValueChangeListener(e -> masterValveSelected(e));
 
-		
-		
 		bleedLineCheckbox = new CheckBox("Bleed line (Recommended)");
 		this.addComponent(bleedLineCheckbox);
-		this.setVisible(false);
-
-		
+		bleedLineCheckbox.setVisible(false);
 
 		List<com.pi4j.io.gpio.Pin> gpioPins = Arrays.asList(RaspiPin.allPins());
 		gpioPins = gpioPins.stream().sorted((l, r) -> l.getAddress() - r.getAddress()).collect(Collectors.toList());
@@ -200,8 +193,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		activationType.setDataProvider(provider);
 		activationType.setEmptySelectionAllowed(false);
 		activationType.setTextInputAllowed(false);
-		
-		
+
 		VerticalLayout spacer = new VerticalLayout();
 		this.addComponent(spacer);
 		spacer.setSizeFull();
@@ -233,7 +225,6 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		return this;
 	}
 
-
 	private void deleteEndPoint(ClickEvent e)
 	{
 		EndPoint endPoint = (EndPoint) e.getButton().getData();
@@ -245,14 +236,15 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 
 	private void masterValveSelected(ValueChangeEvent<EndPointType> e)
 	{
-		if (e.getValue() == null)
+		if (e.getValue() == EndPointType.MasterValve)
 		{
-			bleedLineCheckbox.setVisible(false);
+			bleedLineCheckbox.setVisible(true);
+
 		}
 		else
 		{
-			bleedLineCheckbox.setVisible(true);
-			
+			bleedLineCheckbox.setVisible(false);
+
 		}
 	}
 
@@ -261,7 +253,6 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
 	}
 
-	
 	private void save()
 	{
 		if (binder.validate().isOk())
@@ -270,22 +261,68 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 
 			EndPoint endPoint;
 
-			if (this.isEdit)
-				endPoint = this.editedEndPoint;
+			Pin piPin = this.piPinComboBox.getValue();
+			if (isPinInUse(piPin))
+				Notification.show("Pin in Use",
+						"The selected Pin is already used by End Point '" + getPinUsedBy(piPin).getEndPointName()
+								+ "'.",
+						Type.ERROR_MESSAGE);
 			else
-				endPoint = new EndPoint();
+			{
 
-			endPoint.setEndPointName(this.endPointName.getValue());
-			endPoint.setEndPointType(this.endPointType.getValue());
-			endPoint.setBleedLine(this.bleedLineCheckbox.getValue());
-			endPoint.setPinActiviationType(this.activationType.getValue());
-			endPoint.setPiPin(this.piPinComboBox.getValue());
-			if (this.isEdit)
-				daoEndPoint.merge(endPoint);
-			else
-				daoEndPoint.persist(endPoint);
-			UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
+				if (this.isEdit)
+					endPoint = this.editedEndPoint;
+				else
+					endPoint = new EndPoint();
+
+				endPoint.setEndPointName(this.endPointName.getValue());
+				endPoint.setEndPointType(this.endPointType.getValue());
+				endPoint.setBleedLine(this.bleedLineCheckbox.getValue());
+				endPoint.setPinActiviationType(this.activationType.getValue());
+				endPoint.setPiPin(piPin);
+				if (this.isEdit)
+					daoEndPoint.merge(endPoint);
+				else
+					daoEndPoint.persist(endPoint);
+				
+				// re-initialise the valve controller now we have changed a valve
+				ValveController.init();
+
+				UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
+			}
 		}
+	}
+
+	private EndPoint getPinUsedBy(Pin piPin)
+	{
+		EndPoint usedBy = null;
+		EndPointDao daoEndPoint = new EndPointDao();
+
+		List<EndPoint> usedByList = daoEndPoint.getByPin(piPin);
+
+		if (this.isEdit)
+			usedByList = usedByList.stream().filter(e -> !e.equals(this.editedEndPoint)).collect(Collectors.toList());
+
+		if (usedByList.size() != 0)
+			usedBy = usedByList.get(0);
+
+		return usedBy;
+	}
+
+	private boolean isPinInUse(Pin piPin)
+	{
+		boolean inUse = false;
+
+		EndPointDao daoEndPoint = new EndPointDao();
+
+		List<EndPoint> usedByList = daoEndPoint.getByPin(piPin);
+
+		// true if we have at least one element that isn't the currently edited endpoint.
+		if (this.isEdit)
+			inUse = usedByList.stream().anyMatch(e -> !e.equals(this.editedEndPoint));
+		else
+			inUse = usedByList.size() != 0;
+		return inUse;
 	}
 
 	@Override

@@ -138,7 +138,7 @@ public class GardenBed
 
 	public Boolean isOn()
 	{
-		return this.valve.getCurrentStatus() == PinStatus.ON;
+		return (this.valve == null ? false : this.valve.getCurrentStatus() == PinStatus.ON);
 	}
 	
 	public boolean isOff()

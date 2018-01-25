@@ -150,8 +150,6 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 			editGardenBedView.setBean(gardenBed);
 
 			UI.getCurrent().getNavigator().navigateTo(GardenBedEditorView.NAME);
-			// re-initialise the valve controller now we have changed a valve
-			ValveController.init();
 		}
 
 	}
@@ -181,8 +179,6 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 
 				UI.getCurrent().getNavigator().navigateTo(GardenBedEditorView.NAME);
 			}
-			// re-initialise the valve controller now we have changed a valve
-			ValveController.init();
 		}
 
 	}
