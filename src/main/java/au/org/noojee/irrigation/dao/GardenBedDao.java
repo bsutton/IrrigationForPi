@@ -87,16 +87,20 @@ public class GardenBedDao
 
 	}
 
-	public void delete(GardenBed GardenBed)
+	public void delete(GardenBed gardenBed)
 	{
+//		// We have to delete the history first.
+//		HistoryDao daoHistory = new HistoryDao();
+//		daoHistory.deleteByGardenBed(gardenBed);
+
 		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
 		try (Transaction tran = new Transaction(em))
 		{
 			// make certain we are deleting an attached entity.
-			GardenBed = em.find(GardenBed.class, GardenBed.getId());
+			gardenBed = em.find(GardenBed.class, gardenBed.getId());
 
-			em.remove(GardenBed);
+			em.remove(gardenBed);
 			tran.commit();
 		}
 

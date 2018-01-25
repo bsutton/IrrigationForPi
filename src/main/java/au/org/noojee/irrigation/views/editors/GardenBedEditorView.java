@@ -224,7 +224,7 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 		GardenBed gardenBed = (GardenBed) e.getButton().getData();
 
 		GardenBedDao daoGardenBed = new GardenBedDao();
-		daoGardenBed.delete(gardenBed);
+		daoGardenBed.delete(this.editedGardenBed);
 		UI.getCurrent().getNavigator().navigateTo(GardenBedConfigurationView.NAME);
 	}
 

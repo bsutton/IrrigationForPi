@@ -9,6 +9,7 @@ import com.github.appreciated.app.layout.builder.AppLayoutBuilder.Position;
 import com.github.appreciated.app.layout.builder.design.AppBarDesign;
 import com.github.appreciated.app.layout.builder.elements.SubmenuBuilder;
 import com.github.appreciated.app.layout.component.MenuHeader;
+import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Viewport;
 import com.vaadin.icons.VaadinIcons;
@@ -39,6 +40,7 @@ import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 @Theme("mytheme")
 @Viewport("width=device-width, initial-scale=1.0")
 @PushStateNavigation
+@Push
 public class ControllerUI extends UI
 {
 

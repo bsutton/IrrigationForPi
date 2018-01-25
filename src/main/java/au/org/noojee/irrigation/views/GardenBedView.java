@@ -1,14 +1,19 @@
 package au.org.noojee.irrigation.views;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.teemu.switchui.Switch;
 
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import au.org.noojee.irrigation.dao.GardenBedDao;
@@ -16,12 +21,29 @@ import au.org.noojee.irrigation.entities.GardenBed;
 import au.org.noojee.irrigation.entities.History;
 import au.org.noojee.irrigation.util.Formatters;
 
-public class GardenBedView extends VerticalLayout implements SmartView
+public class GardenBedView extends VerticalLayout implements SmartView, ValveChangeListener
 {
 
+	private static final int SWITCH_WIDTH = 35;
+	private static final int LAST_WIDTH = 28;
+	private static final int DURATION_WIDTH = 22;
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "GardenBeds";
 	public static final String LABEL = "Garden Beds";
+
+	private Map<GardenBed, Switch> switchMap = new HashMap<>();
+	private boolean supressChangeListener = false;
+	private UI ui;
+
+	static int a = 1;
+
+	public GardenBedView()
+	{
+		a++;
+		System.out.println("Ctor a=" + a);
+
+		this.ui = UI.getCurrent();
+	}
 
 	@Override
 	public void enter(ViewChangeEvent event)
@@ -29,11 +51,46 @@ public class GardenBedView extends VerticalLayout implements SmartView
 		SmartView.super.enter(event);
 		this.removeAllComponents();
 
+		HorizontalLayout heading = new HorizontalLayout();
+		heading.setWidth("100%");
+		Label headingLabel = new Label("Garden Beds");
+		headingLabel.setStyleName("i4p-heading");
+		Responsive.makeResponsive(headingLabel);
+		heading.addComponent(headingLabel);
+		heading.setComponentAlignment(headingLabel, Alignment.TOP_LEFT);
+		this.addComponent(heading);
+
 		List<GardenBed> gardenBeds;
 
 		GardenBedDao daoGardenBed = new GardenBedDao();
 
 		gardenBeds = daoGardenBed.getAll();
+
+		HorizontalLayout bedHeadingHorizontal = new HorizontalLayout();
+		this.addComponent(bedHeadingHorizontal);
+		bedHeadingHorizontal.setWidth("100%");
+		bedHeadingHorizontal.setMargin(new MarginInfo(false, true, false, false));
+		bedHeadingHorizontal.setSpacing(false);
+
+		Label bedHeadingLabel = new Label("Garden Bed");
+		bedHeadingHorizontal.addComponent(bedHeadingLabel);
+		bedHeadingHorizontal.setComponentAlignment(bedHeadingLabel, Alignment.MIDDLE_LEFT);
+		bedHeadingHorizontal.setExpandRatio(bedHeadingLabel, 1.0f);
+		bedHeadingLabel.setStyleName("i4p-label");
+		Responsive.makeResponsive(bedHeadingLabel);
+		bedHeadingLabel.setWidth(SWITCH_WIDTH, Unit.MM);
+
+		Label lastWateredHeadingLabel = new Label("Last");
+		bedHeadingHorizontal.addComponent(lastWateredHeadingLabel);
+		lastWateredHeadingLabel.setStyleName("i4p-label");
+		Responsive.makeResponsive(lastWateredHeadingLabel);
+		lastWateredHeadingLabel.setWidth(LAST_WIDTH, Unit.MM);
+
+		Label durationHeadingLabel = new Label("Duration");
+		bedHeadingHorizontal.addComponent(durationHeadingLabel);
+		durationHeadingLabel.setStyleName("i4p-label");
+		Responsive.makeResponsive(durationHeadingLabel);
+		durationHeadingLabel.setWidth(DURATION_WIDTH, Unit.MM);
 
 		Panel scrollPanel = new Panel();
 		this.addComponent(scrollPanel);
@@ -52,20 +109,39 @@ public class GardenBedView extends VerticalLayout implements SmartView
 			gardenBedHorizontal.setWidth("100%");
 
 			Label nameLabel = new Label(gardenBed.getName());
+			nameLabel.setStyleName("i4p-label");
+			Responsive.makeResponsive(nameLabel);
+
 			gardenBedHorizontal.addComponent(nameLabel);
 			gardenBedHorizontal.setExpandRatio(nameLabel, 1.0f);
+
+			HorizontalLayout secondLinedHorizontal = new HorizontalLayout();
+			gardenBedLayout.addComponent(secondLinedHorizontal);
+			secondLinedHorizontal.setWidth("100%");
+
+			Switch toggle = createOnOffSwitch(gardenBed);
+			secondLinedHorizontal.addComponent(toggle);
+			secondLinedHorizontal.setExpandRatio(toggle, 1.0f);
+			// toggle.setWidth(SWITCH_WIDTH, Unit.MM);
+
+			switchMap.put(gardenBed, toggle);
 
 			History history = gardenBed.getLastWatering();
 			if (history != null)
 			{
 				Label lastWateredLabel = new Label(Formatters.format(history.getStartDate().toLocalDate()));
-				gardenBedHorizontal.addComponent(lastWateredLabel);
+				secondLinedHorizontal.addComponent(lastWateredLabel);
+				lastWateredLabel.setWidth(LAST_WIDTH, Unit.MM);
+				lastWateredLabel.setStyleName("i4p-label");
+				Responsive.makeResponsive(lastWateredLabel);
 
 				Label durationLabel = new Label(Formatters.format(history.getDuration()));
-				gardenBedHorizontal.addComponent(durationLabel);
-			}
+				secondLinedHorizontal.addComponent(durationLabel);
+				durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
+				durationLabel.setStyleName("i4p-label");
+				Responsive.makeResponsive(durationLabel);
 
-			gardenBedHorizontal.addComponent(createOnOffSwitch(gardenBed));
+			}
 
 		}
 
@@ -81,12 +157,20 @@ public class GardenBedView extends VerticalLayout implements SmartView
 
 		pinToggle.addValueChangeListener(e ->
 			{
-				if (e.getValue() == true)
+				if (!this.supressChangeListener)
 				{
-					gardenBed.turnOn();
+					if (e.getValue() == true)
+					{
+						TimerDialog dialog = new TimerDialog(gardenBed, this);
+						dialog.show(UI.getCurrent());
+						// we leave the switch showing off until the user select and starts a timer.
+						this.supressChangeListener = true;
+						((Switch) e.getComponent()).setValue(false);
+						this.supressChangeListener = false;
+					}
+					else
+						gardenBed.turnOff();
 				}
-				else
-					gardenBed.turnOff();
 			});
 
 		return pinToggle;
@@ -96,6 +180,34 @@ public class GardenBedView extends VerticalLayout implements SmartView
 	public String getName()
 	{
 		return NAME;
+	}
+
+	@Override
+	public void notifyOn(GardenBed gardenBed)
+	{
+		this.supressChangeListener = true;
+		// when we get notified that the user started a timer we need to update the
+		// switch so we show that the bed is on.
+		Switch toggle = switchMap.get(gardenBed);
+		toggle.setValue(true);
+
+		this.supressChangeListener = false;
+
+	}
+
+	@Override
+	public void notifyOff(GardenBed gardenBed)
+	{
+
+		this.supressChangeListener = true;
+		// when we get notified that the timer finished need to update the
+		// switch so we show that the bed is now off
+		Switch toggle = switchMap.get(gardenBed);
+		ui.access(() ->
+			{				
+				toggle.setValue(false);
+			});
+		this.supressChangeListener = false;
 	}
 
 }

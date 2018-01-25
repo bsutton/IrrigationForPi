@@ -5,13 +5,13 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import au.org.noojee.irrigation.entities.GardenBed;
 import au.org.noojee.irrigation.entities.History;
 
 public class HistoryDao
 {
 
 	@SuppressWarnings("unchecked")
-	@InjectEntity
 	public List<History> getAll()
 	{
 		EntityManager em = MyEntityManagerUtil.getEntityManager();
@@ -20,33 +20,63 @@ public class HistoryDao
 		return (List<History>) query.getResultList();
 	}
 
-	public void persist(History History)
+	@SuppressWarnings("unchecked")
+	public List<History> getByGardenBed(GardenBed gardenBed)
 	{
 		EntityManager em = MyEntityManagerUtil.getEntityManager();
 
-		try (Transaction tran = new Transaction(em))
-		{
-			em.persist(History);
-			tran.commit();
-		}
+		Query query = em.createQuery("SELECT e FROM History where e.gardenBed = :gardenBed");
+		query.setParameter("gardenBed", gardenBed);
 
+		return (List<History>) query.getResultList();
 	}
 
-	public void delete(History History)
-	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
+//	@SuppressWarnings("unchecked")
+//	public void deleteByGardenBed(GardenBed gardenBed)
+//	{
+//		EntityManager em = MyEntityManagerUtil.getEntityManager();
+//
+//		try (Transaction tran = new Transaction(em))
+//		{
+//			Query query = em.createQuery("SELECT h FROM History h where h.gardenBed = :gardenBed");
+//			query.setParameter("gardenBed", gardenBed);
+//
+//
+//			List<History> historyList = (List<History>) query.getResultList();
+//
+//			historyList.stream().forEach(h -> em.remove(h));
+//
+//			tran.commit();
+//		}
+//	}
 
-		try (Transaction tran = new Transaction(em))
-		{
-			// make certain we are deleting an attached entity.
-			History = em.find(History.class, History.getId());
+//	public void persist(History History)
+//	{
+//		EntityManager em = MyEntityManagerUtil.getEntityManager();
+//
+//		try (Transaction tran = new Transaction(em))
+//		{
+//			em.persist(History);
+//			tran.commit();
+//		}
+//
+//	}
 
-			em.remove(History);
-			tran.commit();
-		}
-
-	}
-
+//	public void delete(History History)
+//	{
+//		EntityManager em = MyEntityManagerUtil.getEntityManager();
+//
+//		try (Transaction tran = new Transaction(em))
+//		{
+//			// make certain we are deleting an attached entity.
+//			History = em.find(History.class, History.getId());
+//
+//			em.remove(History);
+//			tran.commit();
+//		}
+//
+//	}
+//
 	public void merge(History History)
 	{
 		EntityManager em = MyEntityManagerUtil.getEntityManager();
@@ -56,7 +86,7 @@ public class HistoryDao
 			em.merge(History);
 			tran.commit();
 		}
-		
+
 	}
 
 }

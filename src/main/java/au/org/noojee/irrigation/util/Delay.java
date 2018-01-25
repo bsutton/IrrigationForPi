@@ -7,19 +7,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
-import au.org.noojee.irrigation.entities.EndPoint;
-
 public class Delay
 {
-	public static Future<Void> delay(Duration duration, EndPoint endPoint,
-			Function<EndPoint, Void> function)
+
+	public static <D> Future<Void> delay(Duration duration, D device,
+			Function<D, Void> function)
 	{
 
 		Callable<Void> callable = () ->
 			{
 				Thread.sleep(duration.toMillis());
-
-				function.apply(endPoint);
+				function.apply(device);
 
 				return null;
 			};
@@ -29,5 +27,15 @@ public class Delay
 
 		return future;
 	}
+
+	/*
+	 * public static Future<Void> delay(Duration duration, EndPoint endPoint, Function<EndPoint, Void> function) {
+	 * Callable<Void> callable = () -> { Thread.sleep(duration.toMillis()); function.apply(endPoint); return null; };
+	 * ExecutorService executorService = Executors.newSingleThreadExecutor(); Future<Void> future =
+	 * executorService.submit(callable); return future; } public static Future<Void> delay(Duration duration, GardenBed
+	 * gardenBed, Function<GardenBed, Void> function) { Callable<Void> callable = () -> {
+	 * Thread.sleep(duration.toMillis()); function.apply(gardenBed); return null; }; ExecutorService executorService =
+	 * Executors.newSingleThreadExecutor(); Future<Void> future = executorService.submit(callable); return future; }
+	 */
 
 }

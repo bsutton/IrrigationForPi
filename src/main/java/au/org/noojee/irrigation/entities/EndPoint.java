@@ -77,7 +77,7 @@ public class EndPoint
 		else 
 			setPinLow();
 		
-		logger.error("Pin " + pinNo + " for EndPoint: " + this.endPointName + " set On.");
+		logger.error("Pin " + pinNo + " for EndPoint: " + (this.endPointType == EndPointType.MasterValve ? "(MasterValve)" : "" ) + this.endPointName + " set On.");
 		
 		return null;
 	}
@@ -90,7 +90,7 @@ public class EndPoint
 		else 
 			setPinHigh();
 
-		logger.error("Pin " + pinNo + " for EndPoint: " + this.endPointName + " set Off.");
+		logger.error("Pin " + pinNo + " for EndPoint: " + (this.endPointType == EndPointType.MasterValve ? "(MasterValve)" : "" ) + this.endPointName + " set Off.");
 
 		return null;
 		
