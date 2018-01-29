@@ -1702,6 +1702,15 @@ div.v-layout.v-horizontal.v-widget {
 	.app-layout-behaviour-left-responsive-hybrid .app-layout-submenu-container {
 		padding-left: 0px !important;
 	}
+	.app-layout-behaviour-left-responsive-hybrid .app-drawer-layout-1 app-drawer[opened] .drawer-content {
+		width: 64px !important;
+	}
+	.app-layout-behaviour-left-responsive-hybrid .app-layout-menu-badge-button {
+		padding: 0px 16px !important;
+	}
+	.app-layout-behaviour-left-responsive-hybrid .app-layout-menu-button-badge {
+		margin-left: -20px !important;
+	}
 }
 
 @media only screen and (min-width: 641px) {
@@ -1782,6 +1791,15 @@ div.v-layout.v-horizontal.v-widget {
 	.app-layout-behaviour-left-responsive-hybrid-no-app-bar .app-layout-submenu-container {
 		padding-left: 0px !important;
 	}
+	.app-layout-behaviour-left-responsive-hybrid-no-app-bar .app-drawer-layout-1 app-drawer[opened] .drawer-content {
+		width: 64px !important;
+	}
+	.app-layout-behaviour-left-responsive-hybrid-no-app-bar .app-layout-menu-badge-button {
+		padding: 0px 16px !important;
+	}
+	.app-layout-behaviour-left-responsive-hybrid-no-app-bar .app-layout-menu-button-badge {
+		margin-left: -20px !important;
+	}
 }
 
 @media only screen and (min-width: 641px) {
@@ -1853,6 +1871,15 @@ div.v-layout.v-horizontal.v-widget {
 	}
 	.app-layout-behaviour-left-responsive-hybrid-overlay-no-app-bar .app-layout-submenu-container {
 		padding-left: 0px !important;
+	}
+	.app-layout-behaviour-left-responsive-hybrid-overlay-no-app-bar .app-drawer-layout-1 app-drawer[opened] .drawer-content {
+		width: 64px !important;
+	}
+	.app-layout-behaviour-left-responsive-hybrid-overlay-no-app-bar .app-layout-menu-badge-button {
+		padding: 0px 16px !important;
+	}
+	.app-layout-behaviour-left-responsive-hybrid-overlay-no-app-bar .app-layout-menu-button-badge {
+		margin-left: -20px !important;
 	}
 }
 
@@ -1950,6 +1977,15 @@ div.v-layout.v-horizontal.v-widget {
 		margin-right: -64px !important;
 		padding-right: 64px !important;
 	}
+	.app-layout-behaviour-left-responsive-small .app-drawer-layout-1 app-drawer[opened] .drawer-content {
+		width: 64px !important;
+	}
+	.app-layout-behaviour-left-responsive-small .app-layout-menu-badge-button {
+		padding: 0px 16px !important;
+	}
+	.app-layout-behaviour-left-responsive-small .app-layout-menu-button-badge {
+		margin-left: -20px !important;
+	}
 }
 
 @media only screen and (min-width: 641px) {
@@ -2014,6 +2050,15 @@ div.v-layout.v-horizontal.v-widget {
 		margin-top: 0px !important;
 		margin-bottom: 0px !important;
 		padding-bottom: 0px !important;
+	}
+	.app-layout-behaviour-left-responsive-small-no-app-bar .app-drawer-layout-1 app-drawer[opened] .drawer-content {
+		width: 64px !important;
+	}
+	.app-layout-behaviour-left-responsive-small-no-app-bar .app-layout-menu-badge-button {
+		padding: 0px 16px !important;
+	}
+	.app-layout-behaviour-left-responsive-small-no-app-bar .app-layout-menu-button-badge {
+		margin-left: -20px !important;
 	}
 }
 
@@ -2136,6 +2181,31 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .app-drawer-1 {
 	width: 256px;
+}
+
+.mytheme .app-drawer-layout-1 app-drawer[opened][persistent] + .app-bar-application-content, .mytheme .app-drawer-layout-1 app-drawer[opened][persistent] + #contentContainer .app-bar-application-content {
+	left: 256px;
+}
+
+.mytheme .app-drawer-layout-1.small app-drawer[opened][persistent] + .app-bar-application-content, .mytheme .app-drawer-layout-1.small app-drawer[opened][persistent] + #contentContainer .app-bar-application-content {
+	left: 64px;
+}
+
+.mytheme .app-drawer-layout-1 app-drawer[opened] .drawer-content {
+	width: 256px;
+}
+
+.mytheme .app-drawer-layout-1.small app-drawer[opened] .drawer-content {
+	width: 64px;
+}
+
+.mytheme .app-drawer-1 .app-drawer#scrim {
+	background: transparent !important;
+	box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.3);
+}
+
+.mytheme .app-toolbar-1 {
+	height: 64px;
 }
 
 .mytheme .app-layout-default-design .app-layout-menu-button-badge {
@@ -2814,6 +2884,22 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .app-layout-behaviour-left-hybrid.small .app-layout-submenu-container {
 	padding-left: 0px;
+}
+
+.mytheme .app-layout-behaviour-left-hybrid.small .app-drawer-layout-1 app-drawer[opened] .drawer-content {
+	width: 64px !important;
+}
+
+.mytheme .app-layout-behaviour-left-hybrid.small .app-drawer-layout-1 app-drawer[opened][persistent] + .app-bar-application-content, .mytheme .app-layout-behaviour-left-hybrid.small .app-drawer-layout-1 app-drawer[opened][persistent] + #contentContainer .app-bar-application-content {
+	left: 64px !important;
+}
+
+.mytheme .app-layout-behaviour-left-hybrid.small .app-layout-menu-badge-button {
+	padding: 0px 16px;
+}
+
+.mytheme .app-layout-behaviour-left-hybrid.small .app-layout-menu-button-badge {
+	margin-left: -20px;
 }
 
 .mytheme .app-layout-behaviour-left-hybrid .app-bar-content {
@@ -17102,4 +17188,14 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .v-gridlayout-margin-left {
 	padding-left: 10px;
+}
+
+.mytheme .v-Notification-description {
+	line-height: 1.8;
+	font-size: 20px;
+}
+
+.mytheme .v-Notification-caption {
+	line-height: 1.8;
+	font-size: 26px;
 }

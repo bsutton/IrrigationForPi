@@ -3,47 +3,51 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd"
 	version="1.0">
 
-	<persistence-unit name="Production"
-		transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="Production" transaction-type="RESOURCE_LOCAL">
 		<!-- This is where you mention your JPA runtime provider e.g. it's EclipseLink 
 			here -->
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
 		<class>au.org.noojee.irrigation.entities.EndPoint</class>
+		<class>au.org.noojee.irrigation.entities.GardenFeature</class>
 		<class>au.org.noojee.irrigation.entities.GardenBed</class>
+		<class>au.org.noojee.irrigation.entities.Lighting</class>
 		<class>au.org.noojee.irrigation.entities.History</class>
 		<class>au.org.noojee.irrigation.entities.User</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
-			<property name="eclipselink.ddl-generation.output-mode" value="database" />
-			<!-- property name="eclipselink.ddl-generation" value="drop-and-create-tables"/-->
-			<property name="eclipselink.ddl-generation" value="create-tables"/>
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+			<!-- property name="eclipselink.ddl-generation" value="drop-and-create-tables"/ -->
+			<property name="eclipselink.ddl-generation" value="create-tables" />
 			<property name="eclipselink.logging.level" value="FINE" />
 		</properties>
 	</persistence-unit>
-	
-	
-	
-	<persistence-unit name="Test"
-		transaction-type="RESOURCE_LOCAL">
+
+
+
+	<persistence-unit name="Test" transaction-type="RESOURCE_LOCAL">
 		<!-- This is where you mention your JPA runtime provider e.g. it's EclipseLink 
 			here -->
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
 		<class>au.org.noojee.irrigation.entities.EndPoint</class>
+		<class>au.org.noojee.irrigation.entities.GardenFeature</class>
 		<class>au.org.noojee.irrigation.entities.GardenBed</class>
+		<class>au.org.noojee.irrigation.entities.Lighting</class>
 		<class>au.org.noojee.irrigation.entities.History</class>
 		<class>au.org.noojee.irrigation.entities.User</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
-			<property name="eclipselink.ddl-generation.output-mode" value="database" />
-			<!-- property name="eclipselink.ddl-generation" value="drop-and-create-tables"/-->
-			<property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+			<property name="eclipselink.ddl-generation.output-mode"
+				value="database" />
+			<!-- property name="eclipselink.ddl-generation" value="drop-and-create-tables"/ -->
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
 			<property name="eclipselink.logging.level" value="FINE" />
 		</properties>
 	</persistence-unit>
-	
+
 </persistence>
 

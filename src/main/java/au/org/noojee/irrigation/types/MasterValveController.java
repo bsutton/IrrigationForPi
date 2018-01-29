@@ -49,7 +49,7 @@ public class MasterValveController
 	 * 
 	 * @param masterValue
 	 */
-	public synchronized void turnOff(GardenBed gardenBed)
+	public synchronized void softOff(GardenBed gardenBed)
 	{
 		logger.error("Turning " + gardenBed.getName() + " Off.");
 
@@ -70,7 +70,7 @@ public class MasterValveController
 				this.bleedOutVia = gardenBed;
 
 				// Turn off the master valve which will start the line bleed out.
-				this.masterValve.setOff();
+				this.masterValve.hardOff();
 
 				
 				// let the line bleed for 30 seconds then turn of the garden beds valve.
@@ -80,7 +80,7 @@ public class MasterValveController
 			else
 			{
 				// some other valve is running so no point going into bleed mode.
-				gardenBedValve.setOff();
+				gardenBedValve.hardOff();
 			}
 
 		}
@@ -90,7 +90,7 @@ public class MasterValveController
 			// But we only turn the master valve off if no other
 			// valves down stream of this master valve are running.
 			if (!isOtherValveRunning(gardenBed))
-				this.masterValve.setOff();
+				this.masterValve.hardOff();
 
 			// We always try to create a gap between tranistioning valves
 			// to avoid heavy power draw.
@@ -98,14 +98,14 @@ public class MasterValveController
 
 			// We have eliminated the delay for the moment as it makes this logic MUCH
 			// more complex as a valve now has three states: ON, OFF, PENDING_OFF
-			gardenBedValve.setOff();
+			gardenBedValve.hardOff();
 		}
 
 	}
 
 	private synchronized Void bleedLine(EndPoint bleedOutValve)
 	{
-		bleedOutValve.setOff();
+		bleedOutValve.hardOff();
 		
 		assert(bleedOutValve.equals(this.bleedOutVia.getValve()));
 		logger.error("Setting bleedOutVia to null");
@@ -133,7 +133,7 @@ public class MasterValveController
 		return foundRunningValve;
 	}
 
-	public synchronized void turnOn(GardenBed gardenBed)
+	public synchronized void softOn(GardenBed gardenBed)
 	{
 		logger.error("Turning " + gardenBed.getName() + " On.");
 
@@ -143,7 +143,7 @@ public class MasterValveController
 
 		// We always turn the bed valve on first
 		// so we don't get pressure build up between the master valve and the down stream bed valve.
-		gardenBedValve.setOn();
+		gardenBedValve.hardOn();
 
 		
 		if (!this.masterValve.isOn())
@@ -153,14 +153,14 @@ public class MasterValveController
 				// So we are currently bleeding out via another line.
 				// We must turn that line off before we turn the master valve on
 				// or that bed will suddenly start to be watered again.
-				this.bleedOutVia.getValve().setOff();
+				this.bleedOutVia.getValve().hardOff();
 				
 				logger.error("Setting bleedOutVia to null");
 				// We need to cancel the outstanding bleed 
 				this.bleedOutFuture.cancel(true);
 				this.bleedOutVia = null;
 			}
-			this.masterValve.setOn();
+			this.masterValve.hardOn();
 
 			// No other garden beds associated with this master valve
 			// are being watered so we need to actually turn the

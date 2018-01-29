@@ -40,14 +40,14 @@
   {	
         font-weight: bold;
         font-size: 40px;
-        line-height: 50px
+        line-height: 50px;
   }
   
   .i4p-label[width-range="0-700"]
   {	
         font-weight: bold;
         font-size: 20px;
-        line-height: 22px
+        line-height: 22px;
   }
   
   
@@ -61,5 +61,19 @@
     padding-left: 10px;
 }
   
+  
+  .v-Notification-description
+  {
+      line-height: 1.8;
+      font-size: 20px;
+ }
+ 
+   .v-Notification-caption
+  {
+  
+       line-height: 1.8;
+      font-size: 26px;
+ 
+ } 
   
 }

@@ -34,7 +34,7 @@ import au.org.noojee.irrigation.entities.GardenBed;
  * @author bsutton
  */
 
-public class ValveController
+public class GardenBedController
 {
 	private static Logger logger = LogManager.getLogger();
 	
@@ -44,9 +44,11 @@ public class ValveController
 	{
 		EndPointDao daoEndPoint = new EndPointDao();
 		
+		
+		// Initialise the list of Master Valve Controllers.
 		List<EndPoint> masterValves = daoEndPoint.getMasterValves(); 
 		
-		// If a valve is edit we get re-initialised so need to clear out the controllers.
+		// If a valve is edited we get re-initialised so need to clear out the controllers.
 		masterValveControllers.clear();
 		
 		for (EndPoint masterValve : masterValves)
@@ -62,29 +64,29 @@ public class ValveController
 	 * 
 	 * @param masterValue
 	 */
-	public static synchronized void turnOff(GardenBed gardenBed)
+	public static synchronized void softOff(GardenBed gardenBed)
 	{
 		logger.error("Turning " + gardenBed.getName() + " Off." );
 		
 		MasterValveController masterValveController = getMasterValveForBed(gardenBed);
 		
 		if (masterValveController != null)
-			masterValveController.turnOff(gardenBed);
+			masterValveController.softOff(gardenBed);
 		else
-			gardenBed.getValve().setOff();
+			gardenBed.getValve().hardOff();
 	}
-
 	
-	public static synchronized void turnOn(GardenBed gardenBed)
+	
+	public static synchronized void softOn(GardenBed gardenBed)
 	{
 		logger.error("Turning " + gardenBed.getName() + " On." );
 				
 		MasterValveController masterValveController = getMasterValveForBed(gardenBed);
 		
 		if (masterValveController != null)
-			masterValveController.turnOn(gardenBed);
+			masterValveController.softOn(gardenBed);
 		else
-			gardenBed.getValve().setOn();
+			gardenBed.getValve().hardOn();
 	}
 	
 	private static MasterValveController getMasterValveForBed(GardenBed gardenBed)
@@ -124,6 +126,7 @@ public class ValveController
 		}
 		return valveRunning;
 	}
+
 
 
 }

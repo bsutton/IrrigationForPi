@@ -3,6 +3,10 @@ package au.org.noojee.irrigation.views.editors;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.RollbackException;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+
 import com.vaadin.data.Binder;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -27,7 +31,7 @@ import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.GardenBedDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
-import au.org.noojee.irrigation.types.ValveController;
+import au.org.noojee.irrigation.types.GardenBedController;
 import au.org.noojee.irrigation.views.GardenBedConfigurationView;
 import au.org.noojee.irrigation.views.SmartView;
 
@@ -56,7 +60,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 		SmartView.super.enter(event);
 		gardenBedName.focus();
 	}
-
 
 	@Override
 	public Component getViewComponent()
@@ -90,7 +93,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 		// make certain the UI is initialised.
 		buildUI();
 
-
 		if (gardenBed != null)
 		{
 			this.isEdit = true;
@@ -107,7 +109,7 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 		{
 			this.isEdit = false;
 			this.editedGardenBed = null;
-			
+
 			this.deleteButton.setData(null);
 			this.deleteButton.setVisible(false);
 
@@ -196,8 +198,7 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 			buttons.addComponent(btnSave);
 			buttons.setComponentAlignment(btnSave, Alignment.BOTTOM_RIGHT);
 			btnSave.addClickListener(l -> save());
-			
-			
+
 			bindFields();
 
 			this.uiBuilt = true;
@@ -221,8 +222,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 
 	private void deleteGardenBed(ClickEvent e)
 	{
-		GardenBed gardenBed = (GardenBed) e.getButton().getData();
-
 		GardenBedDao daoGardenBed = new GardenBedDao();
 		daoGardenBed.delete(this.editedGardenBed);
 		UI.getCurrent().getNavigator().navigateTo(GardenBedConfigurationView.NAME);
@@ -259,13 +258,39 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 				gardenBed.setValve(this.valveCombo.getValue());
 				gardenBed.setMasterValve(this.masterValveCombo.getValue());
 
-				if (this.isEdit)
-					daoGardenBed.merge(gardenBed);
-				else
-					daoGardenBed.persist(gardenBed);
+				try
+				{
+
+					if (this.isEdit)
+						daoGardenBed.merge(gardenBed);
+					else
+						daoGardenBed.persist(gardenBed);
+				}
+				catch (RollbackException e)
+				{
+					int error = 0;
+					Throwable cause = e.getCause();
+					if (cause instanceof DatabaseException)
+					{
+						DatabaseException dbexception = (DatabaseException) cause;
+						error = dbexception.getErrorCode();
+					}
+					switch (error)
+					{
+						case 0:
+							Notification.show("Save failed.", e.getMessage(), Type.ERROR_MESSAGE);
+							break;
+						case 4002:
+							Notification.show("Save failed.", "The Garden Bed name entered is already used.",
+									Type.ERROR_MESSAGE);
+							break;
+					}
+					return;
+
+				}
 
 				// re-initialise the valve controller now we have changed a garden bed
-				ValveController.init();
+				GardenBedController.init();
 
 				UI.getCurrent().getNavigator().navigateTo(GardenBedConfigurationView.NAME);
 			}

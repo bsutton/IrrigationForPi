@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.RollbackException;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.RaspiPin;
 import com.vaadin.data.Binder;
@@ -29,10 +33,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import au.org.noojee.irrigation.dao.EndPointDao;
+import au.org.noojee.irrigation.dao.LightingDao;
 import au.org.noojee.irrigation.entities.EndPoint;
+import au.org.noojee.irrigation.entities.Lighting;
 import au.org.noojee.irrigation.types.EndPointType;
+import au.org.noojee.irrigation.types.GardenBedController;
 import au.org.noojee.irrigation.types.PinActivationType;
-import au.org.noojee.irrigation.types.ValveController;
 import au.org.noojee.irrigation.views.EndPointConfigurationView;
 import au.org.noojee.irrigation.views.SmartView;
 
@@ -51,7 +57,9 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	private Binder<EndPoint> binder = new Binder<>(EndPoint.class);
 	private boolean isEdit = false;
 	private EndPoint editedEndPoint;
+	private EndPointType originalEndPointType;
 	private Button deleteButton;
+	
 
 	public EndPointEditorView()
 	{
@@ -82,7 +90,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		binder.bindInstanceFields(this);
 
 		binder.forField(this.endPointName)
-				.asRequired("Please enter a Label for this End Point.")
+				.asRequired("Please enter a Name for this End Point.")
 				.bind(EndPoint::getEndPointName, EndPoint::setEndPointName);
 
 		binder.forField(this.endPointType)
@@ -108,6 +116,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		{
 			this.isEdit = true;
 			this.editedEndPoint = endPoint;
+			this.originalEndPointType = endPoint.getEndPointType();
 
 			this.deleteButton.setData(this.editedEndPoint);
 			this.deleteButton.setVisible(true);
@@ -130,6 +139,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.bleedLineCheckbox.setValue(false);
 
 			this.editedEndPoint = null;
+			this.originalEndPointType = null;
 
 			this.isEdit = false;
 		}
@@ -150,7 +160,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		this.addComponent(topLine);
 		topLine.setWidth("100%");
 
-		endPointName = new TextField("Label");
+		endPointName = new TextField("Name");
 		topLine.addComponent(endPointName);
 		topLine.setComponentAlignment(endPointName, Alignment.MIDDLE_LEFT);
 		endPointName.setWidth("100%");
@@ -229,8 +239,11 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	{
 		EndPoint endPoint = (EndPoint) e.getButton().getData();
 
+		lightSwitchDeleteProcessing(endPoint);
+
 		EndPointDao endPointDao = new EndPointDao();
 		endPointDao.delete(endPoint);
+
 		UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
 	}
 
@@ -280,17 +293,96 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 				endPoint.setBleedLine(this.bleedLineCheckbox.getValue());
 				endPoint.setPinActiviationType(this.activationType.getValue());
 				endPoint.setPiPin(piPin);
-				if (this.isEdit)
-					daoEndPoint.merge(endPoint);
-				else
-					daoEndPoint.persist(endPoint);
-				
+				try
+				{
+					if (this.isEdit)
+						daoEndPoint.merge(endPoint);
+					else
+						daoEndPoint.persist(endPoint);
+				}
+				catch (RollbackException e)
+				{
+					int error = 0;
+					Throwable cause = e.getCause();
+					if (cause instanceof DatabaseException)
+					{
+						DatabaseException dbexception = (DatabaseException) cause;
+						error = dbexception.getErrorCode();
+					}
+					switch (error)
+					{
+						case 0:
+							Notification.show("Save failed.", e.getMessage(), Type.ERROR_MESSAGE);
+							break;
+						case 4002:
+							Notification.show("Save failed.", "The End Point name entered is already used.",
+									Type.ERROR_MESSAGE);
+							break;
+					}
+					return;
+
+				}
+
+				lightSwichEditProcessing(endPoint);
+
 				// re-initialise the valve controller now we have changed a valve
-				ValveController.init();
+				GardenBedController.init();
 
 				UI.getCurrent().getNavigator().navigateTo(EndPointConfigurationView.NAME);
 			}
 		}
+	}
+
+	/**
+	 * We are doing some hacky stuff here to avoid the end user having to add/delete light entities.
+	 */
+	private void lightSwitchDeleteProcessing(EndPoint endPoint)
+	{
+		LightingDao daoLighting = new LightingDao();
+
+		daoLighting.deleteByEndPoint(endPoint);
+
+	}
+
+	private void lightSwichEditProcessing(EndPoint endPoint)
+	{
+		if (isEdit)
+		{
+			// need to determine if there has been a change of type.
+
+			if (endPoint.getEndPointType() != this.originalEndPointType)
+			{
+				// so the type has change so we are going to have do some db editing.
+
+				// If the original was a light then we are no longer a light so delete it.
+				if (this.originalEndPointType == EndPointType.Light)
+					lightSwitchDeleteProcessing(endPoint);
+
+				// If the new end point is a light then we need to create one.
+				if (endPoint.getEndPointType() == EndPointType.Light)
+					lightSwitchCreateProcessing(endPoint);
+
+			}
+		}
+		else
+		{
+			// So not an edit then we may have a new light.
+			lightSwitchCreateProcessing(endPoint);
+		}
+
+	}
+
+	private void lightSwitchCreateProcessing(EndPoint endPoint)
+	{
+		if (endPoint.getEndPointType() == EndPointType.Light)
+		{
+			LightingDao daoLighting = new LightingDao();
+
+			Lighting lighting = new Lighting(endPoint);
+
+			daoLighting.persist(lighting);
+		}
+
 	}
 
 	private EndPoint getPinUsedBy(Pin piPin)

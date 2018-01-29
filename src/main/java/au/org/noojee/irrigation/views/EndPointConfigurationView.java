@@ -1,13 +1,15 @@
 package au.org.noojee.irrigation.views;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.teemu.switchui.Switch;
 
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -28,14 +30,16 @@ import com.vaadin.ui.themes.ValoTheme;
 import au.org.noojee.irrigation.ControllerUI;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.entities.EndPoint;
+import au.org.noojee.irrigation.types.EndPointBus;
+import au.org.noojee.irrigation.types.GardenBedController;
 import au.org.noojee.irrigation.types.PinStatus;
-import au.org.noojee.irrigation.types.ValveController;
 import au.org.noojee.irrigation.views.editors.EndPointEditorView;
 import au.org.noojee.irrigation.weather.bureaus.WeatherBureau;
 import au.org.noojee.irrigation.weather.bureaus.WeatherBureaus;
 import au.org.noojee.irrigation.weather.bureaus.WeatherStation;
 
-public class EndPointConfigurationView extends VerticalLayout implements SmartView
+public class EndPointConfigurationView extends VerticalLayout
+		implements SmartView, EndPointChangeListener, ViewChangeListener
 {
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "EndPoints";
@@ -44,6 +48,15 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 	private ComboBox<WeatherStation> weatherStation;
 	private ComboBox<WeatherBureau> weatherBureau;
 	private GridLayout endPointGrid;
+
+	private Map<EndPoint, Switch> switchMap = new HashMap<>();
+
+	private UI ui;
+
+	public EndPointConfigurationView()
+	{
+		this.ui = UI.getCurrent();
+	}
 
 	public void enter(ViewChangeEvent event)
 	{
@@ -115,6 +128,7 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 
 		for (EndPoint endPoint : endPoints)
 		{
+			EndPointBus.getInstance().addListener(endPoint, this);
 
 			Label endPointNameLabel = new Label(endPoint.getEndPointName());
 			endPointNameLabel.setStyleName("i4p-label");
@@ -148,27 +162,19 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 		endPointToggle.addValueChangeListener(e ->
 			{
 				if (e.getValue() == true)
-					turnOn(endPointToggle, endPoint);
+					endPoint.hardOn();
 				else
-					turnOff(endPointToggle, endPoint);
+					endPoint.hardOff();
 			});
+
+		switchMap.put(endPoint, endPointToggle);
 
 		return endPointToggle;
 	}
 
-	private void turnOff(Switch endPointToggle, EndPoint endPoint)
-	{
-		endPoint.setOff();
-	}
-
-	private void turnOn(Switch endPointToggle, EndPoint endPoint)
-	{
-		endPoint.setOn();
-	}
-
 	private void editEndPoint(ClickEvent e)
 	{
-		if (ValveController.isAnyValveRunning())
+		if (GardenBedController.isAnyValveRunning())
 			Notification.show("Can't add EndPoint", "You can't edit an EndPoint whilst any valves are on.",
 					Type.ERROR_MESSAGE);
 		else
@@ -184,7 +190,7 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 
 	private void addEndPoint()
 	{
-		if (ValveController.isAnyValveRunning())
+		if (GardenBedController.isAnyValveRunning())
 			Notification.show("Can't add EndPoint", "You can't add an EndPoint whilst any valves are on.",
 					Type.ERROR_MESSAGE);
 		else
@@ -210,6 +216,42 @@ public class EndPointConfigurationView extends VerticalLayout implements SmartVi
 	public String getName()
 	{
 		return NAME;
+	}
+
+	@Override
+	public void notifyHardOn(EndPoint gardenBed)
+	{
+		// Handle notifications that the EndPoint has changed state
+		Switch toggle = switchMap.get(gardenBed);
+		toggle.setValue(true);
+
+	}
+
+	@Override
+	public void notifyHardOff(EndPoint gardenBed)
+	{
+
+		// Handle notifications that the EndPoint has changed state
+		Switch toggle = switchMap.get(gardenBed);
+		if (ui.isAttached())
+			ui.access(() ->
+				{
+					toggle.setValue(false);
+				});
+	}
+
+	@Override
+	public void afterViewChange(ViewChangeEvent event)
+	{
+		if (event.getOldView() == this)
+			EndPointBus.getInstance().removeListener(this);
+	}
+
+	@Override
+	public boolean beforeViewChange(ViewChangeEvent event)
+	{
+		// We always let the view change.
+		return true;
 	}
 
 }

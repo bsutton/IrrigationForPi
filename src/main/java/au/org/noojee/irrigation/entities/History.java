@@ -3,6 +3,7 @@ package au.org.noojee.irrigation.entities;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,59 +12,71 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
+/**
+ * Records the start time and duration each time an end point is activated.
+ * @author bsutton
+ *
+ */
 @Entity
 @Table(name="tblHistory")
 public class History
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(updatable = false, nullable = false)
 	private long id;
-
-	LocalDateTime wateringEvent;
 	
+	 @Version
+     private int version;
+
+
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gardenBed_id")
-	GardenBed gardenBed;
-	Duration duration;
+    @JoinColumn(name = "gardenFeature_id")
+	GardenFeature gardenFeature;
+
+	
+	LocalDateTime eventStart;
+	Duration eventDuration;
 	
 	// required by JPA
 	public History()
 	{
 		
 	}
-	public History(GardenBed gardenBed)
+	public History(GardenFeature device)
 	{
-		this.gardenBed = gardenBed;
-		this.wateringEvent = LocalDateTime.now();
+		this.gardenFeature = device;
+		this.eventStart = LocalDateTime.now();
 	}
 	public long getId()
 	{
 		return id;
 	}
-	public void endWateringEvent()
+	public void markEventComplete()
 	{
 		LocalDateTime end = LocalDateTime.now();
 		
 		
-		this.duration = Duration.between(wateringEvent, end);
+		this.eventDuration = Duration.between(eventStart, end);
 		
 	}
-	public LocalDateTime getStartDate()
+	public LocalDateTime getStart()
 	{
-		return wateringEvent;
+		return eventStart;
 	}
 	public Duration getDuration()
 	{
-		return this.duration;
+		return this.eventDuration;
 	}
-	public GardenBed getGardenBed()
+	public GardenFeature getGardenFeature()
 	{
-		return this.gardenBed;
+		return this.gardenFeature;
 	}
-	public void clearGardenBed()
+	public void clearGardenFeature()
 	{
-		this.gardenBed = null;
+		this.gardenFeature = null;
 		
 	}
 	

@@ -1,11 +1,13 @@
 package au.org.noojee.irrigation.views;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.teemu.switchui.Switch;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -25,17 +27,29 @@ import com.vaadin.ui.themes.ValoTheme;
 import au.org.noojee.irrigation.ControllerUI;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.GardenBedDao;
+import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
-import au.org.noojee.irrigation.types.ValveController;
+import au.org.noojee.irrigation.types.EndPointBus;
+import au.org.noojee.irrigation.types.GardenBedController;
 import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 
-public class GardenBedConfigurationView extends VerticalLayout implements SmartView
+public class GardenBedConfigurationView extends VerticalLayout
+		implements SmartView, EndPointChangeListener, ViewChangeListener
 {
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "GardenBedConfiguration";
 	public static final String LABEL = "Garden Beds";
 
+	private Map<EndPoint, Switch> switchMap = new HashMap<>();
+
 	private GridLayout gardenBedGrid;
+
+	private UI ui;
+
+	public GardenBedConfigurationView()
+	{
+		this.ui = UI.getCurrent();
+	}
 
 	public void enter(ViewChangeEvent event)
 	{
@@ -93,6 +107,7 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 
 		for (GardenBed gardenBed : gardenBeds)
 		{
+			EndPointBus.getInstance().addListener(gardenBed.getValve(), this);
 
 			Label gardenBedNameLabel = new Label(gardenBed.getName());
 			gardenBedNameLabel.setStyleName("i4p-label");
@@ -126,18 +141,20 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 			{
 				if (e.getValue() == true)
 				{
-					gardenBed.turnOn();
+					gardenBed.softOn();
 				}
 				else
-					gardenBed.turnOff();
+					gardenBed.softOff();
 			});
+
+		switchMap.put(gardenBed.getValve(), pinToggle);
 
 		return pinToggle;
 	}
 
 	private void editGardenBed(ClickEvent e)
 	{
-		if (ValveController.isAnyValveRunning())
+		if (GardenBedController.isAnyValveRunning())
 			Notification.show("Can't add Garden Bed", "You can't edit an GardenBed whilst any valves are on.",
 					Type.ERROR_MESSAGE);
 		else
@@ -156,7 +173,7 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 
 	private void addGardenBed()
 	{
-		if (ValveController.isAnyValveRunning())
+		if (GardenBedController.isAnyValveRunning())
 			Notification.show("Can't add Garden Bed", "You can't add an GardenBed whilst any valves are on.",
 					Type.ERROR_MESSAGE);
 		else
@@ -187,6 +204,42 @@ public class GardenBedConfigurationView extends VerticalLayout implements SmartV
 	public String getName()
 	{
 		return NAME;
+	}
+
+	@Override
+	public void notifyHardOn(EndPoint gardenBed)
+	{
+		// Handle notifications that the EndPoint has changed state
+		Switch toggle = switchMap.get(gardenBed);
+		toggle.setValue(true);
+
+	}
+
+	@Override
+	public void notifyHardOff(EndPoint gardenBed)
+	{
+
+		// Handle notifications that the EndPoint has changed state
+		Switch toggle = switchMap.get(gardenBed);
+		if (ui.isAttached())
+			ui.access(() ->
+				{
+					toggle.setValue(false);
+				});
+	}
+
+	@Override
+	public void afterViewChange(ViewChangeEvent event)
+	{
+		if (event.getOldView() == this)
+			EndPointBus.getInstance().removeListener(this);
+	}
+
+	@Override
+	public boolean beforeViewChange(ViewChangeEvent event)
+	{
+		// We always let the view change.
+		return true;
 	}
 
 }

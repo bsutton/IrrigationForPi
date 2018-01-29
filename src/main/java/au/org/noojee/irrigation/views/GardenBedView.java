@@ -1,12 +1,14 @@
 package au.org.noojee.irrigation.views;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.vaadin.teemu.switchui.Switch;
 
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Responsive;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -17,11 +19,15 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import au.org.noojee.irrigation.dao.GardenBedDao;
+import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
+import au.org.noojee.irrigation.entities.GardenFeature;
 import au.org.noojee.irrigation.entities.History;
+import au.org.noojee.irrigation.types.EndPointBus;
 import au.org.noojee.irrigation.util.Formatters;
 
-public class GardenBedView extends VerticalLayout implements SmartView, ValveChangeListener
+public class GardenBedView extends VerticalLayout
+		implements SmartView, EndPointChangeListener, ViewChangeListener, TimerNotification
 {
 
 	private static final int SWITCH_WIDTH = 35;
@@ -31,17 +37,14 @@ public class GardenBedView extends VerticalLayout implements SmartView, ValveCha
 	public static final String NAME = "GardenBeds";
 	public static final String LABEL = "Garden Beds";
 
-	private Map<GardenBed, Switch> switchMap = new HashMap<>();
+	private Map<EndPoint, Switch> switchMap = new HashMap<>();
 	private boolean supressChangeListener = false;
 	private UI ui;
 
-	static int a = 1;
+	List<FeatureLine> featureLines;
 
 	public GardenBedView()
 	{
-		a++;
-		System.out.println("Ctor a=" + a);
-
 		this.ui = UI.getCurrent();
 	}
 
@@ -102,8 +105,12 @@ public class GardenBedView extends VerticalLayout implements SmartView, ValveCha
 
 		gardenBedLayout.setSizeFull();
 
+		featureLines = new ArrayList<>();
+
 		for (GardenBed gardenBed : gardenBeds)
 		{
+			EndPointBus.getInstance().addListener(gardenBed.getValve(), this);
+
 			HorizontalLayout gardenBedHorizontal = new HorizontalLayout();
 			gardenBedLayout.addComponent(gardenBedHorizontal);
 			gardenBedHorizontal.setWidth("100%");
@@ -119,35 +126,65 @@ public class GardenBedView extends VerticalLayout implements SmartView, ValveCha
 			gardenBedLayout.addComponent(secondLinedHorizontal);
 			secondLinedHorizontal.setWidth("100%");
 
-			Switch toggle = createOnOffSwitch(gardenBed);
+			FeatureLine line = new FeatureLine(gardenBed, secondLinedHorizontal);
+			featureLines.add(line);
+
+			Switch toggle = createOnOffSwitch(gardenBed, line);
 			secondLinedHorizontal.addComponent(toggle);
 			secondLinedHorizontal.setExpandRatio(toggle, 1.0f);
 			// toggle.setWidth(SWITCH_WIDTH, Unit.MM);
 
-			switchMap.put(gardenBed, toggle);
-
 			History history = gardenBed.getLastWatering();
+			
+			Label lastWateredLabel;
+			Label durationLabel;
+
 			if (history != null)
 			{
-				Label lastWateredLabel = new Label(Formatters.format(history.getStartDate().toLocalDate()));
-				secondLinedHorizontal.addComponent(lastWateredLabel);
-				lastWateredLabel.setWidth(LAST_WIDTH, Unit.MM);
-				lastWateredLabel.setStyleName("i4p-label");
-				Responsive.makeResponsive(lastWateredLabel);
-
-				Label durationLabel = new Label(Formatters.format(history.getDuration()));
-				secondLinedHorizontal.addComponent(durationLabel);
-				durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
-				durationLabel.setStyleName("i4p-label");
-				Responsive.makeResponsive(durationLabel);
-
+				
+				lastWateredLabel = new Label(Formatters.format(history.getStart().toLocalDate()));
+				durationLabel = new Label(Formatters.format(history.getDuration()));
 			}
+			else
+			{
+				lastWateredLabel = new Label();
+				durationLabel = new Label();
+			}
+				
+			line.setLabel(lastWateredLabel);
+			line.setDurationLabel(durationLabel);
+
+			secondLinedHorizontal.addComponent(lastWateredLabel);
+			lastWateredLabel.setWidth(LAST_WIDTH, Unit.MM);
+			lastWateredLabel.setStyleName("i4p-label");
+			Responsive.makeResponsive(lastWateredLabel);
+
+
+			secondLinedHorizontal.addComponent(durationLabel);
+			durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
+			durationLabel.setStyleName("i4p-label");
+			Responsive.makeResponsive(durationLabel);
+
 
 		}
 
 	}
 
-	private Switch createOnOffSwitch(GardenBed gardenBed)
+	@Override
+	public void afterViewChange(ViewChangeEvent event)
+	{
+		if (event.getOldView() == this)
+			EndPointBus.getInstance().removeListener(this);
+	}
+
+	@Override
+	public boolean beforeViewChange(ViewChangeEvent event)
+	{
+		// we always let the view change through.
+		return true;
+	}
+
+	private Switch createOnOffSwitch(GardenBed gardenBed, FeatureLine line)
 	{
 		Switch pinToggle = new Switch();
 		pinToggle.setStyleName("i4p-switch");
@@ -161,7 +198,7 @@ public class GardenBedView extends VerticalLayout implements SmartView, ValveCha
 				{
 					if (e.getValue() == true)
 					{
-						TimerDialog dialog = new TimerDialog(gardenBed, this);
+						TimerDialog dialog = new TimerDialog("Watering Time", gardenBed, this);
 						dialog.show(UI.getCurrent());
 						// we leave the switch showing off until the user select and starts a timer.
 						this.supressChangeListener = true;
@@ -169,11 +206,37 @@ public class GardenBedView extends VerticalLayout implements SmartView, ValveCha
 						this.supressChangeListener = false;
 					}
 					else
-						gardenBed.turnOff();
+						gardenBed.softOff();
 				}
 			});
 
+		switchMap.put(gardenBed.getValve(), pinToggle);
+
 		return pinToggle;
+	}
+
+	@Override
+	public void timerStarted(GardenFeature feature, Duration duration)
+	{
+		// Update the feature line
+		FeatureLine line = findFeatureLine(feature);
+
+		line.showTimer("Running", duration);
+	}
+
+	private FeatureLine findFeatureLine(GardenFeature feature)
+	{
+		FeatureLine found = null;
+
+		for (FeatureLine line : this.featureLines)
+		{
+			if (line.equals(feature))
+			{
+				found = line;
+				break;
+			}
+		}
+		return found;
 	}
 
 	@Override
@@ -183,9 +246,10 @@ public class GardenBedView extends VerticalLayout implements SmartView, ValveCha
 	}
 
 	@Override
-	public void notifyOn(GardenBed gardenBed)
+	public void notifyHardOn(EndPoint gardenBed)
 	{
 		this.supressChangeListener = true;
+
 		// when we get notified that the user started a timer we need to update the
 		// switch so we show that the bed is on.
 		Switch toggle = switchMap.get(gardenBed);
@@ -196,17 +260,18 @@ public class GardenBedView extends VerticalLayout implements SmartView, ValveCha
 	}
 
 	@Override
-	public void notifyOff(GardenBed gardenBed)
+	public void notifyHardOff(EndPoint gardenBed)
 	{
 
 		this.supressChangeListener = true;
 		// when we get notified that the timer finished need to update the
 		// switch so we show that the bed is now off
 		Switch toggle = switchMap.get(gardenBed);
-		ui.access(() ->
-			{				
-				toggle.setValue(false);
-			});
+		if (ui.isAttached())
+			ui.access(() ->
+				{
+					toggle.setValue(false);
+				});
 		this.supressChangeListener = false;
 	}
 

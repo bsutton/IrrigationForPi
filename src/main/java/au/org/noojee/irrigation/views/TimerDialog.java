@@ -15,42 +15,46 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import au.org.noojee.irrigation.entities.GardenBed;
+import au.org.noojee.irrigation.entities.GardenFeature;
 
 public class TimerDialog extends Window
 {
 	private static final long serialVersionUID = 1L;
+	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger();
-	private GardenBed gardenBed;
+	private GardenFeature gardenFeature;
+	
 	private boolean wasCancelled = false;
 	
-	private ValveChangeListener listener;
-
-	TimerDialog(GardenBed gardenBed, ValveChangeListener listener)
+	TimerNotification timerNotifications;
+	
+	TimerDialog(String title, GardenFeature gardenFeature, TimerNotification timerNotifications)
 	{
+		this.timerNotifications = timerNotifications;
+		
 		this.setWidth("50%");
 		this.setClosable(false);
 		this.setResizable(false);
 		this.setModal(true);
 		
-		this.gardenBed = gardenBed;
-		this.listener = listener;
+		this.gardenFeature = gardenFeature;
 		
 		VerticalLayout subContent = new VerticalLayout();
 		this.setContent(subContent);
 
 		// Put some components in it
-		Label heading = new Label("Watering Time");
+		Label heading = new Label(title);
 		subContent.addComponent(heading);
 		heading.setStyleName("i4p-label");
 		Responsive.makeResponsive(heading);
 		
+		// re-add for quick test option.
 		
-		Button time1 = new Button("20 Seconds");
-		time1.setWidth("100%");
-		subContent.addComponent(time1);
-		time1.setData(Duration.ofSeconds(20));
-		time1.addClickListener(l -> startTimer(l));
+//		Button time1 = new Button("20 Seconds");
+//		time1.setWidth("100%");
+//		subContent.addComponent(time1);
+//		time1.setData(Duration.ofSeconds(20));
+//		time1.addClickListener(l -> startTimer(l));
 
 		Button time15 = new Button("15 Minutes");
 		time15.setWidth("100%");
@@ -112,12 +116,11 @@ public class TimerDialog extends Window
 	private void startTimer(ClickEvent l)
 	{
 		Duration delay = (Duration)l.getButton().getData();
-		gardenBed.runForTime(delay, this.listener);
+		gardenFeature.runForTime(delay);
+		
+		timerNotifications.timerStarted(this.gardenFeature, delay);
 		
 		this.close();
-		listener.notifyOn(this.gardenBed);
-		
-	
 	}
 
 	// Open it in the UI

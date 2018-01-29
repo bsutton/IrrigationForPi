@@ -46,21 +46,21 @@ public class PinDependancy implements PinRelationship
 					switch (dependancy)
 					{
 						case LagDelay:
-							primaryPin.setOn();
+							primaryPin.hardOn();
 							Thread.sleep(interval.getSeconds() * 1000);
 							for (EndPoint pin : relatedPins)
 							{
-								pin.setOn();
+								pin.hardOn();
 							}
 							break;
 
 						case LeadingDelay:
 							for (EndPoint pin : relatedPins)
 							{
-								pin.setOn();
+								pin.hardOn();
 							}
 							Thread.sleep(interval.getSeconds() * 1000);
-							primaryPin.setOn();
+							primaryPin.hardOn();
 							break;
 					}
 				}

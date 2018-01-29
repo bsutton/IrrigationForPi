@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +19,7 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinProvider;
 
 import au.org.noojee.irrigation.types.Amperage;
+import au.org.noojee.irrigation.types.EndPointBus;
 import au.org.noojee.irrigation.types.EndPointType;
 import au.org.noojee.irrigation.types.PinActivationType;
 import au.org.noojee.irrigation.types.PinStatus;
@@ -27,20 +29,22 @@ import au.org.noojee.irrigation.types.PinStatus;
 @Table(name="tblEndPoint")
 public class EndPoint
 {
-
-
-	private static final Logger logger = LogManager.getLogger();
+	transient private static final Logger logger = LogManager.getLogger();
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(updatable = false, nullable = false)
     private long id;
+    
+	 @Version
+     private int version;
+
 
     // Name of the device attached to the pin.
     @Column(unique=true)
 	private String endPointName;
 	private EndPointType endPointType;
 	private PinActivationType activationType;
-
 	
 	// We store the gpio pin no. here.
 	@Column(unique=true)
@@ -49,6 +53,44 @@ public class EndPoint
 	// If we are a master valve we offer an option to bleed the pressure from the line
 	// by turning the master valve off before we turn the garden bed valve off.
 	private boolean bleedLine = false;
+	
+	// The amount of current activating this pin causes the device to draw.
+	private Amperage startAmps;
+	
+	// the amount of current the device draws when this pin is active (post startup spike).
+	private Amperage runningAmps;
+	
+	// The amount of time the 'startAmps' is drawn once the pin is activiated before
+	// the current draw settles to the 'runningAmps'
+	private Duration startupInterval;
+	
+	public Void hardOn()
+	{
+		if (activationType == PinActivationType.HIGH_IS_ON)
+			setPinHigh();
+		else 
+			setPinLow();
+		
+		logger.error("Pin " + pinNo + " for EndPoint: " + (this.endPointType == EndPointType.MasterValve ? "(MasterValve)" : "" ) + this.endPointName + " set On.");
+		
+		EndPointBus.getInstance().notifyHardOn(this);
+
+		return null;
+	}
+	
+	public Void hardOff()
+	{
+		if (activationType == PinActivationType.HIGH_IS_ON)
+			setPinLow();
+		else 
+			setPinHigh();
+
+		logger.error("Pin " + pinNo + " for EndPoint: " + (this.endPointType == EndPointType.MasterValve ? "(MasterValve)" : "" ) + this.endPointName + " set Off.");
+		
+		EndPointBus.getInstance().notifyHardOff(this);
+
+		return null;
+	}
 	
 	public boolean isBleedLine()
 	{
@@ -59,43 +101,6 @@ public class EndPoint
 	{
 		this.bleedLine = bleadLine;
 	}
-
-
-	
-	// The amount of current activating this pin causes the device to draw.
-	private Amperage startAmps;
-	// the amount of current the device draws when this pin is active (post startup spike).
-	private Amperage runningAmps;
-	// The amount of time the 'startAmps' is drawn once the pin is activiated before
-	// the current draw settles to the 'runningAmps'
-	private Duration startupInterval;
-	
-	public Void setOn()
-	{
-		if (activationType == PinActivationType.HIGH_IS_ON)
-			setPinHigh();
-		else 
-			setPinLow();
-		
-		logger.error("Pin " + pinNo + " for EndPoint: " + (this.endPointType == EndPointType.MasterValve ? "(MasterValve)" : "" ) + this.endPointName + " set On.");
-		
-		return null;
-	}
-	
-	public Void setOff()
-	{
-		
-		if (activationType == PinActivationType.HIGH_IS_ON)
-			setPinLow();
-		else 
-			setPinHigh();
-
-		logger.error("Pin " + pinNo + " for EndPoint: " + (this.endPointType == EndPointType.MasterValve ? "(MasterValve)" : "" ) + this.endPointName + " set Off.");
-
-		return null;
-		
-	}
-	
 	
 	private void setPinHigh()
 	{
@@ -103,6 +108,14 @@ public class EndPoint
 		gpioPin.high();
 		
 	}
+	
+	private void setPinLow()
+	{
+		GpioPinDigitalOutput gpioPin = this.getPiPin(this.pinNo);
+		gpioPin.low();
+		
+	}
+
 
 	public void setPiPin(com.pi4j.io.gpio.Pin piPin)
 	{
@@ -116,13 +129,6 @@ public class EndPoint
 	}
 
 	
-	private void setPinLow()
-	{
-		GpioPinDigitalOutput gpioPin = this.getPiPin(this.pinNo);
-		gpioPin.low();
-		
-	}
-
 	public void setEndPointName(String endPointName)
 	{
 		this.endPointName = endPointName;
@@ -196,7 +202,6 @@ public class EndPoint
 	}
 
 
-
 	private com.pi4j.io.gpio.GpioPinDigitalOutput getPiPin(int pinNo)
 	{
 		final GpioController gpio = GpioFactory.getInstance();
@@ -206,6 +211,7 @@ public class EndPoint
 		
 		return gpioPin;
 	}
+
 	
 	@Override
 	public int hashCode()
@@ -246,6 +252,7 @@ public class EndPoint
 		return !isOn();
 	}
 
+	
 
 
 }

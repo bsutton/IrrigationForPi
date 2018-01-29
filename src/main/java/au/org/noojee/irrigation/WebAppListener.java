@@ -19,7 +19,7 @@ import com.pi4j.io.gpio.RaspiPin;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.MyEntityManagerUtil;
 import au.org.noojee.irrigation.entities.EndPoint;
-import au.org.noojee.irrigation.types.ValveController;
+import au.org.noojee.irrigation.types.GardenBedController;
 
 /**
  * @author Brett Sutton
@@ -27,7 +27,7 @@ import au.org.noojee.irrigation.types.ValveController;
 @WebListener
 public class WebAppListener implements ServletContextListener
 {
-	Logger logger = LogManager.getLogger();
+	public static Logger logger;
 	private boolean databaseInitialised;
 
 	public WebAppListener()
@@ -38,10 +38,14 @@ public class WebAppListener implements ServletContextListener
 	@Override
 	public void contextInitialized(ServletContextEvent sce)
 	{
-		logger.info("Irrigation Manager is starting. ");
+		System.out.println("Pi-gation is starting.");
 
-		System.out.println("PI PLATFORM: " + System.getenv("PI4J_PLATFORM"));
-		System.out.println("Simulated PLATFORM - simulated: " + System.getenv("SimulatedPlatform"));
+		System.out.println("Pi-gation: starting logger");
+
+		logger = LogManager.getLogger();
+
+		logger.info("PI PLATFORM: " + System.getenv("PI4J_PLATFORM"));
+		logger.info("Simulated PLATFORM - simulated: " + System.getenv("SimulatedPlatform"));
 
 		MyEntityManagerUtil.init();
 
@@ -49,7 +53,7 @@ public class WebAppListener implements ServletContextListener
 
 		provisionPins();
 
-		ValveController.init();
+		GardenBedController.init();
 
 	}
 

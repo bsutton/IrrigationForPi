@@ -5,6 +5,9 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.pi4j.io.gpio.Pin;
 
 import au.org.noojee.irrigation.entities.EndPoint;
@@ -12,7 +15,8 @@ import au.org.noojee.irrigation.types.EndPointType;
 
 public class EndPointDao
 {
-
+	@SuppressWarnings("unused")
+	private static Logger logger = LogManager.getLogger();
 	@SuppressWarnings("unchecked")
 	@InjectEntity
 	public List<EndPoint> getAll()
@@ -79,6 +83,7 @@ public class EndPointDao
 			em.persist(endPoint);
 			tran.commit();
 		}
+	
 
 	}
 

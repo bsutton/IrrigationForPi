@@ -114,11 +114,11 @@ public class OverviewView   extends VerticalLayout implements SmartView {
 		{
 			HorizontalLayout historyHorizontal =new HorizontalLayout();
 			this.addComponent(historyHorizontal);
-			Label startDate = new Label(Formatters.format(history.getStartDate()));
+			Label startDate = new Label(Formatters.format(history.getStart()));
 			historyHorizontal.addComponent(startDate);
 			Label duration = new Label(Formatters.format(history.getDuration()));
 			historyHorizontal.addComponent(duration);
-			Label gardenBed = new Label(history.getGardenBed().getName());
+			Label gardenBed = new Label(history.getGardenFeature().getName());
 			historyHorizontal.addComponent(gardenBed);
 		}
 	}

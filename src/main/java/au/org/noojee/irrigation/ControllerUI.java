@@ -2,22 +2,25 @@ package au.org.noojee.irrigation;
 
 import java.util.HashMap;
 
-import com.github.appreciated.app.layout.behaviour.AppLayout;
+import com.github.appreciated.app.layout.behaviour.AppLayoutComponent;
 import com.github.appreciated.app.layout.behaviour.Behaviour;
-import com.github.appreciated.app.layout.builder.AppLayoutBuilder;
-import com.github.appreciated.app.layout.builder.AppLayoutBuilder.Position;
+import com.github.appreciated.app.layout.builder.AppLayout;
 import com.github.appreciated.app.layout.builder.design.AppBarDesign;
-import com.github.appreciated.app.layout.builder.elements.SubmenuBuilder;
+import com.github.appreciated.app.layout.builder.elements.builders.SubmenuBuilder;
 import com.github.appreciated.app.layout.component.MenuHeader;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Viewport;
+import com.vaadin.contextmenu.ContextMenu;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.PushStateNavigation;
+import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.ValoTheme;
 
 import au.org.noojee.irrigation.views.EndPointConfigurationView;
 import au.org.noojee.irrigation.views.GardenBedConfigurationView;
@@ -66,25 +69,36 @@ public class ControllerUI extends UI
 		// Non-menu views:
 		EndPointEditorView endPointEditor = new EndPointEditorView();
 		GardenBedEditorView gardenBedEditor = new GardenBedEditorView();
-
-		AppLayout layout = AppLayoutBuilder.get(Behaviour.LEFT_RESPONSIVE)
+		
+		final Button refreshMenu = new Button(VaadinIcons.ELLIPSIS_DOTS_V);
+		refreshMenu.setStyleName(ValoTheme.BUTTON_BORDERLESS);
+		ContextMenu menu = new ContextMenu(refreshMenu, true);
+		menu.addItem("Refresh", null, (m) -> Page.getCurrent().reload());
+		refreshMenu.addClickListener(l -> menu.open(l.getClientX(), l.getClientY()));
+		
+		AppLayoutComponent layout = AppLayout.getDefaultBuilder(Behaviour.LEFT_RESPONSIVE)
 				.withTitle("Pi-gation")
 				.withDefaultNavigationView(overviewView)
+				.withCloseSubmenusOnNavigate(true)
+				.addToAppBar(refreshMenu)
 				.withDesign(AppBarDesign.MATERIAL)
-				.add(new MenuHeader("Irrigation & Lighting", new ThemeResource("icons/pi-gation.png")), Position.HEADER)
+				.add(new MenuHeader("Irrigation & Lighting", new ThemeResource("icons/pi-gation.png")))
 				.add(OverviewView.NAME, VaadinIcons.HOME, overviewView)
-				.add(GardenBedView.LABEL, GardenBedView.NAME, VaadinIcons.CLOUD, null, gardenBedView, Position.DEFAULT)
+				.add(GardenBedView.LABEL, GardenBedView.NAME, VaadinIcons.CLOUD, null, gardenBedView)
 				.add(LightingView.NAME, VaadinIcons.LIGHTBULB, lightingView)
 				.add(ScheduleView.NAME, VaadinIcons.CLOCK, scheduleView)
 				.add(HistoryView.NAME, VaadinIcons.TIME_BACKWARD, historyView)
 				.add(SubmenuBuilder.get("Configuration", VaadinIcons.COG)
 						.add(EndPointConfigurationView.NAME, VaadinIcons.CONNECT, endPointConfigurationView)
 						.add(GardenBedConfigurationView.LABEL, 
-								GardenBedConfigurationView.NAME, VaadinIcons.CLOUD, gardenBedConfigurationView)
-						.build(), Position.FOOTER)
+								GardenBedConfigurationView.NAME, VaadinIcons.DROP, gardenBedConfigurationView)
+						.build())
 				.build();
 
-		UI.getCurrent().getNavigator().addView(GardenBedConfigurationView.NAME, gardenBedConfigurationView);
+		getNavigator().addView(GardenBedConfigurationView.NAME, gardenBedConfigurationView);
+		getNavigator().addViewChangeListener(gardenBedView);
+		getNavigator().addViewChangeListener(lightingView);
+
 		/*
 		 * .addClickable("Click Me", VaadinIcons.QUESTION, clickEvent -> { }) .add("Preferences", VaadinIcons.COG,
 		 * View6.class, FOOTER)
@@ -98,9 +112,9 @@ public class ControllerUI extends UI
 		addView(gardenBedConfigurationView);
 		// Non-menu views:
 		addView(endPointEditor);
-		UI.getCurrent().getNavigator().addView(EndPointEditorView.NAME, endPointEditor);
+		getNavigator().addView(EndPointEditorView.NAME, endPointEditor);
 		addView(gardenBedEditor);
-		UI.getCurrent().getNavigator().addView(GardenBedEditorView.NAME, gardenBedEditor);
+		getNavigator().addView(GardenBedEditorView.NAME, gardenBedEditor);
 
 		setContent(layout);
 

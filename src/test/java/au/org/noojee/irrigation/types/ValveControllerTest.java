@@ -94,7 +94,7 @@ public class ValveControllerTest
 			masterValve.setBleedLine(true);
 			daoEndPoint.merge(masterValve);
 			// We changed the master valves setting so we need to re-init the controller.
-			ValveController.init();
+			GardenBedController.init();
 
 			logger.error("Running bleed line test");
 			runTestSequence(bed1, bed2, masterValve);
@@ -115,66 +115,66 @@ public class ValveControllerTest
 	private void runTestSequence(GardenBed bed1, GardenBed bed2, EndPoint masterValve) throws InterruptedException
 	{
 		// Now we have created the beds and the valves we can init the controller.
-		ValveController.init();
+		GardenBedController.init();
 
 		logger.error("step 1");
-		bed1.turnOn();
+		bed1.softOn();
 		assert (masterValve.isOn());
 		logger.error("step 2");
-		bed2.turnOn();
+		bed2.softOn();
 		assert (masterValve.isOn());
 		logger.error("step 3");
-		bed1.turnOff();
+		bed1.softOff();
 		assert masterValve.isOn() : "bed1 is on so master valve should be on.";
 		assert (bed1.getValve().isOff());
 		logger.error("step 4");
-		bed2.turnOff();
+		bed2.softOff();
 		assert (masterValve.isOff());
 		if (masterValve.isBleedLine())
 			assert (bed2.isOn());
 		else
 			assert (bed2.isOff());
 		logger.error("step 5");
-		bed1.turnOn();
+		bed1.softOn();
 		assert (masterValve.isOn());
 		logger.error("step 6");
-		bed1.turnOff();
+		bed1.softOff();
 		assert (masterValve.isOff());
 		logger.error("step 7");
-		bed1.turnOn();
+		bed1.softOn();
 		logger.error("step 8");
-		bed1.turnOff();
+		bed1.softOff();
 		assert (masterValve.isOff());
 		logger.error("step 9");
-		bed1.turnOn();
+		bed1.softOn();
 		logger.error("step 10");
-		bed1.turnOff();
+		bed1.softOff();
 		logger.error("step 11");
-		bed2.turnOn();
+		bed2.softOn();
 		logger.error("step 12");
-		bed1.turnOff();
+		bed1.softOff();
 		assert masterValve.isOn() : "bed2 is still on, so master valve should be on"; 
 		logger.error("step 13");
-		bed1.turnOn();
+		bed1.softOn();
 		logger.error("step 14");
-		bed2.turnOn();
+		bed2.softOn();
 		logger.error("step 15");
-		bed2.turnOff();
+		bed2.softOff();
 		assert (masterValve.isOn());
 		logger.error("step 16");
-		bed1.turnOff();
+		bed1.softOff();
 		assert (masterValve.isOff());
 		logger.error("step 17");
-		bed1.turnOn();
+		bed1.softOn();
 		assert (masterValve.isOn());
 		logger.error("step 18");
-		bed2.turnOn();
+		bed2.softOn();
 		assert (masterValve.isOn());
 		logger.error("step 19");
-		bed1.turnOff();
+		bed1.softOff();
 		assert (masterValve.isOn());
 		logger.error("step 20");
-		bed2.turnOff();
+		bed2.softOff();
 		assert (masterValve.isOff());
 
 	}
