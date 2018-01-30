@@ -22,7 +22,7 @@ import au.org.noojee.irrigation.dao.EntityWorker;
  */
 
 //Wire this filter in.
-@WebFilter(filterName = "EntityManagerFilter", urlPatterns = {"/*"})
+@WebFilter(filterName = "EntityManagerFilter", urlPatterns = {"/*"}, asyncSupported=true)
 
 public class EntityManagerInjectorFilter implements Filter
 {
