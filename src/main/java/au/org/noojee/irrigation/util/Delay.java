@@ -7,6 +7,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
+import au.org.noojee.irrigation.dao.EntityManagerRunnable;
+import au.org.noojee.irrigation.types.GardenBedController;
+
 public class Delay
 {
 
@@ -17,7 +20,14 @@ public class Delay
 		Callable<Void> callable = () ->
 			{
 				Thread.sleep(duration.toMillis());
-				function.apply(device);
+
+				// Give the call back an entity manager.
+				new EntityManagerRunnable(() ->
+				{
+					function.apply(device);
+				}).run();
+
+				
 
 				return null;
 			};

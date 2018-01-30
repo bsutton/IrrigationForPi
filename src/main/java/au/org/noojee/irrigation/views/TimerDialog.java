@@ -50,11 +50,11 @@ public class TimerDialog extends Window
 		
 		// re-add for quick test option.
 		
-//		Button time1 = new Button("20 Seconds");
-//		time1.setWidth("100%");
-//		subContent.addComponent(time1);
-//		time1.setData(Duration.ofSeconds(20));
-//		time1.addClickListener(l -> startTimer(l));
+		Button time1 = new Button("20 Seconds");
+		time1.setWidth("100%");
+		subContent.addComponent(time1);
+		time1.setData(Duration.ofSeconds(20));
+		time1.addClickListener(l -> startTimer(l));
 
 		Button time15 = new Button("15 Minutes");
 		time15.setWidth("100%");
