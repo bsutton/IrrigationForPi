@@ -94,9 +94,6 @@ public class GardenBed extends GardenFeature
 		
 		GardenBedController.softOff(this);
 		
-		GardenBedDao daoGardenBed = new GardenBedDao();
-		daoGardenBed.merge(this);
-
 		return null;
 	}
 
@@ -104,10 +101,6 @@ public class GardenBed extends GardenFeature
 	{
 		super.softOn();
 
-		// save the last watering event.
-		GardenBedDao daoGardenBed = new GardenBedDao();
-		daoGardenBed.merge(this);
-		
 		GardenBedController.softOn(this);
 	}
 	

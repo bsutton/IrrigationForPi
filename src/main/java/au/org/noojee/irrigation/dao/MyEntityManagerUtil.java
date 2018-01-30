@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
@@ -29,6 +28,13 @@ public class MyEntityManagerUtil
 		init("Test");
 	}
 
+	public static EntityManagerFactory getEntityManagerFactory()
+	{
+		if (emf == null)
+			throw new IllegalStateException("Call MyEntityManagerUtil.init() first");
+		return MyEntityManagerUtil.emf;
+	}
+
 	public static void init(String persistenceUnitName)
 	{
 		try
@@ -41,25 +47,27 @@ public class MyEntityManagerUtil
 				 * name="javax.persistence.jdbc.password" value="a password goes here" /> <property
 				 * name="javax.persistence.jdbc.user" value="irrigation4pi" />
 				 */
-				
+
 				// Default path.
 				File rootPath = new File("/home/pi/irrigationDb");
-				
+
 				// If we are running under snap then use the snap data path
 				String snapPath = System.getenv("SNAP_DATA");
 				if (snapPath != null)
 					rootPath = new File(snapPath);
-				
+
 				File dbPath = new File(rootPath, persistenceUnitName);
-				
+
 				String username = System.getenv("pi_gation_db_username");
 				String password = System.getenv("pi_gation_db_password");
-				
+
 				if (username == null)
-					throw new RuntimeException("You must create an environment variable pi_gation_db_username which contains the db username");
+					throw new RuntimeException(
+							"You must create an environment variable pi_gation_db_username which contains the db username");
 
 				if (password == null)
-					throw new RuntimeException("You must create an environment variable pi_gation_db_password which contains the db password");
+					throw new RuntimeException(
+							"You must create an environment variable pi_gation_db_password which contains the db password");
 
 				String jdbcURL = "jdbc:derby:" + dbPath.getAbsolutePath() + ";create=true";
 
@@ -85,19 +93,20 @@ public class MyEntityManagerUtil
 		}
 	}
 
-	static EntityManager createEntityManager()
-	{
-		if (emf == null)
-			throw new IllegalStateException("Call EntityManagerUtil.init() on program startup");
-		return emf.createEntityManager();
-	}
-
-	public static EntityManager getEntityManager()
-	{
-
-			return emf.createEntityManager();
-	}
-
+	//
+	// static EntityManager createEntityManager()
+	// {
+	// if (emf == null)
+	// throw new IllegalStateException("Call EntityManagerUtil.init() on program startup");
+	// return emf.createEntityManager();
+	// }
+	//
+	// public static EntityManager getEntityManager()
+	// {
+	//
+	// return emf.createEntityManager();
+	// }
+	//
 	public static void databaseShutdown()
 	{
 		final String SHUTDOWN_CODE = "XJ015";

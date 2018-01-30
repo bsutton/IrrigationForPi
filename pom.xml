@@ -196,19 +196,6 @@
 			<version>23.6-jre</version>
 		</dependency>
 
-		<dependency>
-			<groupId>au.com.vaadinutils</groupId>
-			<artifactId>VaadinUtils</artifactId>
-			<version>0.1.2</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>stax</artifactId>
-					<groupId>stax</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-
 	</dependencies>
 
 	<build>

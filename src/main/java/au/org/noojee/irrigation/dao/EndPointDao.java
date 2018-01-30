@@ -17,12 +17,12 @@ public class EndPointDao
 {
 	@SuppressWarnings("unused")
 	private static Logger logger = LogManager.getLogger();
+
 	@SuppressWarnings("unchecked")
 	@InjectEntity
 	public List<EndPoint> getAll()
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
-
+		EntityManager em = EntityManagerProvider.getEntityManager();
 		Query query = em.createQuery("SELECT e FROM EndPoint e order by LOWER(e.endPointName)");
 		return (List<EndPoint>) query.getResultList();
 	}
@@ -40,8 +40,7 @@ public class EndPointDao
 	@SuppressWarnings("unchecked")
 	public List<EndPoint> getAllByType(EndPointType type)
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
-
+		EntityManager em = EntityManagerProvider.getEntityManager();
 		Query query = em
 				.createQuery("SELECT e FROM EndPoint e where e.endPointType = :type order by LOWER(e.endPointName)");
 		query.setParameter("type", type);
@@ -49,11 +48,10 @@ public class EndPointDao
 		return (List<EndPoint>) query.getResultList();
 	}
 
-
 	@SuppressWarnings("unchecked")
 	public List<EndPoint> getByPin(Pin piPin)
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
+		EntityManager em = EntityManagerProvider.getEntityManager();
 
 		Query query = em
 				.createQuery("SELECT e FROM EndPoint e where e.pinNo = :pinNo order by LOWER(e.endPointName)");
@@ -64,54 +62,31 @@ public class EndPointDao
 
 	public void deleteAll()
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
-
-		try (Transaction tran = new Transaction(em))
-		{
-			Query q2 = em.createQuery("DELETE FROM EndPoint e");
-			q2.executeUpdate();
-			tran.commit();
-		}
+		EntityManager em = EntityManagerProvider.getEntityManager();
+		Query q2 = em.createQuery("DELETE FROM EndPoint e");
+		q2.executeUpdate();
 	}
 
 	public void persist(EndPoint endPoint)
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
-
-		try (Transaction tran = new Transaction(em))
-		{
-			em.persist(endPoint);
-			tran.commit();
-		}
-	
-
+		EntityManager em = EntityManagerProvider.getEntityManager();
+		em.persist(endPoint);
 	}
 
 	public void delete(EndPoint endPoint)
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
+		EntityManager em = EntityManagerProvider.getEntityManager();
+		// make certain we are deleting an attached entity.
+		endPoint = em.find(EndPoint.class, endPoint.getId());
 
-		try (Transaction tran = new Transaction(em))
-		{
-			// make certain we are deleting an attached entity.
-			endPoint = em.find(EndPoint.class, endPoint.getId());
-
-			em.remove(endPoint);
-			tran.commit();
-		}
+		em.remove(endPoint);
 
 	}
 
 	public void merge(EndPoint endPoint)
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
-
-		try (Transaction tran = new Transaction(em))
-		{
-			em.merge(endPoint);
-			tran.commit();
-		}
-
+		EntityManager em = EntityManagerProvider.getEntityManager();
+		em.merge(endPoint);
 	}
 
 }

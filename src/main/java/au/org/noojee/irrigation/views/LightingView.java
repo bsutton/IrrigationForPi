@@ -1,6 +1,7 @@
 package au.org.noojee.irrigation.views;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,10 +21,14 @@ import com.vaadin.ui.VerticalLayout;
 import au.org.noojee.irrigation.dao.LightingDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenFeature;
+import au.org.noojee.irrigation.entities.History;
 import au.org.noojee.irrigation.entities.Lighting;
 import au.org.noojee.irrigation.types.EndPointBus;
+import au.org.noojee.irrigation.util.Formatters;
+import au.org.noojee.irrigation.util.TimerControl;
 
-public class LightingView extends VerticalLayout implements SmartView, EndPointChangeListener, ViewChangeListener, TimerNotification
+public class LightingView extends VerticalLayout
+		implements SmartView, EndPointChangeListener, ViewChangeListener, TimerNotification
 {
 
 	private static final int SWITCH_WIDTH = 35;
@@ -34,6 +39,8 @@ public class LightingView extends VerticalLayout implements SmartView, EndPointC
 
 	private Map<EndPoint, Switch> switchMap = new HashMap<>();
 	private boolean supressChangeListener = false;
+	private List<FeatureLine> featureLines;
+
 	private UI ui;
 
 	public LightingView()
@@ -68,7 +75,7 @@ public class LightingView extends VerticalLayout implements SmartView, EndPointC
 		bedHeadingHorizontal.setMargin(new MarginInfo(false, true, false, false));
 		bedHeadingHorizontal.setSpacing(false);
 
-		Label bedHeadingLabel = new Label("Garden Bed");
+		Label bedHeadingLabel = new Label("Light");
 		bedHeadingHorizontal.addComponent(bedHeadingLabel);
 		bedHeadingHorizontal.setComponentAlignment(bedHeadingLabel, Alignment.MIDDLE_LEFT);
 		bedHeadingHorizontal.setExpandRatio(bedHeadingLabel, 1.0f);
@@ -98,6 +105,8 @@ public class LightingView extends VerticalLayout implements SmartView, EndPointC
 
 		lightingLayout.setSizeFull();
 
+		featureLines = new ArrayList<>();
+
 		for (Lighting lighting : lightingList)
 		{
 			EndPointBus.getInstance().addListener(lighting.getLightSwitch(), this);
@@ -117,30 +126,44 @@ public class LightingView extends VerticalLayout implements SmartView, EndPointC
 			lightingLayout.addComponent(secondLinedHorizontal);
 			secondLinedHorizontal.setWidth("100%");
 
+			FeatureLine line = new FeatureLine(lighting, secondLinedHorizontal);
+			featureLines.add(line);
+
 			Switch toggle = createOnOffSwitch(lighting);
 			secondLinedHorizontal.addComponent(toggle);
 			secondLinedHorizontal.setExpandRatio(toggle, 1.0f);
 			// toggle.setWidth(SWITCH_WIDTH, Unit.MM);
 
-			switchMap.put(lighting.getLightSwitch(), toggle);
+			History history = lighting.getLastEvent();
 
-			// History history = lighting.getLastWatering();
-			// if (history != null)
-			// {
-			// Label lastWateredLabel = new Label(Formatters.format(history.getStartDate().toLocalDate()));
-			// secondLinedHorizontal.addComponent(lastWateredLabel);
-			// lastWateredLabel.setWidth(LAST_WIDTH, Unit.MM);
-			// lastWateredLabel.setStyleName("i4p-label");
-			// Responsive.makeResponsive(lastWateredLabel);
-			//
-			// Label durationLabel = new Label(Formatters.format(history.getDuration()));
-			// secondLinedHorizontal.addComponent(durationLabel);
-			// durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
-			// durationLabel.setStyleName("i4p-label");
-			// Responsive.makeResponsive(durationLabel);
-			//
-			// }
-			//
+			Label lastEventLabel = new Label();
+			lastEventLabel.setWidth(LAST_WIDTH, Unit.MM);
+			lastEventLabel.setStyleName("i4p-label");
+			Responsive.makeResponsive(lastEventLabel);
+
+			Label durationLabel= new Label();
+			durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
+			durationLabel.setStyleName("i4p-label");
+			Responsive.makeResponsive(durationLabel);
+
+			
+			line.setLabel(lastEventLabel);
+			line.setDurationLabel(durationLabel);
+
+			if (history != null)
+			{
+				lastEventLabel.setValue(Formatters.format(history.getStart().toLocalDate()));
+				durationLabel.setValue(Formatters.format(history.getDuration()));
+			}
+
+			if (TimerControl.isTimerRunning(lighting))
+				line.showTimer("Running", TimerControl.timeRemaining(lighting));
+			else
+			{
+				secondLinedHorizontal.addComponent(lastEventLabel);
+				secondLinedHorizontal.addComponent(durationLabel);
+			}
+
 		}
 
 	}
@@ -167,11 +190,50 @@ public class LightingView extends VerticalLayout implements SmartView, EndPointC
 						this.supressChangeListener = false;
 					}
 					else
+					{
 						lighting.softOff();
+						timerFinished(lighting);
+					}
 				}
 			});
 
+		switchMap.put(lighting.getLightSwitch(), pinToggle);
+
 		return pinToggle;
+	}
+
+	@Override
+	public void timerStarted(GardenFeature feature, Duration duration)
+	{
+		// Update the feature line
+		FeatureLine line = findFeatureLine(feature);
+
+		line.showTimer("Running", duration);
+	}
+
+	@Override
+	public void timerFinished(GardenFeature feature)
+	{
+		// Update the feature line
+		FeatureLine line = findFeatureLine(feature);
+
+		if (line != null)
+			line.timerFinished();
+	}
+
+	private FeatureLine findFeatureLine(GardenFeature feature)
+	{
+		FeatureLine found = null;
+
+		for (FeatureLine line : this.featureLines)
+		{
+			if (line.equals(feature))
+			{
+				found = line;
+				break;
+			}
+		}
+		return found;
 	}
 
 	@Override
@@ -221,13 +283,6 @@ public class LightingView extends VerticalLayout implements SmartView, EndPointC
 	{
 		// We always let the view change.
 		return true;
-	}
-
-	@Override
-	public void timerStarted(GardenFeature feature, Duration duration)
-	{
-		// TODO Auto-generated method stub
-		
 	}
 
 }

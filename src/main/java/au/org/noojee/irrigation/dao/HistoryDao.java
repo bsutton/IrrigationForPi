@@ -14,7 +14,7 @@ public class HistoryDao
 	@SuppressWarnings("unchecked")
 	public List<History> getAll()
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
+		EntityManager em = EntityManagerProvider.getEntityManager();
 
 		Query query = em.createQuery("SELECT e FROM History e order by e.eventStart desc");
 		return (List<History>) query.getResultList();
@@ -23,7 +23,7 @@ public class HistoryDao
 	@SuppressWarnings("unchecked")
 	public List<History> getByGardenBed(GardenBed gardenBed)
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
+		EntityManager em = EntityManagerProvider.getEntityManager();
 
 		Query query = em.createQuery("SELECT e FROM History where e.gardenBed = :gardenBed");
 		query.setParameter("gardenBed", gardenBed);
@@ -79,14 +79,7 @@ public class HistoryDao
 //
 	public void merge(History History)
 	{
-		EntityManager em = MyEntityManagerUtil.getEntityManager();
-
-		try (Transaction tran = new Transaction(em))
-		{
-			em.merge(History);
-			tran.commit();
-		}
-
+		EntityManagerProvider.getEntityManager().merge(History);
 	}
 
 }

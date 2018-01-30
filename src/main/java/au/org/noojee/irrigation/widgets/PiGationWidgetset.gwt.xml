@@ -8,25 +8,25 @@
 
     <inherits name="org.vaadin.teemu.switchui.SwitchComponentWidgetset" />
 
-    <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
+    
 
-    <inherits name="org.vaadin.tokenfield.TokenfieldWidgetset" />
+    
 
-    <inherits name="org.vaadin.alump.gridstack.WidgetSet" />
+    
 
-    <inherits name="org.vaadin.sliderpanel.WidgetSet" />
+    
 
-    <inherits name="org.vaadin.openesignforms.ckeditor.widgetset.VaadinCKEditorWidgetset" />
+    
 
-    <inherits name="de.datenhahn.vaadin.componentrenderer.ComponentRendererWidgetSet" />
+    
 
-    <inherits name="org.vaadin.aceeditor.AceEditorWidgetSet" />
+    
 
-    <inherits name="org.vaadin.addons.screenshot.WidgetSet" />
+    
 
-    <inherits name="org.vaadin.ui.LegacycomboboxWidgetset" />
+    
 
-    <inherits name="org.vaadin.johan.Toolbox7Widgetset" />
+    
 
-    <inherits name="org.vaadin.teemusa.gridextensions.GridExtensionPackWidgetSet" />
+    
 </module>

@@ -9,46 +9,27 @@ import com.pi4j.io.gpio.Pin;
 
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
+import au.org.noojee.irrigation.entities.GardenFeature;
 
-public class GardenBedDao
+public class GardenFeatureDao
 {
+
+	public GardenFeature getById(long id)
+	{
+		EntityManager em = EntityManagerProvider.getEntityManager();
+		return em.find(GardenFeature.class, id);
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<GardenBed> getAll()
 	{
 		EntityManager em = EntityManagerProvider.getEntityManager();
 
-		Query query = em.createQuery("SELECT e FROM GardenBed e");
+		Query query = em.createQuery("SELECT e FROM GardenFeature e");
 		return (List<GardenBed>) query.getResultList();
 	}
 
-	/**
-	 * Returns all garden beds which are controlled by the given master valve.
-	 * 
-	 * @param masterValve
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public List<GardenBed> getControlledBy(EndPoint masterValve)
-	{
-		EntityManager em = EntityManagerProvider.getEntityManager();
-
-		Query query = em.createQuery("SELECT e FROM GardenBed e where e.masterValve = :masterValve");
-		query.setParameter("masterValve", masterValve);
-
-		return (List<GardenBed>) query.getResultList();
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<GardenBed> getByValve(EndPoint valve)
-	{
-
-		EntityManager em = EntityManagerProvider.getEntityManager();
-		Query query = em.createQuery("SELECT e FROM GardenBed e where e.valve = :valve");
-		query.setParameter("valve", valve);
-
-		return (List<GardenBed>) query.getResultList();
-	}
+	
 
 	@SuppressWarnings("unchecked")
 	public List<EndPoint> getByPin(Pin piPin)
@@ -66,29 +47,32 @@ public class GardenBedDao
 	{
 		EntityManager em = EntityManagerProvider.getEntityManager();
 
-		Query q2 = em.createQuery("DELETE FROM GardenBed e");
+		Query q2 = em.createQuery("DELETE FROM GardenFeature e");
 		q2.executeUpdate();
 	}
 
-	public void persist(GardenBed gardenBed)
+	public void persist(GardenFeature gardenFeature)
 	{
 		EntityManager em = EntityManagerProvider.getEntityManager();
-		em.persist(gardenBed);
+		em.persist(gardenFeature);
 	}
 
-	public void delete(GardenBed gardenBed)
+	public void delete(GardenFeature gardenFeature)
 	{
 		EntityManager em = EntityManagerProvider.getEntityManager();
-		gardenBed = em.find(GardenBed.class, gardenBed.getId());
+		gardenFeature = em.find(GardenFeature.class, gardenFeature.getId());
 
-		em.remove(gardenBed);
+		em.remove(gardenFeature);
 
 	}
 
-	public void merge(GardenBed GardenBed)
+	public void merge(GardenFeature gardenFeature)
 	{
 		EntityManager em = EntityManagerProvider.getEntityManager();
-		em.merge(GardenBed);
+		em.merge(gardenFeature);
 	}
 
+
+
+	
 }

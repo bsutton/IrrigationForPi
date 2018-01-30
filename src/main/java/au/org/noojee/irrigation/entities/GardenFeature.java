@@ -1,6 +1,8 @@
 package au.org.noojee.irrigation.entities;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -19,7 +21,9 @@ import javax.persistence.Version;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import au.org.noojee.irrigation.dao.GardenFeatureDao;
 import au.org.noojee.irrigation.util.Delay;
+import au.org.noojee.irrigation.util.TimerControl;
 import au.org.noojee.irrigation.views.TimerNotification;
 
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -42,10 +46,6 @@ public abstract class GardenFeature
 
 	private transient History currentHistory;
 
-	transient private Future<Void> timerFuture = null;
-
-	transient private TimerNotification timerNotifaction;
-
 	public abstract boolean isOn();
 
 	public abstract String getName();
@@ -62,36 +62,29 @@ public abstract class GardenFeature
 
 	public void runForTime(Duration runTime, TimerNotification timerNotifaction)
 	{
-		logger.error("Starting Timer for : " + this);
+		TimerControl.startTimer(this, runTime, timerNotifaction);
 
-		// cancel any existing timer first.
-		if (timerFuture != null)
-		{
-			timerFuture.cancel(true);
-			timerNotifaction.timerFinished(this);
-		}
-
-		this.timerNotifaction = timerNotifaction;
-		
 		this.softOn();
-
-		// Run the bed until the timer goes off.
-		timerFuture = Delay.delay(runTime, this, bed -> this.softOff());
-
 	}
 
 	public Void softOff()
 	{
-		if (timerFuture != null)
-		{
-			timerFuture.cancel(false);
-			timerNotifaction.timerFinished(this);
-		}
+		TimerControl.stopTimer(this);
 
 		if (this.currentHistory != null)
 		{
 			this.currentHistory.markEventComplete();
 			this.addHistory(this.currentHistory);
+
+			// So the garden bed we are dealing with will be detached.
+			// So we need to do a merge but the merge returns a new object
+			// which is inconvenient as this garden bed is wedged everywhere.
+			// so as a hack (which hopefully won't burn us) we update the db
+			// but also update our in memory version with the SAME history object.
+			GardenFeatureDao daoFeature = new GardenFeatureDao();
+			GardenFeature feature = daoFeature.getById(this.id);
+			feature.addHistory(this.currentHistory);
+			daoFeature.merge(feature);
 			this.currentHistory = null;
 		}
 

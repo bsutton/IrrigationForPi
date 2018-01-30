@@ -25,6 +25,7 @@ import au.org.noojee.irrigation.entities.GardenFeature;
 import au.org.noojee.irrigation.entities.History;
 import au.org.noojee.irrigation.types.EndPointBus;
 import au.org.noojee.irrigation.util.Formatters;
+import au.org.noojee.irrigation.util.TimerControl;
 
 public class GardenBedView extends VerticalLayout
 		implements SmartView, EndPointChangeListener, ViewChangeListener, TimerNotification
@@ -39,9 +40,9 @@ public class GardenBedView extends VerticalLayout
 
 	private Map<EndPoint, Switch> switchMap = new HashMap<>();
 	private boolean supressChangeListener = false;
-	private UI ui;
+	private List<FeatureLine> featureLines;
 
-	List<FeatureLine> featureLines;
+	private UI ui;
 
 	public GardenBedView()
 	{
@@ -136,33 +137,34 @@ public class GardenBedView extends VerticalLayout
 
 			History history = gardenBed.getLastWatering();
 
-			Label lastWateredLabel;
-			Label durationLabel;
-
-			if (history != null)
-			{
-
-				lastWateredLabel = new Label(Formatters.format(history.getStart().toLocalDate()));
-				durationLabel = new Label(Formatters.format(history.getDuration()));
-			}
-			else
-			{
-				lastWateredLabel = new Label();
-				durationLabel = new Label();
-			}
-
-			line.setLabel(lastWateredLabel);
-			line.setDurationLabel(durationLabel);
-
-			secondLinedHorizontal.addComponent(lastWateredLabel);
+			
+			Label lastWateredLabel = new Label();
 			lastWateredLabel.setWidth(LAST_WIDTH, Unit.MM);
 			lastWateredLabel.setStyleName("i4p-label");
 			Responsive.makeResponsive(lastWateredLabel);
 
-			secondLinedHorizontal.addComponent(durationLabel);
+			Label durationLabel = new Label();
 			durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
 			durationLabel.setStyleName("i4p-label");
 			Responsive.makeResponsive(durationLabel);
+
+			line.setLabel(lastWateredLabel);
+			line.setDurationLabel(durationLabel);
+
+			if (history != null)
+			{
+				lastWateredLabel.setValue(Formatters.format(history.getStart().toLocalDate()));
+				durationLabel.setValue(Formatters.format(history.getDuration()));
+			}
+
+
+			if (TimerControl.isTimerRunning(gardenBed))
+				line.showTimer("Running", TimerControl.timeRemaining(gardenBed));
+			else
+			{
+				secondLinedHorizontal.addComponent(lastWateredLabel);
+				secondLinedHorizontal.addComponent(durationLabel);
+			}
 
 		}
 

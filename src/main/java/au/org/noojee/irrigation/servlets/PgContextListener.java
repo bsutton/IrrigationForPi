@@ -1,9 +1,9 @@
-package au.org.noojee.irrigation;
+package au.org.noojee.irrigation.servlets;
 
 import java.util.List;
 
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +17,7 @@ import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
 import au.org.noojee.irrigation.dao.EndPointDao;
+import au.org.noojee.irrigation.dao.EntityManagerRunnable;
 import au.org.noojee.irrigation.dao.MyEntityManagerUtil;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.types.GardenBedController;
@@ -24,13 +25,16 @@ import au.org.noojee.irrigation.types.GardenBedController;
 /**
  * @author Brett Sutton
  */
+
+// Wire in this listener
 @WebListener
-public class WebAppListener implements ServletContextListener
+
+public class PgContextListener extends VUEntityManagerContextListener
 {
 	public static Logger logger;
 	private boolean databaseInitialised;
 
-	public WebAppListener()
+	public PgContextListener()
 	{
 
 	}
@@ -49,11 +53,20 @@ public class WebAppListener implements ServletContextListener
 
 		MyEntityManagerUtil.init();
 
+		// Now our db is up we can let the EntityManagerProvider be initialised via base class.
+		super.contextInitialized(sce);
+
 		databaseInitialised = true;
 
-		provisionPins();
+		// As we are not in a servlet request we don't have an EM injected
+		// so we need to inject our own.
+		new EntityManagerRunnable(() ->
+			{
+				provisionPins();
+				GardenBedController.init();
+			}).run();
 
-		GardenBedController.init();
+		
 
 	}
 
@@ -105,11 +118,20 @@ public class WebAppListener implements ServletContextListener
 
 		gpio.shutdown();
 
+		// Close down the entity manager.
+		super.contextDestroyed(sce);
+
 		// Only shutdown the db if we actually got to the point of initialising it.
 		if (databaseInitialised)
 			MyEntityManagerUtil.databaseShutdown();
 
 		LogManager.shutdown();
+	}
+
+	@Override
+	protected EntityManagerFactory getEntityManagerFactory()
+	{
+		return MyEntityManagerUtil.getEntityManagerFactory();
 	}
 
 }
