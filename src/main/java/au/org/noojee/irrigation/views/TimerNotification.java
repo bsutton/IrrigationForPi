@@ -7,5 +7,7 @@ import au.org.noojee.irrigation.entities.GardenFeature;
 public interface TimerNotification
 {
 	void timerStarted(GardenFeature feature, Duration duration);
+	
+	void timerFinished(GardenFeature feature);
 
 }

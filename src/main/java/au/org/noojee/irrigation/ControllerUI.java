@@ -11,6 +11,7 @@ import com.github.appreciated.app.layout.component.MenuHeader;
 import com.vaadin.annotations.Push;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Viewport;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.contextmenu.ContextMenu;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
@@ -44,6 +45,7 @@ import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 @Viewport("width=device-width, initial-scale=1.0")
 @PushStateNavigation
 @Push
+@Widgetset("au.org.noojee.irrigation.widgets.PiGationWidgetset")
 public class ControllerUI extends UI
 {
 

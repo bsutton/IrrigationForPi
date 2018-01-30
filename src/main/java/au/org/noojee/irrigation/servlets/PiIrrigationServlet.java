@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation;
+package au.org.noojee.irrigation.servlets;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +11,7 @@ import org.apache.commons.io.IOUtils;
 import org.jsoup.nodes.Element;
 
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.BootstrapFragmentResponse;
 import com.vaadin.server.BootstrapListener;
 import com.vaadin.server.BootstrapPageResponse;
@@ -22,6 +23,8 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
+
+import au.org.noojee.irrigation.ControllerUI;
 
 @WebServlet(urlPatterns = "/*", name = "PiIrrigation", asyncSupported = true)
 @VaadinServletConfiguration(ui = ControllerUI.class, productionMode = false)
@@ -65,7 +68,7 @@ public class PiIrrigationServlet extends VaadinServlet
 						// Logic for implementation of Progress Web App
 						// ServiceWorker.js is the required service worker.
 						// Read article at: https://vaadin.com/blog/progressive-web-apps-in-java
-						// and 
+						// and
 
 						if (pathInfo.endsWith("ServiceWorker.js"))
 						{
@@ -108,18 +111,16 @@ public class PiIrrigationServlet extends VaadinServlet
 					{
 						Element head = response.getDocument()
 								.head();
- 
+
 						/** Add tags to make this a PWA app **/
-						
+
 						/** Give our app a title */
 						head.prependElement("title").appendText("Pi-Gation");
 
-						
 						/** Icon for the home screen */
 						head.prependElement("link")
-						.attr("src", "/irrigation/VAADIN/themes/mytheme/images/pi-gation-192x192.png");
+								.attr("src", "/irrigation/VAADIN/themes/mytheme/images/pi-gation-192x192.png");
 
-						
 						/** Set the theme colour **/
 						head.prependElement("meta")
 								.attr("name", "theme-color")

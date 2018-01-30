@@ -116,7 +116,7 @@ public class TimerDialog extends Window
 	private void startTimer(ClickEvent l)
 	{
 		Duration delay = (Duration)l.getButton().getData();
-		gardenFeature.runForTime(delay);
+		gardenFeature.runForTime(delay, timerNotifications);
 		
 		timerNotifications.timerStarted(this.gardenFeature, delay);
 		

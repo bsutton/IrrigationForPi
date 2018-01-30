@@ -2,6 +2,7 @@ package au.org.noojee.irrigation.views;
 
 import java.time.Duration;
 
+import com.vaadin.server.Responsive;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
@@ -16,15 +17,15 @@ class FeatureLine
 	Label timerLabel;
 	Label duration;
 	TimerLabelComponent timerDuration;
-	
+
 	HorizontalLayout parent;
-	
+
 	FeatureLine(GardenFeature feature, HorizontalLayout line)
 	{
 		this.feature = feature;
 		this.parent = line;
 	}
-	
+
 	public void setDurationLabel(Label durationLabel)
 	{
 		this.duration = durationLabel;
@@ -33,29 +34,38 @@ class FeatureLine
 	public void setLabel(Label label)
 	{
 		this.label = label;
-		
+
 	}
-	
+
 	boolean equals(GardenFeature feature)
 	{
 		return this.feature.equals(feature);
 	}
 
-
 	void showTimer(String timerMessage, Duration timer)
 	{
 		timerLabel = new Label(timerMessage);
+		timerLabel.setStyleName("i4p-label", true);
+		
+		
 		parent.replaceComponent(this.label, timerLabel);
-		
+
 		timerDuration = new TimerLabelComponent();
-		
+
 		parent.replaceComponent(duration, timerDuration);
 
-		timerDuration.getBuilder().setStartValue(timer.getSeconds()).setThreshold(0)
-				.setMode(TimerLabelMode.COUNT_DOWN).setMessage("%%").build();
+		timerDuration.getBuilder()
+				.setStartValue(timer.getSeconds())
+				.setThreshold(0)
+				.setMode(TimerLabelMode.COUNT_DOWN)
+				.setMessage("%%")
+					.build();
+		timerDuration.setStyleName("i4p-label", true);
+		
+		Responsive.makeResponsive(timerLabel, timerDuration);
 		timerDuration.start();
 	}
-	
+
 	void timerFinished()
 	{
 		// revert both the labels.

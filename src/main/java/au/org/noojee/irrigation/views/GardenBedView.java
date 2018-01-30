@@ -135,13 +135,13 @@ public class GardenBedView extends VerticalLayout
 			// toggle.setWidth(SWITCH_WIDTH, Unit.MM);
 
 			History history = gardenBed.getLastWatering();
-			
+
 			Label lastWateredLabel;
 			Label durationLabel;
 
 			if (history != null)
 			{
-				
+
 				lastWateredLabel = new Label(Formatters.format(history.getStart().toLocalDate()));
 				durationLabel = new Label(Formatters.format(history.getDuration()));
 			}
@@ -150,7 +150,7 @@ public class GardenBedView extends VerticalLayout
 				lastWateredLabel = new Label();
 				durationLabel = new Label();
 			}
-				
+
 			line.setLabel(lastWateredLabel);
 			line.setDurationLabel(durationLabel);
 
@@ -159,12 +159,10 @@ public class GardenBedView extends VerticalLayout
 			lastWateredLabel.setStyleName("i4p-label");
 			Responsive.makeResponsive(lastWateredLabel);
 
-
 			secondLinedHorizontal.addComponent(durationLabel);
 			durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
 			durationLabel.setStyleName("i4p-label");
 			Responsive.makeResponsive(durationLabel);
-
 
 		}
 
@@ -206,7 +204,10 @@ public class GardenBedView extends VerticalLayout
 						this.supressChangeListener = false;
 					}
 					else
+					{
 						gardenBed.softOff();
+						timerFinished(gardenBed);
+					}
 				}
 			});
 
@@ -222,6 +223,16 @@ public class GardenBedView extends VerticalLayout
 		FeatureLine line = findFeatureLine(feature);
 
 		line.showTimer("Running", duration);
+	}
+
+	@Override
+	public void timerFinished(GardenFeature feature)
+	{
+		// Update the feature line
+		FeatureLine line = findFeatureLine(feature);
+
+		if (line != null)
+			line.timerFinished();
 	}
 
 	private FeatureLine findFeatureLine(GardenFeature feature)

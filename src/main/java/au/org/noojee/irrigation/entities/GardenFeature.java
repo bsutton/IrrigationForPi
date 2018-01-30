@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import au.org.noojee.irrigation.util.Delay;
+import au.org.noojee.irrigation.views.TimerNotification;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
@@ -43,6 +44,8 @@ public abstract class GardenFeature
 
 	transient private Future<Void> timerFuture = null;
 
+	transient private TimerNotification timerNotifaction;
+
 	public abstract boolean isOn();
 
 	public abstract String getName();
@@ -57,14 +60,19 @@ public abstract class GardenFeature
 		this.currentHistory = new History(this);
 	}
 
-	public void runForTime(Duration runTime)
+	public void runForTime(Duration runTime, TimerNotification timerNotifaction)
 	{
 		logger.error("Starting Timer for : " + this);
 
 		// cancel any existing timer first.
 		if (timerFuture != null)
+		{
 			timerFuture.cancel(true);
+			timerNotifaction.timerFinished(this);
+		}
 
+		this.timerNotifaction = timerNotifaction;
+		
 		this.softOn();
 
 		// Run the bed until the timer goes off.
@@ -75,7 +83,10 @@ public abstract class GardenFeature
 	public Void softOff()
 	{
 		if (timerFuture != null)
+		{
 			timerFuture.cancel(false);
+			timerNotifaction.timerFinished(this);
+		}
 
 		if (this.currentHistory != null)
 		{

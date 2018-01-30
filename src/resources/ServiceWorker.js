@@ -1,5 +1,5 @@
 var CACHE_NAME = 'serviceworker-ex';
-var CACHE_VERSION = 8;
+var CACHE_VERSION = 9;
 
 var filesToCache = [
 // '/',
