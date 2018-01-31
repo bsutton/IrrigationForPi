@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation.types;
+package au.org.noojee.irrigation.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
+import au.org.noojee.irrigation.types.EndPointType;
 
 /**
  * The Valve controller attempts to intelligently manage all vales.
@@ -23,8 +24,8 @@ import au.org.noojee.irrigation.entities.GardenBed;
  * 2) pressure management.
  * For systems where one or more master valves are fitted we attempt to leave all water lines
  * down stream of a master valve in a low pressure state by two actions:
- *  a) When turning a valve off we bleed the line of pressure. This is achieved by turning the master valve off
- *  first, waiting a number of seconds for the down stream line to bleed pressure and then 
+ *  a) When turning a valve off we drain the line of pressure. This is achieved by turning the master valve off
+ *  first, waiting a number of seconds for the down stream line to drain pressure and then 
  *  turning the down stream valve off.
  *  b) When turning a valve on we turn the valve on and then turn the master valve on. This ensures that
  *  we minimize pressure in the line between the master valve and the down stream valve.

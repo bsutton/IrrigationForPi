@@ -28,10 +28,10 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import au.org.noojee.irrigation.ControllerUI;
+import au.org.noojee.irrigation.controllers.EndPointBus;
+import au.org.noojee.irrigation.controllers.GardenBedController;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.entities.EndPoint;
-import au.org.noojee.irrigation.types.EndPointBus;
-import au.org.noojee.irrigation.types.GardenBedController;
 import au.org.noojee.irrigation.types.PinStatus;
 import au.org.noojee.irrigation.views.editors.EndPointEditorView;
 import au.org.noojee.irrigation.weather.bureaus.WeatherBureau;
@@ -252,6 +252,19 @@ public class EndPointConfigurationView extends VerticalLayout
 	{
 		// We always let the view change.
 		return true;
+	}
+
+	@Override
+	public void timerStarted(EndPoint endPoint)
+	{
+		// we dont' care.
+	}
+
+	@Override
+	public void timerFinished(EndPoint endPoint)
+	{
+		// we dont' care.
+		
 	}
 
 }

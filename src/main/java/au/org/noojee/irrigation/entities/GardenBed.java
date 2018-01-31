@@ -9,8 +9,7 @@ import javax.persistence.Table;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import au.org.noojee.irrigation.dao.GardenBedDao;
-import au.org.noojee.irrigation.types.GardenBedController;
+import au.org.noojee.irrigation.controllers.GardenBedController;
 import au.org.noojee.irrigation.types.PinStatus;
 
 @Entity
@@ -128,6 +127,12 @@ public class GardenBed extends GardenFeature
 		return "GardenBed [id=" + getId() + ", name=" + name + ", desription=" + desription + ", lastWatering="
 				 + nextWatering + ", mostiureContent=" + mostiureContent + ", valve="
 				+ valve + ", masterValve=" + masterValve + "]";
+	}
+
+	@Override
+	public EndPoint getPrimaryEndPoint()
+	{
+		return valve;
 	}
 
 

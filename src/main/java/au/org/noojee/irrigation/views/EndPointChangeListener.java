@@ -9,5 +9,9 @@ public interface EndPointChangeListener
 
 	void notifyHardOff(EndPoint endPoint);
 
+	void timerStarted(EndPoint endPoint);
+
+	void timerFinished(EndPoint endPoint);
+
 
 }

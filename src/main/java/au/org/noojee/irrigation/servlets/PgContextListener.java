@@ -16,11 +16,11 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
+import au.org.noojee.irrigation.controllers.GardenBedController;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.EntityManagerRunnable;
 import au.org.noojee.irrigation.dao.MyEntityManagerUtil;
 import au.org.noojee.irrigation.entities.EndPoint;
-import au.org.noojee.irrigation.types.GardenBedController;
 
 /**
  * @author Brett Sutton

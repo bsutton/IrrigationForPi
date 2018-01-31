@@ -27,11 +27,11 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import au.org.noojee.irrigation.controllers.GardenBedController;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.GardenBedDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
-import au.org.noojee.irrigation.types.GardenBedController;
 import au.org.noojee.irrigation.views.GardenBedConfigurationView;
 import au.org.noojee.irrigation.views.SmartView;
 
@@ -52,6 +52,8 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 
 	public GardenBedEditorView()
 	{
+		buildUI();
+
 	}
 
 	@Override
@@ -64,7 +66,6 @@ public class GardenBedEditorView extends VerticalLayout implements SmartView
 	@Override
 	public Component getViewComponent()
 	{
-		buildUI();
 
 		// we must update the master valve list every time as it can change.
 

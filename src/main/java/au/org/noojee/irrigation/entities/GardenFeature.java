@@ -1,10 +1,7 @@
 package au.org.noojee.irrigation.entities;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
-import java.util.concurrent.Future;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,15 +18,16 @@ import javax.persistence.Version;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import au.org.noojee.irrigation.controllers.EndPointBus;
+import au.org.noojee.irrigation.controllers.TimerControl;
 import au.org.noojee.irrigation.dao.GardenFeatureDao;
-import au.org.noojee.irrigation.util.Delay;
-import au.org.noojee.irrigation.util.TimerControl;
 import au.org.noojee.irrigation.views.TimerNotification;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 public abstract class GardenFeature
 {
+	@SuppressWarnings("unused")
 	transient private static Logger logger = LogManager.getLogger();
 
 	@Id
@@ -45,10 +43,14 @@ public abstract class GardenFeature
 	private List<History> historyList;
 
 	private transient History currentHistory;
+	
+	
 
 	public abstract boolean isOn();
 
 	public abstract String getName();
+	
+	abstract public EndPoint getPrimaryEndPoint();
 
 	public long getId()
 	{
@@ -60,16 +62,24 @@ public abstract class GardenFeature
 		this.currentHistory = new History(this);
 	}
 
-	public void runForTime(Duration runTime, TimerNotification timerNotifaction)
+	public void runForTime(String description, Duration runTime, TimerNotification timerNotifaction)
 	{
-		TimerControl.startTimer(this, runTime, timerNotifaction);
+		TimerControl.startTimer(this, description, runTime, feature -> feature.timerCompleted(), timerNotifaction);
 
 		this.softOn();
 	}
 
+	private Void timerCompleted()
+	{
+		EndPointBus.getInstance().timerFinished(getPrimaryEndPoint());
+
+		softOff();
+		
+		return null;
+	}
+
 	public Void softOff()
 	{
-		TimerControl.stopTimer(this);
 
 		if (this.currentHistory != null)
 		{
@@ -87,13 +97,17 @@ public abstract class GardenFeature
 			daoFeature.merge(feature);
 			this.currentHistory = null;
 		}
+		
+		
+//		TimerControl.cancelTimer(this);
+
 
 		return null;
 	}
 
 	void addHistory(History history)
 	{
-		historyList.add(history);
+		historyList.add(0, history);
 	}
 
 	void removeHistory(History history)
@@ -130,5 +144,7 @@ public abstract class GardenFeature
 			return false;
 		return true;
 	}
+
+	
 
 }

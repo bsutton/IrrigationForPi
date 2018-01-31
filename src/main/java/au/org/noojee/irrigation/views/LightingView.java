@@ -18,14 +18,13 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import au.org.noojee.irrigation.controllers.EndPointBus;
+import au.org.noojee.irrigation.controllers.Timer;
+import au.org.noojee.irrigation.controllers.TimerControl;
 import au.org.noojee.irrigation.dao.LightingDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenFeature;
-import au.org.noojee.irrigation.entities.History;
 import au.org.noojee.irrigation.entities.Lighting;
-import au.org.noojee.irrigation.types.EndPointBus;
-import au.org.noojee.irrigation.util.Formatters;
-import au.org.noojee.irrigation.util.TimerControl;
 
 public class LightingView extends VerticalLayout
 		implements SmartView, EndPointChangeListener, ViewChangeListener, TimerNotification
@@ -38,8 +37,7 @@ public class LightingView extends VerticalLayout
 	public static final String NAME = "Lighting";
 
 	private Map<EndPoint, Switch> switchMap = new HashMap<>();
-	private boolean supressChangeListener = false;
-	private List<FeatureLine> featureLines;
+	private List<FeatureRunLayout> featureLines;
 
 	private UI ui;
 
@@ -126,46 +124,19 @@ public class LightingView extends VerticalLayout
 			lightingLayout.addComponent(secondLinedHorizontal);
 			secondLinedHorizontal.setWidth("100%");
 
-			FeatureLine line = new FeatureLine(lighting, secondLinedHorizontal);
-			featureLines.add(line);
-
 			Switch toggle = createOnOffSwitch(lighting);
 			secondLinedHorizontal.addComponent(toggle);
 			secondLinedHorizontal.setExpandRatio(toggle, 1.0f);
 			// toggle.setWidth(SWITCH_WIDTH, Unit.MM);
 
-			History history = lighting.getLastEvent();
+			FeatureRunLayout line = new FeatureRunLayout(lighting);
+			secondLinedHorizontal.addComponent(line);
+			featureLines.add(line);
 
-			Label lastEventLabel = new Label();
-			lastEventLabel.setWidth(LAST_WIDTH, Unit.MM);
-			lastEventLabel.setStyleName("i4p-label");
-			Responsive.makeResponsive(lastEventLabel);
-
-			Label durationLabel= new Label();
-			durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
-			durationLabel.setStyleName("i4p-label");
-			Responsive.makeResponsive(durationLabel);
-
-			
-			line.setLabel(lastEventLabel);
-			line.setDurationLabel(durationLabel);
-
-			if (history != null)
-			{
-				lastEventLabel.setValue(Formatters.format(history.getStart().toLocalDate()));
-				durationLabel.setValue(Formatters.format(history.getDuration()));
-			}
-
-			if (TimerControl.isTimerRunning(lighting))
-				line.showTimer("Running", TimerControl.timeRemaining(lighting));
-			else
-			{
-				secondLinedHorizontal.addComponent(lastEventLabel);
-				secondLinedHorizontal.addComponent(durationLabel);
-			}
-
+			Timer timer = TimerControl.getTimer(lighting);
+			if (timer != null && timer.isTimerRunning())
+				line.showTimer(timer);
 		}
-
 	}
 
 	private Switch createOnOffSwitch(Lighting lighting)
@@ -178,19 +149,20 @@ public class LightingView extends VerticalLayout
 
 		pinToggle.addValueChangeListener(e ->
 			{
-				if (!this.supressChangeListener)
+				if (e.isUserOriginated())
 				{
 					if (e.getValue() == true)
 					{
 						TimerDialog dialog = new TimerDialog("Lighting Time", lighting, this);
 						dialog.show(UI.getCurrent());
 						// we leave the switch showing off until the user selects and starts a timer.
-						this.supressChangeListener = true;
 						((Switch) e.getComponent()).setValue(false);
-						this.supressChangeListener = false;
 					}
 					else
 					{
+						// If there is a timer running we need to cancel it.
+						TimerControl.removeTimer(lighting);
+
 						lighting.softOff();
 						timerFinished(lighting);
 					}
@@ -203,29 +175,59 @@ public class LightingView extends VerticalLayout
 	}
 
 	@Override
+	public void timerStarted(EndPoint endPoint)
+	{
+		GardenFeature feature = findFeature(endPoint);
+		if (feature != null)
+		{
+			// Update the feature line
+			FeatureRunLayout line = findFeatureLine(feature);
+
+			line.showTimer(TimerControl.getTimer(feature));
+		}
+	}
+
+	@Override
 	public void timerStarted(GardenFeature feature, Duration duration)
 	{
 		// Update the feature line
-		FeatureLine line = findFeatureLine(feature);
+		FeatureRunLayout line = findFeatureLine(feature);
 
-		line.showTimer("Running", duration);
+		line.showTimer(TimerControl.getTimer(feature));
 	}
 
 	@Override
 	public void timerFinished(GardenFeature feature)
 	{
 		// Update the feature line
-		FeatureLine line = findFeatureLine(feature);
+		FeatureRunLayout line = findFeatureLine(feature);
 
 		if (line != null)
 			line.timerFinished();
 	}
 
-	private FeatureLine findFeatureLine(GardenFeature feature)
+	private GardenFeature findFeature(EndPoint endPoint)
 	{
-		FeatureLine found = null;
+		GardenFeature found = null;
 
-		for (FeatureLine line : this.featureLines)
+		for (FeatureRunLayout line : this.featureLines)
+		{
+			GardenFeature lineFeature = line.feature;
+
+			if (lineFeature.getPrimaryEndPoint().equals(endPoint))
+			{
+				found = lineFeature;
+				break;
+			}
+		}
+		return found;
+	}
+
+	private FeatureRunLayout findFeatureLine(GardenFeature feature)
+	{
+		FeatureRunLayout found = null;
+
+		for (FeatureRunLayout line : this.featureLines)
 		{
 			if (line.equals(feature))
 			{
@@ -245,21 +247,16 @@ public class LightingView extends VerticalLayout
 	@Override
 	public void notifyHardOn(EndPoint lightSwitch)
 	{
-		this.supressChangeListener = true;
 		// when we get notified that the user started a timer we need to update the
 		// switch so we show that the bed is on.
 		Switch toggle = switchMap.get(lightSwitch);
 		toggle.setValue(true);
-
-		this.supressChangeListener = false;
-
 	}
 
 	@Override
 	public void notifyHardOff(EndPoint lightSwitch)
 	{
 
-		this.supressChangeListener = true;
 		// when we get notified that the timer finished need to update the
 		// switch so we show that the bed is now off
 		Switch toggle = switchMap.get(lightSwitch);
@@ -268,7 +265,6 @@ public class LightingView extends VerticalLayout
 				{
 					toggle.setValue(false);
 				});
-		this.supressChangeListener = false;
 	}
 
 	@Override
@@ -283,6 +279,13 @@ public class LightingView extends VerticalLayout
 	{
 		// We always let the view change.
 		return true;
+	}
+
+	@Override
+	public void timerFinished(EndPoint endPoint)
+	{
+		// we dont' care.
+
 	}
 
 }

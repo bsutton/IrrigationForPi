@@ -11,6 +11,7 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
+import au.org.noojee.irrigation.controllers.GardenBedController;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.GardenBedDao;
 import au.org.noojee.irrigation.dao.MyEntityManagerUtil;
@@ -80,7 +81,7 @@ public class ValveControllerTest
 			daoGardenBed.persist(bed2);
 
 		
-			logger.error("Running NO bleed line test");
+			logger.error("Running NO drain line test");
 			runTestSequence(bed1, bed2, masterValve);
 			
 			assert bed1.getValve().isOff() : "bed 1 should be off";
@@ -89,14 +90,14 @@ public class ValveControllerTest
 		
 	
 
-			// Now turn bleedline on
+			// Now turn drainLine on
 
-			masterValve.setBleedLine(true);
+			masterValve.setDrainLine(true);
 			daoEndPoint.merge(masterValve);
 			// We changed the master valves setting so we need to re-init the controller.
 			GardenBedController.init();
 
-			logger.error("Running bleed line test");
+			logger.error("Running drain line test");
 			runTestSequence(bed1, bed2, masterValve);
 
 			// wait for things to finish.
@@ -130,7 +131,7 @@ public class ValveControllerTest
 		logger.error("step 4");
 		bed2.softOff();
 		assert (masterValve.isOff());
-		if (masterValve.isBleedLine())
+		if (masterValve.isDrainingLine())
 			assert (bed2.isOn());
 		else
 			assert (bed2.isOff());

@@ -18,8 +18,8 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinProvider;
 
+import au.org.noojee.irrigation.controllers.EndPointBus;
 import au.org.noojee.irrigation.types.Amperage;
-import au.org.noojee.irrigation.types.EndPointBus;
 import au.org.noojee.irrigation.types.EndPointType;
 import au.org.noojee.irrigation.types.PinActivationType;
 import au.org.noojee.irrigation.types.PinStatus;
@@ -50,9 +50,9 @@ public class EndPoint
 	@Column(unique=true)
 	private int pinNo;
 	
-	// If we are a master valve we offer an option to bleed the pressure from the line
+	// If we are a master valve we offer an option to drain the pressure from the line
 	// by turning the master valve off before we turn the garden bed valve off.
-	private boolean bleedLine = false;
+	private boolean drainLine = false;
 	
 	// The amount of current activating this pin causes the device to draw.
 	private Amperage startAmps;
@@ -92,14 +92,14 @@ public class EndPoint
 		return null;
 	}
 	
-	public boolean isBleedLine()
+	public boolean isDrainingLine()
 	{
-		return bleedLine;
+		return drainLine;
 	}
 
-	public void setBleedLine(boolean bleadLine)
+	public void setDrainLine(boolean drainLine)
 	{
-		this.bleedLine = bleadLine;
+		this.drainLine = drainLine;
 	}
 	
 	private void setPinHigh()

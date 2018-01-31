@@ -18,29 +18,25 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import au.org.noojee.irrigation.controllers.EndPointBus;
+import au.org.noojee.irrigation.controllers.Timer;
+import au.org.noojee.irrigation.controllers.TimerControl;
 import au.org.noojee.irrigation.dao.GardenBedDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
 import au.org.noojee.irrigation.entities.GardenFeature;
-import au.org.noojee.irrigation.entities.History;
-import au.org.noojee.irrigation.types.EndPointBus;
-import au.org.noojee.irrigation.util.Formatters;
-import au.org.noojee.irrigation.util.TimerControl;
 
 public class GardenBedView extends VerticalLayout
 		implements SmartView, EndPointChangeListener, ViewChangeListener, TimerNotification
 {
 
 	private static final int SWITCH_WIDTH = 35;
-	private static final int LAST_WIDTH = 28;
-	private static final int DURATION_WIDTH = 22;
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "GardenBeds";
 	public static final String LABEL = "Garden Beds";
 
 	private Map<EndPoint, Switch> switchMap = new HashMap<>();
-	private boolean supressChangeListener = false;
-	private List<FeatureLine> featureLines;
+	private List<FeatureRunLayout> featureLines;
 
 	private UI ui;
 
@@ -88,13 +84,13 @@ public class GardenBedView extends VerticalLayout
 		bedHeadingHorizontal.addComponent(lastWateredHeadingLabel);
 		lastWateredHeadingLabel.setStyleName("i4p-label");
 		Responsive.makeResponsive(lastWateredHeadingLabel);
-		lastWateredHeadingLabel.setWidth(LAST_WIDTH, Unit.MM);
+		lastWateredHeadingLabel.setWidth(FeatureRunLayout.LAST_WIDTH, Unit.MM);
 
 		Label durationHeadingLabel = new Label("Duration");
 		bedHeadingHorizontal.addComponent(durationHeadingLabel);
 		durationHeadingLabel.setStyleName("i4p-label");
 		Responsive.makeResponsive(durationHeadingLabel);
-		durationHeadingLabel.setWidth(DURATION_WIDTH, Unit.MM);
+		durationHeadingLabel.setWidth(FeatureRunLayout.DURATION_WIDTH, Unit.MM);
 
 		Panel scrollPanel = new Panel();
 		this.addComponent(scrollPanel);
@@ -127,45 +123,18 @@ public class GardenBedView extends VerticalLayout
 			gardenBedLayout.addComponent(secondLinedHorizontal);
 			secondLinedHorizontal.setWidth("100%");
 
-			FeatureLine line = new FeatureLine(gardenBed, secondLinedHorizontal);
-			featureLines.add(line);
-
-			Switch toggle = createOnOffSwitch(gardenBed, line);
+			Switch toggle = createOnOffSwitch(gardenBed);
 			secondLinedHorizontal.addComponent(toggle);
 			secondLinedHorizontal.setExpandRatio(toggle, 1.0f);
 			// toggle.setWidth(SWITCH_WIDTH, Unit.MM);
 
-			History history = gardenBed.getLastWatering();
+			FeatureRunLayout line = new FeatureRunLayout(gardenBed);
+			secondLinedHorizontal.addComponent(line);
+			featureLines.add(line);
 
-			
-			Label lastWateredLabel = new Label();
-			lastWateredLabel.setWidth(LAST_WIDTH, Unit.MM);
-			lastWateredLabel.setStyleName("i4p-label");
-			Responsive.makeResponsive(lastWateredLabel);
-
-			Label durationLabel = new Label();
-			durationLabel.setWidth(DURATION_WIDTH, Unit.MM);
-			durationLabel.setStyleName("i4p-label");
-			Responsive.makeResponsive(durationLabel);
-
-			line.setLabel(lastWateredLabel);
-			line.setDurationLabel(durationLabel);
-
-			if (history != null)
-			{
-				lastWateredLabel.setValue(Formatters.format(history.getStart().toLocalDate()));
-				durationLabel.setValue(Formatters.format(history.getDuration()));
-			}
-
-
-			if (TimerControl.isTimerRunning(gardenBed))
-				line.showTimer("Running", TimerControl.timeRemaining(gardenBed));
-			else
-			{
-				secondLinedHorizontal.addComponent(lastWateredLabel);
-				secondLinedHorizontal.addComponent(durationLabel);
-			}
-
+			Timer timer = TimerControl.getTimer(gardenBed);
+			if (timer != null && timer.isTimerRunning())
+				line.showTimer(timer);
 		}
 
 	}
@@ -184,7 +153,7 @@ public class GardenBedView extends VerticalLayout
 		return true;
 	}
 
-	private Switch createOnOffSwitch(GardenBed gardenBed, FeatureLine line)
+	private Switch createOnOffSwitch(GardenBed gardenBed)
 	{
 		Switch pinToggle = new Switch();
 		pinToggle.setStyleName("i4p-switch");
@@ -194,19 +163,20 @@ public class GardenBedView extends VerticalLayout
 
 		pinToggle.addValueChangeListener(e ->
 			{
-				if (!this.supressChangeListener)
+				if (e.isUserOriginated())
 				{
 					if (e.getValue() == true)
 					{
 						TimerDialog dialog = new TimerDialog("Watering Time", gardenBed, this);
 						dialog.show(UI.getCurrent());
 						// we leave the switch showing off until the user select and starts a timer.
-						this.supressChangeListener = true;
 						((Switch) e.getComponent()).setValue(false);
-						this.supressChangeListener = false;
 					}
 					else
 					{
+						// If there is a timer running we need to cancel it.
+						TimerControl.removeTimer(gardenBed);
+
 						gardenBed.softOff();
 						timerFinished(gardenBed);
 					}
@@ -218,30 +188,76 @@ public class GardenBedView extends VerticalLayout
 		return pinToggle;
 	}
 
+	/**
+	 * Used by the MasterControl valve to notify us that it has started a drain timer.
+	 */
+	@Override
+	public void timerStarted(EndPoint endPoint)
+	{
+		GardenFeature feature = findFeature(endPoint);
+
+		if (feature != null)
+		{
+			// Update the feature line
+			FeatureRunLayout line = findFeatureLine(feature);
+
+			line.showTimer(TimerControl.getTimer(feature));
+		}
+	}
+
+	@Override
+	public void timerFinished(EndPoint endPoint)
+	{
+		GardenFeature feature = findFeature(endPoint);
+
+		// Update the feature line
+		FeatureRunLayout line = findFeatureLine(feature);
+
+		line.timerFinished();
+	}
+
 	@Override
 	public void timerStarted(GardenFeature feature, Duration duration)
 	{
 		// Update the feature line
-		FeatureLine line = findFeatureLine(feature);
+		FeatureRunLayout line = findFeatureLine(feature);
 
-		line.showTimer("Running", duration);
+		Timer timer = TimerControl.getTimer(feature);
+		line.showTimer(timer);
 	}
 
 	@Override
 	public void timerFinished(GardenFeature feature)
 	{
 		// Update the feature line
-		FeatureLine line = findFeatureLine(feature);
+		FeatureRunLayout line = findFeatureLine(feature);
 
 		if (line != null)
 			line.timerFinished();
 	}
 
-	private FeatureLine findFeatureLine(GardenFeature feature)
+	private GardenFeature findFeature(EndPoint endPoint)
 	{
-		FeatureLine found = null;
+		GardenFeature found = null;
 
-		for (FeatureLine line : this.featureLines)
+		for (FeatureRunLayout line : this.featureLines)
+		{
+			GardenFeature lineFeature = line.feature;
+
+			if (lineFeature.getPrimaryEndPoint().equals(endPoint))
+			{
+				found = lineFeature;
+				break;
+			}
+		}
+		return found;
+	}
+
+	private FeatureRunLayout findFeatureLine(GardenFeature feature)
+	{
+		FeatureRunLayout found = null;
+
+		for (FeatureRunLayout line : this.featureLines)
 		{
 			if (line.equals(feature))
 			{
@@ -261,22 +277,15 @@ public class GardenBedView extends VerticalLayout
 	@Override
 	public void notifyHardOn(EndPoint gardenBed)
 	{
-		this.supressChangeListener = true;
-
 		// when we get notified that the user started a timer we need to update the
 		// switch so we show that the bed is on.
 		Switch toggle = switchMap.get(gardenBed);
 		toggle.setValue(true);
-
-		this.supressChangeListener = false;
-
 	}
 
 	@Override
 	public void notifyHardOff(EndPoint gardenBed)
 	{
-
-		this.supressChangeListener = true;
 		// when we get notified that the timer finished need to update the
 		// switch so we show that the bed is now off
 		Switch toggle = switchMap.get(gardenBed);
@@ -285,7 +294,6 @@ public class GardenBedView extends VerticalLayout
 				{
 					toggle.setValue(false);
 				});
-		this.supressChangeListener = false;
 	}
 
 }

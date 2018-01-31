@@ -1,7 +1,5 @@
 package au.org.noojee.irrigation.entities;
 
-import java.time.Duration;
-
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -65,6 +63,12 @@ public class Lighting  extends GardenFeature
 	}
 
 	
+	@Override
+	public EndPoint getPrimaryEndPoint()
+	{
+		return lightSwitch;
+	}
+
 
 
 

@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation.types;
+package au.org.noojee.irrigation.controllers;
 
 import java.time.Duration;
 import java.util.List;
@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import au.org.noojee.irrigation.dao.GardenBedDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
-import au.org.noojee.irrigation.util.Delay;
 
 /**
  * We need special logic for a Master Values as a master valve must be on if any if its Valves are on.
@@ -29,10 +28,10 @@ public class MasterValveController
 	// List of GardenBeds that belong to the master valve.
 	private final List<GardenBed> controlledBeds;
 
-	// the GardenBed we are currently using to bleed out the line.
-	// This will be null if we are not currently bleeding a line.
-	private GardenBed bleedOutVia = null;
-	private Future<Void> bleedOutFuture = null;
+	// the GardenBed we are currently using to drain out the line.
+	// This will be null if we are not currently draining a line.
+	private GardenBed drainOutVia = null;
+	private Future<Void> drainOutFuture = null;
 
 	MasterValveController(EndPoint masterValve)
 	{
@@ -58,35 +57,36 @@ public class MasterValveController
 
 		EndPoint gardenBedValve = gardenBed.getValve();
 
-		if (this.masterValve.isBleedLine())
+		if (this.masterValve.isDrainingLine())
 		{
-			// If we are turning off a valve we should never be in bleed mode
-			// i.e. we can't bleed a line when a valve owned by this master valve is also running.
-			assert (bleedOutVia == null);
+			// If we are turning off a valve we should never be in drain mode
+			// i.e. we can't drain a line when a valve owned by this master valve is also running.
+			assert (drainOutVia == null);
 
 			if (!isOtherValveRunning(gardenBed))
 			{
-				// No other valve is running so we need to go into bleed mode
-				this.bleedOutVia = gardenBed;
+				// No other valve is running so we need to go into drain mode
+				this.drainOutVia = gardenBed;
 
-				// Turn off the master valve which will start the line bleed out.
+				// Turn off the master valve which will start the line drain out.
 				this.masterValve.hardOff();
 
 				
-				// let the line bleed for 30 seconds then turn of the garden beds valve.
-				logger.error("Bleeding Line via Valve: " + gardenBedValve);
-				bleedOutFuture = Delay.delay(Duration.ofSeconds(30), gardenBedValve, v -> bleedLine(v));
+				// let the line drain for 30 seconds then turn of the garden beds valve.
+				logger.error("Draining Line via Valve: " + gardenBedValve);
+				TimerControl.startTimer(drainOutVia, "Draining", Duration.ofSeconds(30), v -> drainLineCompleted(), null);
+				EndPointBus.getInstance().timerStarted(drainOutVia.getValve());
 			}
 			else
 			{
-				// some other valve is running so no point going into bleed mode.
+				// some other valve is running so no point going into drain mode.
 				gardenBedValve.hardOff();
 			}
 
 		}
 		else
 		{
-			// The master valve doesn't need to be bleed
+			// The master valve doesn't need to be drain
 			// But we only turn the master valve off if no other
 			// valves down stream of this master valve are running.
 			if (!isOtherValveRunning(gardenBed))
@@ -103,14 +103,16 @@ public class MasterValveController
 
 	}
 
-	private synchronized Void bleedLine(EndPoint bleedOutValve)
+	private synchronized Void drainLineCompleted()
 	{
-		bleedOutValve.hardOff();
+		EndPoint drainOutValve = this.drainOutVia.getValve();
+		drainOutValve.hardOff();
 		
-		assert(bleedOutValve.equals(this.bleedOutVia.getValve()));
-		logger.error("Setting bleedOutVia to null");
-		this.bleedOutVia = null;
-		this.bleedOutFuture = null;
+		logger.error("Setting drainOutVia to null");
+		this.drainOutVia = null;
+		this.drainOutFuture = null;
+		
+		EndPointBus.getInstance().timerFinished(drainOutValve);
 		
 		return null;
 	}
@@ -148,17 +150,17 @@ public class MasterValveController
 		
 		if (!this.masterValve.isOn())
 		{
-			if (this.masterValve.isBleedLine() && this.bleedOutVia != null)
+			if (this.masterValve.isDrainingLine() && this.drainOutVia != null)
 			{
-				// So we are currently bleeding out via another line.
+				// So we are currently draining out via another line.
 				// We must turn that line off before we turn the master valve on
 				// or that bed will suddenly start to be watered again.
-				this.bleedOutVia.getValve().hardOff();
+				this.drainOutVia.getValve().hardOff();
 				
-				logger.error("Setting bleedOutVia to null");
-				// We need to cancel the outstanding bleed 
-				this.bleedOutFuture.cancel(true);
-				this.bleedOutVia = null;
+				logger.error("Setting drainOutVia to null from SoftOn");
+				// We need to cancel the outstanding drain 
+				this.drainOutFuture.cancel(true);
+				this.drainOutVia = null;
 			}
 			this.masterValve.hardOn();
 
@@ -184,7 +186,7 @@ public class MasterValveController
 	public String toString()
 	{
 		return "MasterValveController [masterValve=" + masterValve + ", controlledBeds=" + controlledBeds
-				+ ", bleedOutVia=" + bleedOutVia + "]";
+				+ ", drainOutVia=" + drainOutVia + "]";
 	}
 
 

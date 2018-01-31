@@ -25,12 +25,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import au.org.noojee.irrigation.ControllerUI;
+import au.org.noojee.irrigation.controllers.EndPointBus;
+import au.org.noojee.irrigation.controllers.GardenBedController;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.GardenBedDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.GardenBed;
-import au.org.noojee.irrigation.types.EndPointBus;
-import au.org.noojee.irrigation.types.GardenBedController;
 import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
 
 public class GardenBedConfigurationView extends VerticalLayout
@@ -139,12 +139,15 @@ public class GardenBedConfigurationView extends VerticalLayout
 
 		pinToggle.addValueChangeListener(e ->
 			{
-				if (e.getValue() == true)
+				if (e.isUserOriginated())
 				{
-					gardenBed.softOn();
+					if (e.getValue() == true)
+					{
+						gardenBed.softOn();
+					}
+					else
+						gardenBed.softOff();
 				}
-				else
-					gardenBed.softOff();
 			});
 
 		switchMap.put(gardenBed.getValve(), pinToggle);
@@ -240,6 +243,20 @@ public class GardenBedConfigurationView extends VerticalLayout
 	{
 		// We always let the view change.
 		return true;
+	}
+
+	@Override
+	public void timerStarted(EndPoint endPoint)
+	{
+		// we don't care
+
+	}
+
+	@Override
+	public void timerFinished(EndPoint endPoint)
+	{
+		// we dont' care.
+
 	}
 
 }

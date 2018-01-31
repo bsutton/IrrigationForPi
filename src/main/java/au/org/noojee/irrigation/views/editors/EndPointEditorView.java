@@ -32,12 +32,12 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import au.org.noojee.irrigation.controllers.GardenBedController;
 import au.org.noojee.irrigation.dao.EndPointDao;
 import au.org.noojee.irrigation.dao.LightingDao;
 import au.org.noojee.irrigation.entities.EndPoint;
 import au.org.noojee.irrigation.entities.Lighting;
 import au.org.noojee.irrigation.types.EndPointType;
-import au.org.noojee.irrigation.types.GardenBedController;
 import au.org.noojee.irrigation.types.PinActivationType;
 import au.org.noojee.irrigation.views.EndPointConfigurationView;
 import au.org.noojee.irrigation.views.SmartView;
@@ -52,7 +52,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	private ComboBox<EndPointType> endPointType;
 	private ComboBox<PinActivationType> activationType;
 	private ComboBox<com.pi4j.io.gpio.Pin> piPinComboBox;
-	private CheckBox bleedLineCheckbox;
+	private CheckBox drainLineCheckbox;
 
 	private Binder<EndPoint> binder = new Binder<>(EndPoint.class);
 	private boolean isEdit = false;
@@ -63,7 +63,11 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 
 	public EndPointEditorView()
 	{
+		buildUI();
+		bindFields();
+
 	}
+	
 
 	@Override
 	public void enter(ViewChangeEvent event)
@@ -72,18 +76,6 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		endPointName.focus();
 	}
 
-	@Override
-	public Component getViewComponent()
-	{
-		if (!uiBuilt)
-		{
-			buildUI();
-			bindFields();
-			this.uiBuilt = true;
-		}
-
-		return this;
-	}
 
 	private void bindFields()
 	{
@@ -126,7 +118,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.activationType.setValue(endPoint.getPinActiviationType());
 			this.piPinComboBox.setValue(endPoint.getPiPin());
 
-			this.bleedLineCheckbox.setValue(endPoint.isBleedLine());
+			this.drainLineCheckbox.setValue(endPoint.isDrainingLine());
 
 		}
 		else
@@ -136,7 +128,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 			this.endPointType.setValue(EndPointType.Valve);
 			this.activationType.setValue(PinActivationType.HIGH_IS_ON);
 			this.piPinComboBox.setSelectedItem(null);
-			this.bleedLineCheckbox.setValue(false);
+			this.drainLineCheckbox.setValue(false);
 
 			this.editedEndPoint = null;
 			this.originalEndPointType = null;
@@ -183,9 +175,9 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 		endPointType.setTextInputAllowed(false);
 		endPointType.addValueChangeListener(e -> masterValveSelected(e));
 
-		bleedLineCheckbox = new CheckBox("Bleed line (Recommended)");
-		this.addComponent(bleedLineCheckbox);
-		bleedLineCheckbox.setVisible(false);
+		drainLineCheckbox = new CheckBox("Drain line (Recommended)");
+		this.addComponent(drainLineCheckbox);
+		drainLineCheckbox.setVisible(false);
 
 		List<com.pi4j.io.gpio.Pin> gpioPins = Arrays.asList(RaspiPin.allPins());
 		gpioPins = gpioPins.stream().sorted((l, r) -> l.getAddress() - r.getAddress()).collect(Collectors.toList());
@@ -251,12 +243,12 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 	{
 		if (e.getValue() == EndPointType.MasterValve)
 		{
-			bleedLineCheckbox.setVisible(true);
+			drainLineCheckbox.setVisible(true);
 
 		}
 		else
 		{
-			bleedLineCheckbox.setVisible(false);
+			drainLineCheckbox.setVisible(false);
 
 		}
 	}
@@ -290,7 +282,7 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 
 				endPoint.setEndPointName(this.endPointName.getValue());
 				endPoint.setEndPointType(this.endPointType.getValue());
-				endPoint.setBleedLine(this.bleedLineCheckbox.getValue());
+				endPoint.setDrainLine(this.drainLineCheckbox.getValue());
 				endPoint.setPinActiviationType(this.activationType.getValue());
 				endPoint.setPiPin(piPin);
 				try

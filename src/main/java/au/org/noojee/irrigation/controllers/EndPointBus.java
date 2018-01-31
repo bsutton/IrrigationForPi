@@ -1,4 +1,4 @@
-package au.org.noojee.irrigation.types;
+package au.org.noojee.irrigation.controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import au.org.noojee.irrigation.entities.EndPoint;
+import au.org.noojee.irrigation.entities.GardenBed;
 import au.org.noojee.irrigation.views.EndPointChangeListener;
 
 /**
@@ -108,6 +109,36 @@ public class EndPointBus
 		
 		}
 	}
+
+
+	public void timerStarted(EndPoint endPoint)
+	{
+		List<EndPointChangeListener> listeners = listenerMap.get(endPoint);
+
+		if (listeners != null)
+		{
+			for (EndPointChangeListener listener : listeners)
+			{
+				listener.timerStarted(endPoint);
+			}
+		
+		}
+	}
+	
+	public void timerFinished(EndPoint endPoint)
+	{
+		List<EndPointChangeListener> listeners = listenerMap.get(endPoint);
+
+		if (listeners != null)
+		{
+			for (EndPointChangeListener listener : listeners)
+			{
+				listener.timerFinished(endPoint);
+			}
+		
+		}
+	}
+
 	
 
 

@@ -8,7 +8,7 @@ var filesToCache = [
   '/irrigation/VAADIN/themes/mytheme/icons/pi-gation.png',
   '/irrigation/images/touch/chrome-touch-icon-192x192.png',
   '/irrigation/images/touch/chrome-touch-icon-512x512.png',
-  '/irrigation/VAADIN/widgetsets/u.org.noojee.irrigation.widgets.PiGationWidgetset/switch/styles.css',
+  // '/irrigation/VAADIN/widgetsets/u.org.noojee.irrigation.widgets.PiGationWidgetset/switch/styles.css',
   '/irrigation/VAADIN/themes/valo/shared/img/spinner.gif',
   '/irrigation/VAADIN/themes/valo/fonts/open-sans/OpenSans-Light-webfont.woff',
   '/irrigation/VAADIN/addons/app-layout/app-layout-resize-listener.js',
