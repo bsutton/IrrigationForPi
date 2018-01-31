@@ -31,8 +31,10 @@ import au.org.noojee.irrigation.views.LightingView;
 import au.org.noojee.irrigation.views.OverviewView;
 import au.org.noojee.irrigation.views.ScheduleView;
 import au.org.noojee.irrigation.views.SmartView;
+import au.org.noojee.irrigation.views.UserView;
 import au.org.noojee.irrigation.views.editors.EndPointEditorView;
 import au.org.noojee.irrigation.views.editors.GardenBedEditorView;
+import au.org.noojee.irrigation.views.editors.UserEditorView;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window (or tab) or some part of an HTML
@@ -61,23 +63,26 @@ public class ControllerUI extends UI
 		// holder.increase();
 		//
 
-		OverviewView overviewView = new OverviewView(); 
-		GardenBedView gardenBedView = new GardenBedView(); 
+		OverviewView overviewView = new OverviewView();
+		GardenBedView gardenBedView = new GardenBedView();
 		LightingView lightingView = new LightingView();
 		ScheduleView scheduleView = new ScheduleView();
 		HistoryView historyView = new HistoryView();
+		UserView userView = new UserView();
+
 		EndPointConfigurationView endPointConfigurationView = new EndPointConfigurationView();
 		GardenBedConfigurationView gardenBedConfigurationView = new GardenBedConfigurationView();
 		// Non-menu views:
 		EndPointEditorView endPointEditor = new EndPointEditorView();
 		GardenBedEditorView gardenBedEditor = new GardenBedEditorView();
-		
+		UserEditorView userEditor = new UserEditorView();
+
 		final Button refreshMenu = new Button(VaadinIcons.ELLIPSIS_DOTS_V);
 		refreshMenu.setStyleName(ValoTheme.BUTTON_BORDERLESS);
 		ContextMenu menu = new ContextMenu(refreshMenu, true);
 		menu.addItem("Refresh", null, (m) -> Page.getCurrent().reload());
 		refreshMenu.addClickListener(l -> menu.open(l.getClientX(), l.getClientY()));
-		
+
 		AppLayoutComponent layout = AppLayout.getDefaultBuilder(Behaviour.LEFT_RESPONSIVE)
 				.withTitle("Pi-gation")
 				.withDefaultNavigationView(overviewView)
@@ -92,8 +97,9 @@ public class ControllerUI extends UI
 				.add(HistoryView.NAME, VaadinIcons.TIME_BACKWARD, historyView)
 				.add(SubmenuBuilder.get("Configuration", VaadinIcons.COG)
 						.add(EndPointConfigurationView.NAME, VaadinIcons.CONNECT, endPointConfigurationView)
-						.add(GardenBedConfigurationView.LABEL, 
+						.add(GardenBedConfigurationView.LABEL,
 								GardenBedConfigurationView.NAME, VaadinIcons.DROP, gardenBedConfigurationView)
+						.add(UserView.NAME, VaadinIcons.USER, userView)
 						.build())
 				.build();
 
@@ -117,6 +123,8 @@ public class ControllerUI extends UI
 		getNavigator().addView(EndPointEditorView.NAME, endPointEditor);
 		addView(gardenBedEditor);
 		getNavigator().addView(GardenBedEditorView.NAME, gardenBedEditor);
+		addView(userEditor);
+		getNavigator().addView(UserEditorView.NAME, userEditor);
 
 		setContent(layout);
 

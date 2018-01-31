@@ -12,6 +12,7 @@ import javax.persistence.Version;
 @Table(name="tblUser")
 public class User
 {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
@@ -22,7 +23,7 @@ public class User
 
 
 	@Column(unique=true)
-	String name;
+	String username;
 	String desription;
 	String password;
 	boolean isAdministrator;
@@ -34,12 +35,12 @@ public class User
 
 	public String getName()
 	{
-		return name;
+		return username;
 	}
 
 	public void setName(String name)
 	{
-		this.name = name;
+		this.username = name;
 	}
 
 	public String getDesription()
@@ -80,8 +81,33 @@ public class User
 	@Override
 	public String toString()
 	{
-		return "User [id=" + id + ", name=" + name + ", desription=" + desription 
+		return "User [id=" + id + ", name=" + username + ", desription=" + desription 
 				+ ", isAdministrator=" + isAdministrator + "]";
+	}
+
+	
+	@Override
+	public int hashCode()
+	{
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (id != other.id)
+			return false;
+		return true;
 	}
 
 
