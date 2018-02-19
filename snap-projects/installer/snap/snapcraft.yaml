@@ -49,6 +49,25 @@ parts:
     organize:
       war/irrigation-1.0-SNAPSHOT.war : webapps/pi-gation.war
     after: [tomcat]
+    stage-packages:
+      - libc6
+      - libbz2-1.0
+      - libgcc1
+      - libcomerr2
+      - libgcrypt20
+      - liblzma5
+      - libmount1
+      - libncursesw5
+      - libselinux1
+      - libtinfo5
+      - libuuid1
+      - libstdc++6
+      - libsmartcols1
+      - libgpg-error0
+      - libblkid1
+      - zlib1g
+      - libpcre3
+
 
   # copies the files in snap/src/scripts/ to 
   # the root of the snap directory - snap/
@@ -56,7 +75,7 @@ parts:
     plugin: dump
     source: snap/src/scripts
     #after: [xkcdpassgen, tomcat, pi-gation-webapp]
-    after: [tomcat, pi-gation-webapp]
+    #after: [tomcat, pi-gation-webapp]
 
 # https://kyrofa.com/posts/snapping-nextcloud-the-web-server  
   #apache:

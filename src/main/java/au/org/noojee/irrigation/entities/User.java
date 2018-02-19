@@ -1,5 +1,8 @@
 package au.org.noojee.irrigation.entities;
 
+import java.time.Duration;
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,10 +26,14 @@ public class User
 
 
 	@Column(unique=true)
-	String username;
-	String desription;
-	String password;
-	boolean isAdministrator;
+	private String username;
+	private String desription;
+	private String password;
+	private boolean isAdministrator;
+	
+	private String securityToken;
+	private LocalDate tokenExpiryDate;
+	private Duration tokenLivesFor;
 
 	public long getId()
 	{
@@ -76,6 +83,46 @@ public class User
 	public void setId(long id)
 	{
 		this.id = id;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getSecurityToken()
+	{
+		return securityToken;
+	}
+
+	public void setSecurityToken(String securityToken)
+	{
+		this.securityToken = securityToken;
+	}
+
+	public LocalDate getTokenExpiryDate()
+	{
+		return tokenExpiryDate;
+	}
+
+	public void setTokenExpiryDate(LocalDate tokenExpiryDate)
+	{
+		this.tokenExpiryDate = tokenExpiryDate;
+	}
+
+	public Duration getTokenLivesFor()
+	{
+		return tokenLivesFor;
+	}
+
+	public void setTokenLivesFor(Duration tokenLivesFor)
+	{
+		this.tokenLivesFor = tokenLivesFor;
 	}
 
 	@Override
