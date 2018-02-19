@@ -1,28 +1,19 @@
 #!/bin/dash
 set -x
 
-# CONFIG FILE PATH
-CONFIG_FILE=$SNAP_DATA/config
 
-# CONFIG OPTIONS: db-username, db-password, https-port
-OPTIONS="db-username db-password https-port"
+# generate random password for keystore
+#KEYSTOREPWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 
-promptUser=y
+# hmm don't like this but how else do we pass this to the config hook
+#snapctl set keystorepwd=${KEYSTOREPWD}
 
-#while [ $promptUser = y ]
-#do
-	#read -p "Enter new database username: " db_username
-	#read -p "Enter new database password: " db_password
-	#read -p "Enter listen port for https: " https_port
+#mkdir -p /etc/letsencrypt/live/${SNAPNAME}
 
-	#read -p "Keep these values? (Y/N): " confirm 
+# create pkcs12 store
+#openssl pkcs12 -export \
+# -in /etc/letsencrypt/live/${SNAPNAME}/fullchain.pem \
+# -inkey /etc/letsencrypt/live/${SNAPNAME}/privkey.pem \
+# -out /etc/tomcat8/keystore/${SNAPNAME}.p12 \
+# -password pass:${KEYSTOREPWD}
 
-#	if  [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-	#if  [ $confirm = y ] || [ $confirm = Y ]; then
-		#promptUser=n
-	#fi
-#done
-
-snapctl set db-username="$db_username"
-snapctl set db-password="$db_password"
-snapctl set https-port="$https_port"

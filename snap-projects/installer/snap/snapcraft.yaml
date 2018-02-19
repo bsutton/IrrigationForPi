@@ -32,12 +32,16 @@ apps:
       #- on arm64: '' 
       #- else: 'RaspberryPi GPIO Provider'
 
-hooks:
-  install:
-    plugs: []
+  getcert:
+    command: getcert
+    plugs: [network, network-bind]
 
-  configure:
-    plugs: []
+#hooks:
+  #install:
+    #plugs: []
+
+  #configure:
+    #plugs: []
 
 parts: 
   # build the web app
@@ -74,8 +78,33 @@ parts:
   pi-gation-launch:
     plugin: dump
     source: snap/src/scripts
-    #after: [xkcdpassgen, tomcat, pi-gation-webapp]
-    #after: [tomcat, pi-gation-webapp]
+  
+  getcert:
+    plugin: dump
+    source: snap/src/scripts
+
+  tomcat:
+    plugin: ant
+    source: http://svn.apache.org/repos/asf/tomcat/tc8.5.x/trunk/
+    source-type: svn
+    prepare: |
+      cp build.properties.default build.properties
+    install: |
+      cp -r output/build/* $SNAPCRAFT_PART_INSTALL
+      cat <<EOF > $SNAPCRAFT_PART_INSTALL/tomcat-launch
+      #!/bin/sh
+      export JRE_HOME=\${SNAP}/usr/lib/jvm/default-java/jre
+      export JAVA_HOME=\${SNAP}/usr/lib/jvm/default-java/jre
+      export CATALINA_HOME=\${SNAP}
+      export CATALINA_BASE=\${SNAP_DATA}
+      export CATALINA_TMPDIR=/tmp
+      cp -rn \${CATALINA_HOME}/conf \${CATALINA_BASE}/
+      cp -rn \${CATALINA_HOME}/webapps \${CATALINA_BASE}/
+      exec \${CATALINA_HOME}/bin/catalina.sh run
+      EOF
+      chmod +x $SNAPCRAFT_PART_INSTALL/tomcat-launch
+    stage-packages:
+      - libc6
 
 # https://kyrofa.com/posts/snapping-nextcloud-the-web-server  
   #apache:
