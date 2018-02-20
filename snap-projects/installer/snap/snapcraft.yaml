@@ -21,6 +21,13 @@ apps:
     command: pi-gation-launch
     daemon: simple
     plugs: [network, network-bind]
+ 
+  # used to ran the certbot renewal process.
+  cron:
+    command: cron
+    daemon: simple
+    plugs: [network, network-bind]
+
 
     ## When 'on' is supported for environment we can remove the custom
     ## launcher.
@@ -77,11 +84,15 @@ parts:
   # the root of the snap directory - snap/
   pi-gation-launch:
     plugin: dump
-    source: snap/src/scripts
+    source: snap/src/scripts/pi-gation-launch
   
   getcert:
     plugin: dump
-    source: snap/src/scripts
+    source: snap/src/scripts/getcert
+    # run our renew script as a certbot post renewal deploy script
+    # this installs the certs into the java keystore and restarts tomcat.
+    organize: 
+      renewal : /etc/letsencrypt/renewal-hooks/deploy
 
   tomcat:
     plugin: ant
@@ -105,6 +116,23 @@ parts:
       chmod +x $SNAPCRAFT_PART_INSTALL/tomcat-launch
     stage-packages:
       - libc6
+      - libbz2-1.0
+      - libgcc1
+      - libcomerr2
+      - libgcrypt20
+      - liblzma5
+      - libmount1
+      - libncursesw5
+      - libselinux1
+      - libtinfo5
+      - libuuid1
+      - libstdc++6
+      - libsmartcols1
+      - libgpg-error0
+      - libblkid1
+      - zlib1g
+      - libpcre3
+
 
 # https://kyrofa.com/posts/snapping-nextcloud-the-web-server  
   #apache:

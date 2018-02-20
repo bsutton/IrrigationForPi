@@ -1,5 +1,6 @@
-#]!/bin/dash
-#set -x
+#!/bin/dash
+set -x
+exit
 
 # If no arguments, print usage statement & exit from function
 if [ "$#" -ne "2" ]; then
