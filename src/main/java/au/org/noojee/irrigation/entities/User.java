@@ -1,7 +1,7 @@
 package au.org.noojee.irrigation.entities;
 
 import java.time.Duration;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 
 @Entity
-@Table(name="tblUser")
+@Table(name = "tblUser")
 public class User
 {
 
@@ -20,20 +20,21 @@ public class User
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(updatable = false, nullable = false)
 	private long id;
-	
-	 @Version
-     private int version;
 
+	@Version
+	private int version;
 
-	@Column(unique=true)
+	@Column(unique = true)
 	private String username;
 	private String desription;
 	private String password;
 	private boolean isAdministrator;
-	
+
 	private String securityToken;
-	private LocalDate tokenExpiryDate;
+	private LocalDateTime tokenExpiryDate;
 	private Duration tokenLivesFor;
+
+	private String emailAddress;
 
 	public long getId()
 	{
@@ -48,6 +49,12 @@ public class User
 	public void setName(String name)
 	{
 		this.username = name;
+	}
+
+	
+	public String getEmailAddress()
+	{
+		return emailAddress;
 	}
 
 	public String getDesription()
@@ -105,12 +112,12 @@ public class User
 		this.securityToken = securityToken;
 	}
 
-	public LocalDate getTokenExpiryDate()
+	public LocalDateTime getTokenExpiryDate()
 	{
 		return tokenExpiryDate;
 	}
 
-	public void setTokenExpiryDate(LocalDate tokenExpiryDate)
+	public void setTokenExpiryDate(LocalDateTime tokenExpiryDate)
 	{
 		this.tokenExpiryDate = tokenExpiryDate;
 	}
@@ -125,14 +132,18 @@ public class User
 		this.tokenLivesFor = tokenLivesFor;
 	}
 
+	public boolean isSecurityTokenLive()
+	{
+		return this.tokenExpiryDate.isAfter(LocalDateTime.now());
+	}
+
 	@Override
 	public String toString()
 	{
-		return "User [id=" + id + ", name=" + username + ", desription=" + desription 
+		return "User [id=" + id + ", name=" + username + ", desription=" + desription
 				+ ", isAdministrator=" + isAdministrator + "]";
 	}
 
-	
 	@Override
 	public int hashCode()
 	{

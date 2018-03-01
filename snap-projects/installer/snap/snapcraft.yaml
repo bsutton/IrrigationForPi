@@ -43,13 +43,6 @@ apps:
     command: getcert
     plugs: [network, network-bind]
 
-#hooks:
-  #install:
-    #plugs: []
-
-  #configure:
-    #plugs: []
-
 parts: 
   # build the web app
   pi-gation-webapp:
@@ -60,25 +53,6 @@ parts:
     organize:
       war/irrigation-1.0-SNAPSHOT.war : webapps/pi-gation.war
     after: [tomcat]
-    stage-packages:
-      - libc6
-      - libbz2-1.0
-      - libgcc1
-      - libcomerr2
-      - libgcrypt20
-      - liblzma5
-      - libmount1
-      - libncursesw5
-      - libselinux1
-      - libtinfo5
-      - libuuid1
-      - libstdc++6
-      - libsmartcols1
-      - libgpg-error0
-      - libblkid1
-      - zlib1g
-      - libpcre3
-
 
   # copies the files in snap/src/scripts/ to 
   # the root of the snap directory - snap/
@@ -99,7 +73,7 @@ parts:
     source: https://github.com/apache/tomcat85.git
     source-type: git
     #source: http://svn.apache.org/repos/asf/tomcat/tc8.5.x/trunk/
-    #source-type: svn https://github.com/apache/tomcat/tree/TOMCAT_9_0_5
+    #source-type: svn 
     prepare: |
       cp build.properties.default build.properties
     install: |
@@ -135,15 +109,3 @@ parts:
       - zlib1g
       - libpcre3
 
-
-# https://kyrofa.com/posts/snapping-nextcloud-the-web-server  
-  #apache:
-    #plugin: apache
-    #stage-packages: [apache2]
-    #after: [tomcat]
-
-  #apache:
-    #command: webserver pi-gation
-    #daemon: simple
-    #restart-condition: always
-    #plugs: [network-bind]

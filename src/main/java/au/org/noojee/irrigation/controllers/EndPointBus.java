@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import au.org.noojee.irrigation.entities.EndPoint;
-import au.org.noojee.irrigation.entities.GardenBed;
 import au.org.noojee.irrigation.views.EndPointChangeListener;
 
 /**

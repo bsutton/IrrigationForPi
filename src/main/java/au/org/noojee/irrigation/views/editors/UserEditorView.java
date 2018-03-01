@@ -1,7 +1,5 @@
 package au.org.noojee.irrigation.views.editors;
 
-import java.util.List;
-
 import javax.persistence.RollbackException;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -294,13 +292,13 @@ public class UserEditorView extends VerticalLayout implements SmartView
 		boolean inUse = false;
 		UserDao daoUser = new UserDao();
 
-		List<User> usedByList = daoUser.getByName(username);
+		User usedBy = daoUser.getByName(username);
 
 		// true if we have at least one element that isn't the currently edited user.
 		if (this.isEdit)
-			inUse = usedByList.stream().anyMatch(e -> !e.equals(this.editedUser));
+			inUse = !usedBy.equals(this.editedUser);
 		else
-			inUse = usedByList.size() != 0;
+			inUse = usedBy == null;
 
 		return inUse;
 	}

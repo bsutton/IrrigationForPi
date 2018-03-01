@@ -1,10 +1,13 @@
 #!/bin/dash
 set -x
 SERVERXML=/conf/server.xml
+SNAPCTL=snapctl
+SNAPNAME=
 
 #temp hacks
 SNAPNAME=pi-gation
 SERVERXML=conf/server.xml
+SNAPCTl=snap
 #end hacks	
 
 # If no arguments, print usage statement & exit from function
@@ -83,5 +86,9 @@ sed  -e 's/%FQDN%/'${FQDN}'/g' \
 	-e 's/%KEYSTOREPWD%/'${KEYSTOREPWD}'/g' \
 	< tomcat-server-with-ssl.xml \
 	> "${SERVERXML}"
+
+#setting this key lets the 'cron/renewal' scripts know that we have a certificate
+# and renewals can start
+${SNAPCTL} set ${SNAPNAME} fqdn=${FQDN}
 
 snap restart ${SNAPNAME}

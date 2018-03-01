@@ -16,6 +16,7 @@ import com.vaadin.contextmenu.ContextMenu;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.PushStateNavigation;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
@@ -23,12 +24,17 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
+import au.org.noojee.irrigation.dao.UserDao;
 import au.org.noojee.irrigation.views.EndPointConfigurationView;
+import au.org.noojee.irrigation.views.ForgottenPasswordView;
 import au.org.noojee.irrigation.views.GardenBedConfigurationView;
 import au.org.noojee.irrigation.views.GardenBedView;
 import au.org.noojee.irrigation.views.HistoryView;
+import au.org.noojee.irrigation.views.FirstRunView;
 import au.org.noojee.irrigation.views.LightingView;
+import au.org.noojee.irrigation.views.LoginView;
 import au.org.noojee.irrigation.views.OverviewView;
+import au.org.noojee.irrigation.views.ResetPasswordView;
 import au.org.noojee.irrigation.views.ScheduleView;
 import au.org.noojee.irrigation.views.SmartView;
 import au.org.noojee.irrigation.views.UserView;
@@ -48,15 +54,33 @@ import au.org.noojee.irrigation.views.editors.UserEditorView;
 @PushStateNavigation
 @Push
 @Widgetset("au.org.noojee.irrigation.widgets.PiGationWidgetset")
-public class ControllerUI extends UI
+public class ControllerUI extends UI  implements ViewChangeListener
 {
 
 	private static final long serialVersionUID = 1L;
 	Navigator nav;
 	private HashMap<String, SmartView> views = new HashMap<>();
+	
+	// login
+	LoginView loginView = new LoginView();
 
+
+	
 	@Override
 	protected void init(VaadinRequest vaadinRequest)
+	{
+		if (PiGationConfig.SELF.isConfigured() && UserDao.isLoggedIn())
+			loadLayout();
+		else
+		{
+			setContent(loginView);
+			PublicNavigator navigator = new PublicNavigator(this);
+			setNavigator(navigator);
+			navigator.addViewChangeListener(this);
+		}
+	}
+
+	public void loadLayout()
 	{
 		// DefaultBadgeHolder holder = new DefaultBadgeHolder(); // I can indicate updates in another "navigatable"
 		// element
@@ -129,6 +153,16 @@ public class ControllerUI extends UI
 		setContent(layout);
 
 	}
+	
+	private void logout()
+	{
+		UserDao.logout();
+
+		this.setNavigator(new PublicNavigator(this));
+		this.getNavigator().navigateTo(LoginView.NAME);
+	}
+
+
 
 	void addView(SmartView view)
 	{
@@ -145,5 +179,43 @@ public class ControllerUI extends UI
 	{
 		return views.get(name);
 	}
+	
+	@Override
+	public boolean beforeViewChange(ViewChangeEvent event)
+	{
+		boolean allow = false;
+
+		// Always allow access to login page.
+		if (isPublicPage(event))
+		{
+			UserDao.logout();
+			setContent(null);
+			allow = true;
+		}
+		else if (UserDao.isLoggedIn())
+			allow = true; // the user is logged in.
+
+		if (!allow)
+			this.getNavigator().navigateTo(LoginView.NAME);
+		return allow;
+
+	}
+	
+	private boolean isPublicPage(ViewChangeEvent event)
+	{
+		boolean isPublic = false;
+
+		// add more public views here.
+		isPublic |= event.getNewView() instanceof LoginView;
+		isPublic |= event.getNewView() instanceof ForgottenPasswordView;
+		isPublic |= event.getNewView() instanceof ResetPasswordView;
+		
+		if (!PiGationConfig.SELF.isConfigured())
+			isPublic |= event.getNewView() instanceof FirstRunView;
+
+		return isPublic;
+	}
+
+
 
 }

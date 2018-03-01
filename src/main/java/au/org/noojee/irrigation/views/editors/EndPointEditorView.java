@@ -47,7 +47,6 @@ public class EndPointEditorView extends VerticalLayout implements SmartView
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "EndPointEditor";
-	private boolean uiBuilt = false;
 	private TextField endPointName;
 	private ComboBox<EndPointType> endPointType;
 	private ComboBox<PinActivationType> activationType;
