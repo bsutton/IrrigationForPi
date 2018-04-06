@@ -253,7 +253,7 @@ sudo snap install pi-gation
 
 pi-gation is now installed. Lets now get a certificate:
 
-sudo snap pi-gation.getcert <youremail> <fqdn of pi>
+sudo pi-gation.getcert <youremail> <fqdn of pi>
 
 Your now have a certificate.
 
