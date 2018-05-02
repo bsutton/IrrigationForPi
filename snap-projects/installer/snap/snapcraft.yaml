@@ -70,9 +70,11 @@ parts:
 
   tomcat:
     plugin: ant
-    ant-properties:
-      proxy.host: http://snap-proxy.launchpad.net
-      proxy.port: 3128
+    ant-options:
+      [-verbose, -autoproxy]
+    # ant-properties:
+      # proxy.host: http://snap-proxy.launchpad.net
+      # proxy.port: 3128
     source: https://github.com/apache/tomcat85.git
     source-type: git
     # source: http://svn.apache.org/repos/asf/tomcat/tc8.5.x/trunk/
