@@ -238,6 +238,34 @@ An end point is a light or valve that you have wired up to a Raspberry Pi GPIO p
 
 You can also test each End Point as you define it.
 
+# Install using the snap installer (recommended)
+Download UbuntuCore for the Raspberry Pi from here:
+https://developer.ubuntu.com/core/get-started/raspberry-pi-2-3
+
+Follow the instruction to setup a Ubuntu SSO account and install Ubuntu Core as per those instructions.
+
+Pre-requisites
+Your raspberri PI must be visible to the public internet and you need to have a real host name for you pi. (i.e you need to obtain and register a domain and create an A record pointing at your PI).
+Once installed connect to your PI via ssh and run the following commands:
+
+
+* sudo snap install pi-gation
+
+pi-gation is now installed. Lets now get a certificate:
+
+* sudo pi-gation.getcert <youremail> <fqdn of pi>
+
+Your now have a certificate.
+
+Connected to pi gation using your browser and the fqdn of your PI.
+
+Pi-gation will run the FirstRun Wizard and ask a few setup questions.
+Once you have answered the questions you must restart tomcat or you PI.
+
+* sudo snap restart pi-gation.tomcat
+
+Pi-gation is now running and waiting for you to configure your garden beds and lighting.
+
  
 Technology
 ==========
