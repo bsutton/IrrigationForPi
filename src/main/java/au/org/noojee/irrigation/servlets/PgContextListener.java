@@ -47,6 +47,13 @@ public class PgContextListener extends VUEntityManagerContextListener
 		System.out.println("Pi-gation: starting logger");
 
 		logger = LogManager.getLogger();
+		
+		// in development mode you need to simulate the raspberry pi.
+		// set the following environment variables to:
+		// PI4J_PLATFORM="Simulated"
+		// SimulatedPlatform="RaspberryPi GPIO Provider"
+		// 
+		// In production neither of these variables are used. 
 
 		logger.info("PI PLATFORM: " + System.getenv("PI4J_PLATFORM"));
 		logger.info("Simulated PLATFORM - simulated: " + System.getenv("SimulatedPlatform"));
