@@ -7,14 +7,14 @@ environment:
 dependencies: 
   args: ^1.5.2
   dcli: ^0.39.0
-  github: # 7.0.2
-    path: ../../github.dart
-  # nginx_le_shared: ^4.0.0
+  github: ^7.0.0
+    # path: ../../github.dart
+  nginx_le_shared: ^4.0.0
   path: ^1.6.4
   settings_yaml: ^2.1.0
   uuid: ^2.0.4
-  pub_release: #^2.0.0
-    path: ../../pub_release
+  pub_release: ^3.0.0
+    #path: ../../pub_release
 dev_dependencies: 
   test: ^1.0.0
 executables: 

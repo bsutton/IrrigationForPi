@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.14.2"
+  cron:
+    dependency: transitive
+    description:
+      name: cron
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.4"
   crypto:
     dependency: transitive
     description:
@@ -130,10 +137,10 @@ packages:
   github:
     dependency: "direct main"
     description:
-      path: "../../github.dart"
-      relative: true
-    source: path
-    version: "7.0.1"
+      name: github
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "7.0.4"
   glob:
     dependency: transitive
     description:
@@ -154,7 +161,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.0"
+    version: "0.12.2"
   http_multi_server:
     dependency: transitive
     description:
@@ -176,6 +183,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  instant:
+    dependency: transitive
+    description:
+      name: instant
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.3+1"
   intl:
     dependency: transitive
     description:
@@ -190,6 +204,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.4"
+  isolate:
+    dependency: transitive
+    description:
+      name: isolate
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
   js:
     dependency: transitive
     description:
@@ -218,6 +239,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.11.4"
+  mailer:
+    dependency: transitive
+    description:
+      name: mailer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.1"
   matcher:
     dependency: transitive
     description:
@@ -239,6 +267,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.7"
+  nginx_le_shared:
+    dependency: "direct main"
+    description:
+      name: nginx_le_shared
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.13"
   node_interop:
     dependency: transitive
     description:
@@ -281,6 +316,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.2"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.1.0"
   pool:
     dependency: transitive
     description:
@@ -291,10 +333,10 @@ packages:
   pub_release:
     dependency: "direct main"
     description:
-      path: "../../pub_release"
-      relative: true
-    source: path
-    version: "2.1.20"
+      name: pub_release
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   pub_semver:
     dependency: transitive
     description:
@@ -302,6 +344,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.4"
+  public_suffix:
+    dependency: transitive
+    description:
+      name: public_suffix
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1"
   pubspec:
     dependency: transitive
     description:
@@ -309,6 +358,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.5"
+  punycode:
+    dependency: transitive
+    description:
+      name: punycode
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   quiver:
     dependency: transitive
     description:
@@ -491,6 +547,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.7.4"
+  xml:
+    dependency: transitive
+    description:
+      name: xml
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.5.1"
   yaml:
     dependency: transitive
     description:
