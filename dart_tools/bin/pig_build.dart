@@ -1,22 +1,42 @@
 #! /usr/bin/env dcli
 
 import 'package:dcli/dcli.dart';
+import 'package:pigation/src/version/version.g.dart';
 import 'package:pub_release/pub_release.dart';
 
+/// This script is normally called by a pub_release pre hook to build the assets
+/// as part of the process of publishing pigation.
+///
+/// You can manually run this when doing local testing.
+///
 void main(List<String> args) {
   var parser = ArgParser();
   parser.addFlag('quick',
       abbr: 'q', defaultsTo: false, help: 'Skips rebuilding the war file.');
 
+  parser.addFlag('current',
+      abbr: 'c', help: 'If passed the current pubspec version no. is used.');
+
   var results = parser.parse(args);
   var quick = results['quick'] as bool;
+
+  if (!quick) {
+    print(orange('Use --quick to avoid repeating the java build phase'));
+  }
 
   var pathToPubspec = findPubSpec();
   var pubspec = getPubSpec();
 
-  print('Building the pigation installer, version ${pubspec.version}');
-  var newVersion = askForVersion(pubspec.version);
-  updateVersion(newVersion, pubspec, pathToPubspec);
+  final currentVersion = pubspec.version;
+  var selectedVersion = pubspec.version;
+
+  if (results.wasParsed('current')) {
+    print('Building the pigation installer, using version ${currentVersion}');
+  } else {
+    print('Building the pigation installer, current version ${currentVersion}');
+    selectedVersion = askForVersion(pubspec.version);
+    updateVersion(selectedVersion, pubspec, pathToPubspec);
+  }
 
   var script = Script.fromFile(Settings().pathToScript);
   var projectRoot = script.pathToProjectRoot;
@@ -33,7 +53,7 @@ void main(List<String> args) {
     deleteDir(mvnTarget, recursive: true);
   }
 
-  var versionDir = join(target, 'versions', newVersion.toString());
+  var versionDir = join(target, 'versions', selectedVersion.toString());
   createDir(versionDir, recursive: true);
 
   if (!quick) {
@@ -42,7 +62,7 @@ void main(List<String> args) {
     buildWar(projectRoot);
   }
 
-  createZipImage(newVersion, versionDir, projectRoot, mvnTarget);
+  createZipImage(selectedVersion, versionDir, projectRoot, mvnTarget);
 
   var zip = createZip(target);
 
@@ -84,13 +104,17 @@ void showCompletedMessage(String zip) {
   print(orange('*' * 80));
   print('Build complete.');
   print('');
+
+  print(
+      'For testing you can you can run the following. Normally the pub_release/pig_install process manage the zip file deployment');
   print('Copy ${relative(zip)} to the target machine');
-  print('run ${green('unzip install_pigation.zip')}');
+  print('run ${green('unzip install_pigation-$packageVersion.zip')}');
   print("run ${green('sudo ./install')}");
 }
 
 String createZip(String target) {
-  var zip = join(target, '..', 'install_pigation.zip');
+  var zip = join(Script.current.pathToProjectRoot, 'releases',
+      'install_pigation-$packageVersion.zip');
   if (exists(zip)) {
     delete(zip);
   }
