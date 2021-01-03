@@ -53,24 +53,17 @@ void main(List<String> args) {
 
   settings = PigationSettings.load();
 
-  settings.hostname = ask(
-    'hostname',
-    defaultValue: settings.hostname,
-    // validator: AskMultiValidator([Ask.alphaNumeric, Ask.required]));
-  );
-  settings.domain = ask(
-    'domain',
-    defaultValue: settings.domain,
-    // validator: AskMultiValidator([Ask.fqdn, Ask.required]));
-  );
-  settings.tld = ask(
-    'tld',
-    defaultValue: settings.tld,
-    //  validator: AskMultiValidator([Ask.alphaNumeric, Ask.required]));
-  );
+  settings.hostname = ask('hostname',
+      defaultValue: settings.hostname,
+      required: true,
+      validator: Ask.alphaNumeric);
+  settings.domain = ask('domain',
+      defaultValue: settings.domain, required: true, validator: Ask.fqdn);
+  settings.tld = ask('tld',
+      defaultValue: settings.tld, required: true, validator: Ask.alphaNumeric);
 
-  settings.smtpHost = ask('SMTP Host',
-      defaultValue: settings.smtpHost, validator: Ask.required);
+  settings.smtpHost =
+      ask('SMTP Host', defaultValue: settings.smtpHost, required: true);
 
   settings.smtpPort =
       int.tryParse(ask('SMTP Port', defaultValue: '${settings.smtpPort}'));
