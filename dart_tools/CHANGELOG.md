@@ -1,3 +1,9 @@
+# 1.0.13
+upgraded to pub_release 3.0.
+removed unused code.
+renamed the hooks so they run in the correct order.
+pre release hook to build the java code.
+
 # 1.0.12
 Updated to latest version of pub_release to fix bugs with hooks not running.
 

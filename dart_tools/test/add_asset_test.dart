@@ -28,6 +28,5 @@ void main() {
   print(pwd);
   addAsset(sgh, release, assetPath: join('bin', 'pig_build'));
 
-
   sgh.dispose();
 }

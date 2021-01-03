@@ -7,5 +7,3 @@ void main() {
     expect(Git().usingGit(Script.current.pathToProjectRoot), equals(true));
   });
 }
-
-
