@@ -105,11 +105,8 @@ void showCompletedMessage(String zip) {
   print('Build complete.');
   print('');
 
-  print(
-      'For testing you can you can run the following. Normally the pub_release/pig_install process manage the zip file deployment');
-  print('Copy ${relative(zip)} to the target machine');
-  print('run ${green('unzip install_pigation-$packageVersion.zip')}');
-  print("run ${green('sudo ./install')}");
+  print('Copy ${relative(zip)} to the target machine and then run');
+  print('run ${green('pig_install')}');
 }
 
 String createZip(String target) {

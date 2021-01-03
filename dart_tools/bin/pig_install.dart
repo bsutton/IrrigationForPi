@@ -87,9 +87,9 @@ String get zipFilename => 'install_pigation-$packageVersion.zip';
 void unzip(String installSrcDir) {
   print('Downloading java zip');
 
-  fetch(
-      url: 'https://github.com/bsutton/IrrigationForPi/assets/$zipFilename',
-      saveToPath: join(installSrcDir, zipFilename));
+  // fetch(
+  //     url: 'https://github.com/bsutton/IrrigationForPi/assets/$zipFilename',
+  //     saveToPath: join(installSrcDir, zipFilename));
 
   print(green('Unzipping into a clean directory.'));
 
