@@ -512,7 +512,7 @@
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2021-01-03T22:07:37.426022Z",
+  "generated": "2021-01-03T22:15:30.348536Z",
   "generator": "pub",
-  "generatorVersion": "2.12.0-133.2.beta"
+  "generatorVersion": "2.10.4"
 }

@@ -26,3 +26,5 @@ hs_err_pid*
 .metadata
 dart_tools/tool/post_release_hook/settings.yaml
 dart_tools/test/settings.yaml
+build_tools/test/settings.yaml
+build_tools/tool/post_release_hook/settings.yaml
