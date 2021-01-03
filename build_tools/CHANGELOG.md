@@ -1,3 +1,7 @@
+# 1.0.16
+docker login isn't required as nginx-le is public.
+renamed dart_tools to build_tools
+
 # 1.0.15
 fixed the notes on how to complete the install.
 upgraded to latest dcli so we can use default values in ask.
