@@ -16,7 +16,7 @@ void main() {
   print(orange('usermod'));
   'usermod -aG docker ${env['USER']}'.start(privileged: true);
 
-  var projectRoot = DartProject.current.pathToProjectRoot;
+  // var projectRoot = DartProject.current.pathToProjectRoot;
   // var armPath = createDir(join(projectRoot, 'arm'));
 
   //copy('/usr/bin/qemu-arm-static', armPath);
