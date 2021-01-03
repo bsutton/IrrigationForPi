@@ -26,22 +26,10 @@
       "languageVersion": "2.3"
     },
     {
-      "name": "asn1lib",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/asn1lib-0.6.5",
-      "packageUri": "lib/",
-      "languageVersion": "2.2"
-    },
-    {
       "name": "async",
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/async-2.4.2",
       "packageUri": "lib/",
       "languageVersion": "2.2"
-    },
-    {
-      "name": "basic_utils",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/basic_utils-2.6.3",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
     },
     {
       "name": "boolean_selector",
@@ -80,12 +68,6 @@
       "languageVersion": "2.7"
     },
     {
-      "name": "cron",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/cron-0.2.4",
-      "packageUri": "lib/",
-      "languageVersion": "2.7"
-    },
-    {
       "name": "crypto",
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/crypto-2.1.5",
       "packageUri": "lib/",
@@ -99,7 +81,7 @@
     },
     {
       "name": "dcli",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/dcli-0.34.6",
+      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/dcli-0.39.4",
       "packageUri": "lib/",
       "languageVersion": "2.6"
     },
@@ -129,7 +111,7 @@
     },
     {
       "name": "github",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/github-7.0.4",
+      "rootUri": "../../../github.dart",
       "packageUri": "lib/",
       "languageVersion": "2.3"
     },
@@ -147,9 +129,9 @@
     },
     {
       "name": "http",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/http-0.12.2",
+      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/http-0.12.0",
       "packageUri": "lib/",
-      "languageVersion": "2.4"
+      "languageVersion": "2.0"
     },
     {
       "name": "http_multi_server",
@@ -170,12 +152,6 @@
       "languageVersion": "2.0"
     },
     {
-      "name": "instant",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/instant-0.3.3+1",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
-    },
-    {
       "name": "intl",
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/intl-0.16.1",
       "packageUri": "lib/",
@@ -188,12 +164,6 @@
       "languageVersion": "2.0"
     },
     {
-      "name": "isolate",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/isolate-2.0.3",
-      "packageUri": "lib/",
-      "languageVersion": "2.3"
-    },
-    {
       "name": "js",
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/js-0.6.2",
       "packageUri": "lib/",
@@ -201,9 +171,9 @@
     },
     {
       "name": "json_annotation",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/json_annotation-3.0.1",
+      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/json_annotation-3.1.1",
       "packageUri": "lib/",
-      "languageVersion": "2.6"
+      "languageVersion": "2.7"
     },
     {
       "name": "logger",
@@ -216,12 +186,6 @@
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/logging-0.11.4",
       "packageUri": "lib/",
       "languageVersion": "2.0"
-    },
-    {
-      "name": "mailer",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/mailer-3.2.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.2"
     },
     {
       "name": "matcher",
@@ -240,12 +204,6 @@
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/mime-0.9.7",
       "packageUri": "lib/",
       "languageVersion": "2.0"
-    },
-    {
-      "name": "nginx_le_shared",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/nginx_le_shared-3.0.2",
-      "packageUri": "lib/",
-      "languageVersion": "2.7"
     },
     {
       "name": "node_interop",
@@ -284,18 +242,6 @@
       "languageVersion": "2.1"
     },
     {
-      "name": "petitparser",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/petitparser-3.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.7"
-    },
-    {
-      "name": "pointycastle",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/pointycastle-1.0.2",
-      "packageUri": "lib/",
-      "languageVersion": "0.8"
-    },
-    {
       "name": "pool",
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/pool-1.4.0",
       "packageUri": "lib/",
@@ -303,7 +249,7 @@
     },
     {
       "name": "pub_release",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/pub_release-2.1.13",
+      "rootUri": "../../../pub_release",
       "packageUri": "lib/",
       "languageVersion": "2.7"
     },
@@ -314,34 +260,16 @@
       "languageVersion": "2.0"
     },
     {
-      "name": "public_suffix",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/public_suffix-1.2.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.2"
-    },
-    {
       "name": "pubspec",
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/pubspec-0.1.5",
       "packageUri": "lib/",
       "languageVersion": "2.2"
     },
     {
-      "name": "punycode",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/punycode-0.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "1.20"
-    },
-    {
       "name": "quiver",
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/quiver-2.1.5",
       "packageUri": "lib/",
       "languageVersion": "2.0"
-    },
-    {
-      "name": "random_string",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/random_string-2.1.0",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
     },
     {
       "name": "settings_yaml",
@@ -465,15 +393,9 @@
     },
     {
       "name": "validators",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/validators-2.0.1",
+      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/validators-2.0.0+1",
       "packageUri": "lib/",
       "languageVersion": "2.0"
-    },
-    {
-      "name": "vin_decoder",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/vin_decoder-0.1.3",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
     },
     {
       "name": "vm_service",
@@ -500,12 +422,6 @@
       "languageVersion": "2.0"
     },
     {
-      "name": "xml",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/xml-4.5.1",
-      "packageUri": "lib/",
-      "languageVersion": "2.7"
-    },
-    {
       "name": "yaml",
       "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/yaml-2.2.1",
       "packageUri": "lib/",
@@ -518,7 +434,7 @@
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2021-01-02T21:45:00.191794Z",
+  "generated": "2021-01-03T06:45:36.519016Z",
   "generator": "pub",
   "generatorVersion": "2.12.0-133.2.beta"
 }

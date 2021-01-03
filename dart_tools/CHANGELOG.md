@@ -1,3 +1,89 @@
+# 1.0.12
+Updated to latest version of pub_release to fix bugs with hooks not running.
+
+# 1.0.11
+
+# 1.0.11
+testing release process
+
+# 1.0.10
+testing release process
+
+# 1.0.9
+
+# 1.0.8
+Merge pull request #2 from bsutton/dependabot/maven/org.apache.logging.log4j-log4j-core-2.13.2
+Added builder so we can create a dart exe for arm.
+this file shouldn't have been added.
+converted to using docker and dart cli tools.
+removed unused coded. removed references to snap as we are no longer using it. additional doco.
+ignored stuff.
+Bump log4j-core from 2.9.1 to 2.13.2
+Merge pull request #1 from bsutton/dependabot/maven/com.google.guava-guava-24.1.1-jre
+Bump guava from 23.6-jre to 24.1.1-jre
+Update snapcraft.yaml
+Merge branch 'master' of https://github.com/bsutton/IrrigationForPi
+experiment with ant proxy
+Update README.md
+Update README.md
+Update README.md
+Added auth and a first run wizard for configuration.
+ move to github for tomcat
+progress on certbot integration
+work on snapcraft.yaml and certbot
+work on snap
+Added in user management
+ignore temp snap directories.
+Work on getting the timer display to show when draining.
+Fixed a bug where timers were not shutting down.
+Made entity manager filter async.
+EntityManager Injection and Onscreen timers
+Timer counter for garden beds now functioning.
+cert bot experiment.
+missing files.
+missing widget set.
+Added support for lighting.
+
+# 1.0.8
+Merge pull request #2 from bsutton/dependabot/maven/org.apache.logging.log4j-log4j-core-2.13.2
+Added builder so we can create a dart exe for arm.
+this file shouldn't have been added.
+converted to using docker and dart cli tools.
+removed unused coded. removed references to snap as we are no longer using it. additional doco.
+ignored stuff.
+Bump log4j-core from 2.9.1 to 2.13.2
+Merge pull request #1 from bsutton/dependabot/maven/com.google.guava-guava-24.1.1-jre
+Bump guava from 23.6-jre to 24.1.1-jre
+Update snapcraft.yaml
+Merge branch 'master' of https://github.com/bsutton/IrrigationForPi
+experiment with ant proxy
+Update README.md
+Update README.md
+Update README.md
+Added auth and a first run wizard for configuration.
+ move to github for tomcat
+progress on certbot integration
+work on snapcraft.yaml and certbot
+work on snap
+Added in user management
+ignore temp snap directories.
+Work on getting the timer display to show when draining.
+Fixed a bug where timers were not shutting down.
+Made entity manager filter async.
+EntityManager Injection and Onscreen timers
+Timer counter for garden beds now functioning.
+cert bot experiment.
+missing files.
+missing widget set.
+Added support for lighting.
+
+# 1.0.8
+Fix in pub_release should now result in a git tag begin created
+# 1.0.7
+# 1.0.6
+testing of the release process.
+# 1.0.5
+Test of new release/install processes.
 # 1.0.4
 Finally solved all of the version conflicts.
 # 1.0.2
