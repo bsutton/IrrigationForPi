@@ -78,8 +78,8 @@ void main(List<String> args) {
 String get zipFilename => 'install_pigation-$packageVersion.zip';
 
 void unzip(String installSrcDir) {
-  print('Downloading java zip');
-
+  // print('Downloading java zip');
+  //
   // fetch(
   //     url: 'https://github.com/bsutton/IrrigationForPi/assets/$zipFilename',
   //     saveToPath: join(installSrcDir, zipFilename));
@@ -126,7 +126,8 @@ void install(String installSrc, PigationSettings settings) {
   copy(join(installSrc, 'docker-compose.yaml'), pigationDir, overwrite: true);
 
   // copy the executables in.
-  copyTree(join(installSrc, 'bin'), pigationDir, overwrite: true);
+  /// removed as the executables have to be compiled on the arm.
+  /// copyTree(join(installSrc, 'bin'), pigationDir, overwrite: true);
 
   // create the pigation log directory
   'mkdir -p /var/log/tomcat/pigation'.start(privileged: true);
@@ -255,10 +256,6 @@ void installDocker() {
     'groupadd docker'.start(privileged: true);
   }
   'usermod -aG docker ${user}'.start(privileged: true);
-
-  /// we need the user to login to docker hub so we can pull private images.
-  print(orange('Please login to docker so we can pull private images'));
-  'docker login'.run;
 
   print('Installing docker-compose');
   'apt install --no-install-recommends -y  docker-compose'
