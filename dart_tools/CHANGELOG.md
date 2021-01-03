@@ -1,3 +1,7 @@
+# 1.0.15
+fixed the notes on how to complete the install.
+upgraded to latest dcli so we can use default values in ask.
+
 # 1.0.14
 Removed the logic to download the zip as I've not found anywhere to store it.
 
