@@ -4,13 +4,17 @@ import 'package:dcli/dcli.dart';
 import 'package:pigation/src/version/version.g.dart';
 import 'package:pub_release/pub_release.dart';
 
-/// This script is normally called by a pub_release pre hook to build the assets
-/// as part of the process of publishing pigation.
-///
 /// You can manually run this when doing local testing.
 ///
 void main(List<String> args) {
   var parser = ArgParser();
+
+  parser.addFlag('full',
+      abbr: 'f',
+      defaultsTo: false,
+      help:
+          'Does a full build including cloning the repo and installing the dev chain.');
+
   parser.addFlag('quick',
       abbr: 'q', defaultsTo: false, help: 'Skips rebuilding the war file.');
 
