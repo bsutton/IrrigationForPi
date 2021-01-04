@@ -71,14 +71,12 @@ void prepForBuild(bool tools) {
     'git pull'.start(workingDirectory: pathToRepo);
   }
 
-  if (tools)
-  {
-  print('Installing build tools');
+  if (tools) {
+    print('Installing build tools');
 
-  'apt install --no-install-recommends -y openjdk-8-jdk-headless maven'
-      .start(privileged: true, runInShell: true);
-  }
-  else {
+    'apt install --no-install-recommends -y openjdk-8-jdk-headless maven'
+        .start(privileged: true, runInShell: true);
+  } else {
     print('Build tools will not be installed as --no-tools specified.');
   }
 }
@@ -110,17 +108,15 @@ String build({bool quick, bool current}) {
     deleteDir(mvnTarget, recursive: true);
   }
 
-  var versionDir = join(target, 'versions', selectedVersion.toString());
+  var versionDir = join(target,  selectedVersion.toString());
   createDir(versionDir, recursive: true);
 
   if (!quick) {
     print('building pigation');
 
     buildWar(projectRoot);
-  }
-  else
-  {
-    print("Java build will be skipped as --quick specified").
+  } else {
+    print('Java build will be skipped as --quick specified');
   }
 
   createZipImage(selectedVersion, versionDir, projectRoot, mvnTarget);
