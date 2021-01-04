@@ -37,18 +37,19 @@ void main(List<String> args) {
   //   exit(1);
   // }
 
-  var installSrcDir = join('versions', packageVersion);
+  var zipFilePathTo = join('releases', zipFileName);
+  var expandIntoPathTo = join('versions', packageVersion);
 
   // we start by re-unziping the zip file so we ensure we do it into a clean directory.
-  if (exists(installSrcDir)) {
-    deleteDir(installSrcDir);
+  if (exists(expandIntoPathTo)) {
+    deleteDir(expandIntoPathTo);
   }
 
-  unzip(installSrcDir);
+  unzip(zipFilePathTo, expandIntoPathTo);
 
-  if (!exists(join(installSrcDir, 'opt'))) {
+  if (!exists(join(expandIntoPathTo, 'opt'))) {
     printerr(red(
-        "Didn't find the opt directory. install must be run from the directory you expanded the $zipFilename into."));
+        "It appears that the unzip failed. Try again."));
     exit(1);
   }
 
@@ -73,30 +74,30 @@ void main(List<String> args) {
   settings.save();
   setEnvironment(settings);
 
-  install(installSrcDir, settings);
+  install(expandIntoPathTo, settings);
 }
 
 String get zipFilename => 'install_pigation-$packageVersion.zip';
 
-void unzip(String installSrcDir) {
+void unzip(String zipFilePathTo, String expandIntoPathTo) {
   // print('Downloading java zip');
   //
   // fetch(
   //     url: 'https://github.com/bsutton/IrrigationForPi/assets/$zipFilename',
-  //     saveToPath: join(installSrcDir, zipFilename));
+  //     saveToPath: join(expandIntoPathTo, zipFilename));
 
   print(green('Unzipping into a clean directory.'));
 
-  if (!exists(zipFilename)) {
+  if (!exists(zipFilePathTo)) {
     printerr(red('$zipFilename not found'));
     printerr(red(
-        'pig_install must be run from the directory where $zipFilename is located'));
+        'Run pig_build and then try again.'));
     exit(1);
   }
-  'unzip -o $zipFilename'.run;
+  'unzip -o $zipFilePathTo'.start(workingDirectory: expandIntoPathTo);
 
   // fix permissions
-  'chown -R ${user}:${user} *'.start(privileged: true);
+  'chown -R ${user}:${user} *'.start(privileged: true, workingDirectory: expandIntoPathTo);
 }
 
 void install(String installSrc, PigationSettings settings) {
