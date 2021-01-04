@@ -170,8 +170,6 @@ String createZip(String target) {
     delete(zip);
   }
 
-  print('dir: $pwd');
-
   'zip  -r $zip *'.start(workingDirectory: target);
   return zip;
 }
