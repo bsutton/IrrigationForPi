@@ -11,7 +11,7 @@ void main(List<String> args) {
 
   parser.addFlag('full',
       abbr: 'f',
-      defaultsTo: false,
+      defaultsTo: true,
       help:
           'Does a full build including cloning the repo and installing the dev chain.');
 
@@ -23,18 +23,51 @@ void main(List<String> args) {
 
   var results = parser.parse(args);
   var quick = results['quick'] as bool;
+  var full = results['full'] as bool;
+  var current = results['current'] as bool;
 
   if (!quick) {
     print(orange('Use --quick to avoid repeating the java build phase'));
   }
 
+  if (full) {
+    prepForBuild();
+  }
+  var zip = build(quick: quick, current: current);
+
+  showCompletedMessage(zip);
+}
+
+void prepForBuild() {
+  var pathToPigation = join(HOME, 'pigation');
+  var pathToRepo = join(pathToPigation, 'IrrigationForPi');
+
+  if (!exists(pathToRepo)) {
+    print('Cloning project into $pathToRepo');
+
+    createDir(pathToRepo, recursive: true);
+    'git clone https://github.com/bsutton/IrrigationForPi.git'
+        .start(workingDirectory: pathToPigation);
+  } else {
+    print('Pulling latest version of project into $pathToRepo');
+
+    'git pull'.start(workingDirectory: pathToRepo);
+  }
+
+  print('Installing build tools');
+
+  'apt install --no-install-recommends -y openjdk-8-jdk-headless maven'
+      .start(privileged: true, runInShell: true);
+}
+
+String build({bool quick, bool current}) {
   var pathToPubspec = findPubSpec();
   var pubspec = getPubSpec();
 
   final currentVersion = pubspec.version;
   var selectedVersion = pubspec.version;
 
-  if (results.wasParsed('current')) {
+  if (current) {
     print('Building the pigation installer, using version ${currentVersion}');
   } else {
     print('Building the pigation installer, current version ${currentVersion}');
@@ -69,8 +102,7 @@ void main(List<String> args) {
   createZipImage(selectedVersion, versionDir, projectRoot, mvnTarget);
 
   var zip = createZip(target);
-
-  showCompletedMessage(zip);
+  return zip;
 }
 
 void createZipImage(
