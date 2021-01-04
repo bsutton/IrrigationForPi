@@ -37,19 +37,21 @@ void main(List<String> args) {
   //   exit(1);
   // }
 
-  var zipFilePathTo = join('releases', zipFileName);
-  var expandIntoPathTo = join('versions', packageVersion);
+  var zipFilePathTo = join(pwd, 'releases', zipFilename);
+  var expandIntoPathTo = join(pwd, 'versions');
 
   // we start by re-unziping the zip file so we ensure we do it into a clean directory.
   if (exists(expandIntoPathTo)) {
     deleteDir(expandIntoPathTo);
   }
+  createDir(expandIntoPathTo, recursive: true);
+
+  print('expanding to $expandIntoPathTo');
 
   unzip(zipFilePathTo, expandIntoPathTo);
 
   if (!exists(join(expandIntoPathTo, 'opt'))) {
-    printerr(red(
-        "It appears that the unzip failed. Try again."));
+    printerr(red('It appears that the unzip failed. Try again.'));
     exit(1);
   }
 
@@ -90,14 +92,14 @@ void unzip(String zipFilePathTo, String expandIntoPathTo) {
 
   if (!exists(zipFilePathTo)) {
     printerr(red('$zipFilename not found'));
-    printerr(red(
-        'Run pig_build and then try again.'));
+    printerr(red('Run pig_build and then try again.'));
     exit(1);
   }
   'unzip -o $zipFilePathTo'.start(workingDirectory: expandIntoPathTo);
 
   // fix permissions
-  'chown -R ${user}:${user} *'.start(privileged: true, workingDirectory: expandIntoPathTo);
+  // 'chown -R ${user}:${user} *'
+  //     .start(privileged: true, workingDirectory: expandIntoPathTo);
 }
 
 void install(String installSrc, PigationSettings settings) {
@@ -142,7 +144,7 @@ void install(String installSrc, PigationSettings settings) {
   installDocker();
 
   print(green('Stopping Pigation'));
-  'pig_stop'.start( workingDirectory: pigationDir);
+  'pig_stop'.start(workingDirectory: pigationDir);
 
   // pull the docker containers
   print(orange('Pulling the required containers'));
