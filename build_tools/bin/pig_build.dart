@@ -12,19 +12,6 @@ String projectRoot;
 /// You can manually run this when doing local testing.
 ///
 void main(List<String> args) {
-  var parser = ArgParser();
-
-  parser.addFlag('full',
-      abbr: 'f',
-      defaultsTo: true,
-      help:
-          'Does a full build including cloning the repo and installing the dev chain.');
-
-  parser.addFlag('quick',
-      abbr: 'q', defaultsTo: false, help: 'Skips rebuilding the war file.');
-
-  parser.addFlag('current',
-      abbr: 'c', help: 'If passed the current pubspec version no. is used.');
 
   var results = parser.parse(args);
   var quick = results['quick'] as bool;
@@ -153,11 +140,13 @@ void showCompletedMessage(String zip) {
 String createZip(String target) {
   var zip =
       join(projectRoot, 'releases', 'install_pigation-$packageVersion.zip');
+
+  if (!exists(dirname(zip))) {
+    createDir(dirname(zip), recursive: true);
+  }
   if (exists(zip)) {
     delete(zip);
   }
-
-  print('dir: $pwd');
 
   'zip  -r $zip *'.start(workingDirectory: target);
   return zip;
