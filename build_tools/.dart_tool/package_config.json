@@ -99,7 +99,7 @@
     },
     {
       "name": "dcli",
-      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/dcli-0.39.5",
+      "rootUri": "file:///home/bsutton/.pub-cache/hosted/pub.dartlang.org/dcli-0.39.6",
       "packageUri": "lib/",
       "languageVersion": "2.6"
     },
@@ -512,7 +512,7 @@
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2021-01-04T01:17:18.039694Z",
+  "generated": "2021-01-04T01:38:51.027385Z",
   "generator": "pub",
   "generatorVersion": "2.10.4"
 }
