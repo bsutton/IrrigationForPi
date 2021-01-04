@@ -1,3 +1,8 @@
+# 1.0.17
+Begin of work to allow a full build on the raspberry pi.
+Added example sudo launch line. cleaned up the apt install lines so we aren't repeating ourselves. Changed the call to stop to the correct pig_stop.
+moved docs to gitbooks.
+
 # 1.0.16
 docker login isn't required as nginx-le is public.
 renamed dart_tools to build_tools
