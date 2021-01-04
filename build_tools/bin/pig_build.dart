@@ -4,6 +4,11 @@ import 'package:dcli/dcli.dart';
 import 'package:pigation/src/version/version.g.dart';
 import 'package:pub_release/pub_release.dart';
 
+var pathToPigation = join(HOME, 'pigation');
+var pathToRepo = join(pathToPigation, 'IrrigationForPi');
+
+String projectRoot;
+
 /// You can manually run this when doing local testing.
 ///
 void main(List<String> args) {
@@ -30,6 +35,12 @@ void main(List<String> args) {
     print(orange('Use --quick to avoid repeating the java build phase'));
   }
 
+  projectRoot = Script.current.pathToProjectRoot;
+
+  if (Script.current.isPubGlobalActivated) {
+    projectRoot = pathToPigation;
+  }
+
   if (full) {
     prepForBuild();
   }
@@ -39,9 +50,6 @@ void main(List<String> args) {
 }
 
 void prepForBuild() {
-  var pathToPigation = join(HOME, 'pigation');
-  var pathToRepo = join(pathToPigation, 'IrrigationForPi');
-
   if (!exists(pathToRepo)) {
     print('Cloning project into $pathToRepo');
 
@@ -74,9 +82,6 @@ String build({bool quick, bool current}) {
     selectedVersion = askForVersion(pubspec.version);
     updateVersion(selectedVersion, pubspec, pathToPubspec);
   }
-
-  var script = Script.fromFile(Settings().pathToScript);
-  var projectRoot = script.pathToProjectRoot;
 
   /// clean the dart_tool target directory
   var target = join(projectRoot, 'target');
@@ -141,13 +146,13 @@ void showCompletedMessage(String zip) {
   print('Build complete.');
   print('');
 
-  print('Copy ${relative(zip)} to the target machine and then run');
+  print('Copy ${truepath(zip)} to the target machine and then run');
   print('run ${green('pig_install')}');
 }
 
 String createZip(String target) {
-  var zip = join(Script.current.pathToProjectRoot, 'releases',
-      'install_pigation-$packageVersion.zip');
+  var zip =
+      join(projectRoot, 'releases', 'install_pigation-$packageVersion.zip');
   if (exists(zip)) {
     delete(zip);
   }
