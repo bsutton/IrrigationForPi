@@ -31,11 +31,11 @@ void main(List<String> args) {
   var debug = results['debug'] as bool;
   Settings().setVerbose(enabled: debug);
 
-  if (!Shell.current.isPrivilegedUser) {
-    printerr(red('You must run install as the root user'));
-    print(r'run: sudo env "PATH=$PATH" pig_install');
-    exit(1);
-  }
+  // if (!Shell.current.isPrivilegedUser) {
+  //   printerr(red('You must run install as the root user'));
+  //   print(r'run: sudo env "PATH=$PATH" pig_install');
+  //   exit(1);
+  // }
 
   var installSrcDir = join('versions', packageVersion);
 
@@ -141,7 +141,7 @@ void install(String installSrc, PigationSettings settings) {
   installDocker();
 
   print(green('Stopping Pigation'));
-  'pig_stop'.start(workingDirectory: pigationDir);
+  'pig_stop'.start( workingDirectory: pigationDir);
 
   // pull the docker containers
   print(orange('Pulling the required containers'));
