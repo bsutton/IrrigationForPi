@@ -24,12 +24,21 @@ void main(List<String> args) {
       abbr: 'q', defaultsTo: false, help: 'Skips rebuilding the war file.');
 
   parser.addFlag('current',
-      abbr: 'c', help: 'If passed the current pubspec version no. is used.');
+      abbr: 'c',
+      defaultsTo: true,
+      help: 'If passed the current pubspec version no. is used.');
+
+  parser.addFlag('tools',
+      abbr: 't',
+      defaultsTo: true,
+      help:
+          'If passed then the java build tools are installed. Default to true.');
 
   var results = parser.parse(args);
   var quick = results['quick'] as bool;
   var full = results['full'] as bool;
   var current = results['current'] as bool;
+  var tools = results['tools'] as bool;
 
   if (!quick) {
     print(orange('Use --quick to avoid repeating the java build phase'));
@@ -42,14 +51,14 @@ void main(List<String> args) {
   }
 
   if (full) {
-    prepForBuild();
+    prepForBuild(tools);
   }
   var zip = build(quick: quick, current: current);
 
   showCompletedMessage(zip);
 }
 
-void prepForBuild() {
+void prepForBuild(bool tools) {
   if (!exists(pathToRepo)) {
     print('Cloning project into $pathToRepo');
 
@@ -153,6 +162,10 @@ void showCompletedMessage(String zip) {
 String createZip(String target) {
   var zip =
       join(projectRoot, 'releases', 'install_pigation-$packageVersion.zip');
+
+  if (!exists(dirname(zip))) {
+    createDir(dirname(zip), recursive: true);
+  }
   if (exists(zip)) {
     delete(zip);
   }
@@ -164,9 +177,7 @@ String createZip(String target) {
 }
 
 void buildWar(String projectRoot) {
-  print('Running git pull');
-  'git pull'.run;
-
+  print('building java code');
   //  -U forces an update of all snapshot jars
   'mvn -DskipTests install -U'.start(workingDirectory: join(projectRoot, '..'));
 }
