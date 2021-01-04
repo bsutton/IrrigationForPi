@@ -33,6 +33,7 @@ void main(List<String> args) {
 
   if (!Shell.current.isPrivilegedUser) {
     printerr(red('You must run install as the root user'));
+    print(r'run: sudo env "PATH=$PATH" pig_install');
     exit(1);
   }
 
@@ -140,7 +141,7 @@ void install(String installSrc, PigationSettings settings) {
   installDocker();
 
   print(green('Stopping Pigation'));
-  '$pigationDir/stop'.start(workingDirectory: pigationDir);
+  'pig_stop'.start(workingDirectory: pigationDir);
 
   // pull the docker containers
   print(orange('Pulling the required containers'));
@@ -204,16 +205,8 @@ void setTimezone() {
 }
 
 void installCliTools() {
-  'apt install --no-install-recommends -y wget ca-certificates gnupg2'
+  'apt install -y --no-install-recommends  wget ca-certificates gnupg2 unzip'
       .start(privileged: true, runInShell: true);
-  // 'wget https://github.com/bsutton/dcli/releases/download/latest-linux/dcli_install -O dcli_install'
-  //     .run;
-  // 'chmod +x dcli_install'.run;
-  // Env().appendToPATH('/usr/lib/dart/bin');
-  // Env().appendToPATH('${HOME}/.pub-cache/bin');
-  // Env().appendToPATH('${HOME}/.dcli/bin');
-  // './dcli_install'.start(privileged: true);
-
   print('New path is: $PATH');
   print('pub path: ${which('pub').path}');
 
@@ -231,7 +224,6 @@ void installDocker() {
   -y
   --no-install-recommends 
     apt-transport-https 
-    ca-certificates 
     curl 
     gnupg-agent 
     gnupg2 pass
