@@ -13,6 +13,8 @@ class PigationSettings {
 
   String tld;
 
+  String email;
+
   String smtpHost;
 
   int smtpPort;
@@ -30,6 +32,8 @@ class PigationSettings {
     settings.tld = yaml['tld'] as String;
     settings.dbUsername = yaml['dbUsername'] as String;
     settings.dbPassword = yaml['dbPassword'] as String;
+
+    settings.email = yaml['email'] as String;
 
     settings.smtpHost = yaml['smtpHost'] as String;
     settings.smtpPort = yaml['smtpPort'] as int;
@@ -56,8 +60,11 @@ class PigationSettings {
     yaml['hostname'] = hostname;
     yaml['domain'] = domain;
     yaml['tld'] = tld;
-    yaml['dbPassword'] = dbPassword;
+
     yaml['dbUsername'] = dbUsername;
+    yaml['dbPassword'] = dbPassword;
+
+    yaml['email'] = email;
 
     yaml['smtpHost'] = smtpHost;
     yaml['smtpPort'] = smtpPort;
