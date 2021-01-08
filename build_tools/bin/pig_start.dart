@@ -63,5 +63,6 @@ String findDockerCompose() {
 
     current = dirname(current);
   }
-  return null;
+
+  return '/opt/pigation';
 }
