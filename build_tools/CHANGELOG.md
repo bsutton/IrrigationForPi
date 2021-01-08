@@ -1,3 +1,10 @@
+# 1.0.18
+Fixed zip paths to match location used by build tools.
+Added additional messages.
+Added message informing use that build_tools will not be installed.
+Added flag to control installation of tools
+Added checks if we are installed from pub-cache.
+
 # 1.0.17
 Begin of work to allow a full build on the raspberry pi.
 Added example sudo launch line. cleaned up the apt install lines so we aren't repeating ourselves. Changed the call to stop to the correct pig_stop.
