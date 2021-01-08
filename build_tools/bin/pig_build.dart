@@ -1,5 +1,7 @@
 #! /usr/bin/env dcli
 
+import 'dart:io';
+
 import 'package:dcli/dcli.dart';
 import 'package:pigation/src/version/version.g.dart';
 import 'package:pub_release/pub_release.dart';
@@ -10,6 +12,7 @@ var pathToRepo = join(pathToPigation, 'IrrigationForPi');
 String projectRoot;
 
 /// You can manually run this when doing local testing.
+///
 ///
 void main(List<String> args) {
   var parser = ArgParser();
@@ -42,6 +45,12 @@ void main(List<String> args) {
 
   if (!quick) {
     print(orange('Use --quick to avoid repeating the java build phase'));
+  }
+
+  if (!Shell.current.isPrivilegedUser) {
+    printerr(
+        'Please restart ${Script.current.exeName} using sudo: sudo env "PATH=$PATH" pig_install');
+    exit(1);
   }
 
   projectRoot = Script.current.pathToProjectRoot;
@@ -108,7 +117,7 @@ String build({bool quick, bool current}) {
     deleteDir(mvnTarget, recursive: true);
   }
 
-  var versionDir = join(target,  selectedVersion.toString());
+  var versionDir = join(target, selectedVersion.toString());
   createDir(versionDir, recursive: true);
 
   if (!quick) {
