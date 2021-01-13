@@ -8,6 +8,7 @@ void setEnvironment(PigationSettings settings) {
   env['CERT_TLD'] = settings.tld;
   env['DB_PASSWORD'] = settings.dbPassword;
   env['DB_USERNAME'] = settings.dbUsername;
+  env['EMAIL_ADDRESS'] = settings.email;
 
   env['SMTP_SERVER'] = settings.smtpHost;
   env['SMTP_SERVER_PORT'] = '${settings.smtpPort}';
