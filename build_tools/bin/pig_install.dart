@@ -33,11 +33,12 @@ void main(List<String> args) {
 
   if (!Shell.current.isPrivilegedUser) {
     printerr(red('You must run install as the root user'));
-    print(r'run: sudo pig_install');
+    print(
+        'Please restart ${Script.current.exeName} using sudo: sudo env "PATH=\$PATH" pig_install');
     exit(1);
   }
 
-  var zipFilePathTo = join(pwd, 'releases', zipFilename);
+  var zipFilePathTo = findZipFile();
   var expandIntoPathTo = join(pwd, 'versions');
 
   // we start by re-unziping the zip file so we ensure we do it into a clean directory.
@@ -46,7 +47,7 @@ void main(List<String> args) {
   }
   createDir(expandIntoPathTo, recursive: true);
 
-  print('expanding to $expandIntoPathTo');
+  print('Expanding zip file to $expandIntoPathTo');
 
   unzip(zipFilePathTo, expandIntoPathTo);
 
@@ -68,8 +69,8 @@ void main(List<String> args) {
       defaultValue: settings.tld, required: true, validator: Ask.alphaNumeric);
 
   print(
-      'Lets Encrypt requires an email address to send certificate notifications to');
-  settings.tld = ask('Email',
+      'Lets Encrypt requires an email address to send certificate notifications to.');
+  settings.email = ask('Email',
       defaultValue: settings.email, required: true, validator: Ask.email);
 
   // print(
@@ -87,6 +88,28 @@ void main(List<String> args) {
   setEnvironment(settings);
 
   install(join(expandIntoPathTo, packageVersion), settings);
+}
+
+String findZipFile() {
+  var pathToZip = join(pwd, zipFilename);
+
+  if (!exists(pathToZip)) {
+    pathToZip = join(pwd, 'releases', zipFilename);
+
+    if (!exists(pathToZip)) {
+      // try local build path
+      pathToZip = join(pwd, 'pigation', 'IrrigationForPi', 'build_tools',
+          'releases', zipFilename);
+
+      if (!exists(pathToZip)) {
+        print(red(
+            "Can't find the zip file $zipFilename. Place it in the current directory and try again."));
+        exit(-1);
+      }
+    }
+  }
+
+  return pathToZip;
 }
 
 String get zipFilename => 'install_pigation-$packageVersion.zip';
@@ -157,9 +180,9 @@ void install(String installSrc, PigationSettings settings) {
 
   print(green('Stopping Pigation'));
 
-  /// we are running as sudo so pig_stop won't be on the path so we use the current
+  /// we are running as sudo so pig_stop may not be on the path so we use the current
   /// scripts path to locate pig_stop as they should both be in the same dir.
-  var pigStopPathTo = join(dirname(Script.current.pathToExe), 'pig_stop');
+  var pigStopPathTo = join(dirname(Script.current.pathToScript), 'pig_stop');
   pigStopPathTo.start(workingDirectory: pigationDir);
 
   // pull the docker containers
