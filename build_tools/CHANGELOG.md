@@ -1,3 +1,10 @@
+# 1.0.19
+Added email as required for certbot.
+Added logic to find the docker-compose file.
+Added default location for docker-compose.yaml
+Added back in requrirement to run as priviliged as setting the timezone requires it.
+Fixed build/install issues when using compiled scripts
+
 # 1.0.18
 Fixed zip paths to match location used by build tools.
 Added additional messages.
