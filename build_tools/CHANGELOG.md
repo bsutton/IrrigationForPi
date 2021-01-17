@@ -1,3 +1,6 @@
+# 1.0.20
+Print out build version on start.
+
 # 1.0.19
 Added email as required for certbot.
 Added logic to find the docker-compose file.
