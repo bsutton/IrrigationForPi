@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:dcli/dcli.dart';
-import 'package:pigation/src/version/version.g.dart';
 import 'package:pub_release/pub_release.dart';
+import 'package:pigation/src/version/version.g.dart' as v;
 
 var pathToPigation = join(pwd, 'pigation');
 var pathToRepo = join(pathToPigation, 'IrrigationForPi');
@@ -16,6 +16,8 @@ String projectRoot;
 ///
 void main(List<String> args) {
   var parser = ArgParser();
+
+  print('pig_build ${v.packageVersion}');
 
   parser.addFlag('debug',
       abbr: 'd', defaultsTo: false, help: 'Enables debug output.');
@@ -42,7 +44,7 @@ void main(List<String> args) {
 
   var results = parser.parse(args);
   var quick = results['quick'] as bool;
-  var debug = results['quick'] as bool;
+  var debug = results['debug'] as bool;
   var full = results['full'] as bool;
   var current = results['current'] as bool;
   var tools = results['tools'] as bool;
@@ -110,7 +112,7 @@ String build({bool quick, bool current}) {
 
   if (current) {
     print('Building the pigation installer');
-    selectedVersion = Version.parse(packageVersion);
+    selectedVersion = Version.parse(v.packageVersion);
   } else {
     Version currentVersion;
     var pathToPubspec = findPubSpec();
@@ -182,7 +184,7 @@ void createZipImage(String versionDir, String projectRoot, String mvnTarget) {
     createDir(webappDir);
   }
 
-  var warPath = join(webappDir, 'pigation.$packageVersion.war');
+  var warPath = join(webappDir, 'pigation.${v.packageVersion}.war');
   print('copy srcDir $srcWar to warPath: $warPath');
   copy(srcWar, warPath);
 }
@@ -198,7 +200,7 @@ void showCompletedMessage(String zip) {
 
 String createZip(String target) {
   var zip =
-      join(projectRoot, 'releases', 'install_pigation-$packageVersion.zip');
+      join(projectRoot, 'releases', 'install_pigation-${v.packageVersion}.zip');
 
   if (!exists(dirname(zip))) {
     createDir(dirname(zip), recursive: true);
