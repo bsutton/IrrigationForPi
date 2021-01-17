@@ -216,5 +216,5 @@ String createZip(String target) {
 void buildWar(String projectRoot) {
   print('building java code');
   //  -U forces an update of all snapshot jars
-  'mvn -DskipTests install -U'.start(workingDirectory: join(projectRoot, '..'));
+  'mvn -DskipTests install -U'.start(workingDirectory: pathToRepo);
 }
