@@ -1,3 +1,18 @@
+# 1.0.27
+Fixed permissions on the versiondir
+
+# 1.0.27
+Fixed permission for the version directory.
+
+# 1.0.26
+Docker commands need sudo.
+
+# 1.0.25
+timezone needs priviliges to write.
+
+# 1.0.24
+now fixing permissions from the pigation folder down.
+
 # 1.0.24
 Added priviliges when creating the versions folder to ensure we can write to it.
 
