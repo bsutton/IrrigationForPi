@@ -1,3 +1,10 @@
+# 1.0.24
+Added priviliges when creating the versions folder to ensure we can write to it.
+
+# 1.0.23
+Fixed problems with sudo priviliges causing root to own the git repo.
+Improved search logic for pig_stop.
+
 # 1.0.22
 Resolved issues with nginx-le docker upgrades.
 # 1.0.21
