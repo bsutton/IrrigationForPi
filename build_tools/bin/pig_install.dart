@@ -252,11 +252,13 @@ String get user {
 }
 
 void setTimezone() {
-  var TZ = 'Australia/Melbourne';
+  Shell.current.withPrivileges(() {
+    var TZ = 'Australia/Melbourne';
 
-  'ln -snf /usr/share/zoneinfo/$TZ /etc/localtime'.start(privileged: true);
-  '/etc/timezone'.write('$TZ');
-  'apt install -y  tzdata'.start(privileged: true, runInShell: true);
+    'ln -snf /usr/share/zoneinfo/$TZ /etc/localtime'.start(privileged: true);
+    '/etc/timezone'.write('$TZ');
+    'apt install -y  tzdata'.start(privileged: true, runInShell: true);
+  });
 }
 
 void installCliTools() {
