@@ -90,7 +90,7 @@ void prepForBuild(bool tools) {
       // create the directory and make certain we can write to it.
       createDir(pathToRepo, recursive: true);
       final user = Shell.current.loggedInUser;
-      'chown $user:$user $pathToRepo'.run;
+      'chown -R $user:$user $pathToPigation'.run;
     });
     'git clone https://github.com/bsutton/IrrigationForPi.git'
         .start(workingDirectory: pathToPigation);
