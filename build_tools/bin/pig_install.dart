@@ -210,19 +210,19 @@ void install(String installSrc, PigationSettings settings) {
 
   installCliTools();
 
-  print(green('The containers will to be started to finalise configuration.'));
-  // delete the old named containers
-  deleteContainer(name: 'nginx-le');
-  deleteContainer(name: 'tomcat');
-
   Shell.current.withPrivileges(() {
+    print(
+        green('The containers will to be started to finalise configuration.'));
+    // delete the old named containers
+    deleteContainer(name: 'nginx-le');
+    deleteContainer(name: 'tomcat');
     'docker-compose up -d'.start(workingDirectory: pigationDir);
+
+    /// we have just created new container so...
+    nginx.Containers().flushCache();
+
+    cleanupPermissions();
   });
-
-  /// we have just created new container so...
-  nginx.Containers().flushCache();
-
-  cleanupPermissions();
 
   print('Settings saved to ${PigationSettings.path}');
 
