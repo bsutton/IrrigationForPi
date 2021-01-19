@@ -145,11 +145,16 @@ String build({bool quick, bool current}) {
 
   /// clean the maven target directory unless we are running with quick
   var mvnTarget = join(join(projectRoot, '..', 'target'));
-  if (!quick && exists(mvnTarget)) {
-    deleteDir(mvnTarget, recursive: true);
-  }
 
-  createDir(versionDir, recursive: true);
+  Shell.current.withPrivileges(() {
+    if (!quick && exists(mvnTarget)) {
+      deleteDir(mvnTarget, recursive: true);
+    }
+
+    createDir(versionDir, recursive: true);
+    final user = Shell.current.loggedInUser;
+    'chown -R $user:$user ${dirname(versionDir)}'.run;
+  });
 
   if (!quick) {
     print('building pigation');
