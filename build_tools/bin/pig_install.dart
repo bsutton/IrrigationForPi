@@ -39,14 +39,20 @@ void main(List<String> args) {
     exit(1);
   }
 
+  Shell.current.releasePrivileges();
+
   var zipFilePathTo = findZipFile();
   var expandIntoPathTo = join(pwd, 'versions');
 
-  // we start by re-unziping the zip file so we ensure we do it into a clean directory.
-  if (exists(expandIntoPathTo)) {
-    deleteDir(expandIntoPathTo);
-  }
-  createDir(expandIntoPathTo, recursive: true);
+  Shell.current.withPrivileges(() {
+    // we start by re-unziping the zip file so we ensure we do it into a clean directory.
+    if (exists(expandIntoPathTo)) {
+      deleteDir(expandIntoPathTo);
+    }
+    createDir(expandIntoPathTo, recursive: true);
+
+    'chown -R $user:$user $expandIntoPathTo'.run;
+  });
 
   print('Expanding zip file to $expandIntoPathTo');
 
@@ -181,9 +187,16 @@ void install(String installSrc, PigationSettings settings) {
 
   print(green('Stopping Pigation'));
 
-  /// we are running as sudo so pig_stop may not be on the path so we use the current
+  /// we are running as sudo so pig_stop may not be on the path but it should be in
+  /// pub-cache or the same directory as pig_install.
   /// scripts path to locate pig_stop as they should both be in the same dir.
-  var pigStopPathTo = join(dirname(Script.current.pathToScript), 'pig_stop');
+
+  var pigStopPathTo = join(PubCache().pathToBin, 'pig_stop');
+
+  if (!exists(pigStopPathTo)) {
+    /// use scripts path to locate pig_stop as they should both be in the same dir.
+    pigStopPathTo = join(dirname(Script.current.pathToScript), 'pig_stop');
+  }
   pigStopPathTo.start(workingDirectory: pigationDir);
 
   // pull the docker containers

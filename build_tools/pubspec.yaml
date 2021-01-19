@@ -1,12 +1,12 @@
 name: pigation
-version: 1.0.21
+version: 1.0.22
 description: An irrigation and out door lighting controller for the Raspbery PI.
 repository: https://github.com/bsutton/IrrigationForPi
 environment: 
   sdk: '>=2.7.0 <3.0.0'
 dependencies: 
   args: ^1.5.2
-  dcli: ^0.39.0
+  dcli: ^0.40.0
   github: ^7.0.0
   nginx_le_shared: ^5.0.0
   path: ^1.6.4
