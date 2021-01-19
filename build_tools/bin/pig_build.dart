@@ -15,6 +15,14 @@ String projectRoot;
 ///
 ///
 void main(List<String> args) {
+  if (!Shell.current.isPrivilegedProcess) {
+    printerr(
+        'Please restart ${Script.current.exeName} using sudo: sudo env "PATH=\$PATH" pig_build');
+    exit(1);
+  }
+
+  Shell.current.releasePrivileges();
+
   var parser = ArgParser();
 
   print('pig_build ${v.packageVersion}');
@@ -56,13 +64,9 @@ void main(List<String> args) {
     print(orange('Use --quick to avoid repeating the java build phase'));
   }
 
-  if (!Shell.current.isPrivilegedUser) {
-    printerr(
-        'Please restart ${Script.current.exeName} using sudo: sudo env "PATH=\$PATH" pig_build');
-    exit(1);
-  }
-
   projectRoot = Script.current.pathToProjectRoot;
+
+  print('Pub-cache in ${PubCache().pathTo}');
 
   if (Script.current.isPubGlobalActivated || Script.current.isCompiled) {
     projectRoot = join(pathToRepo, 'build_tools');
@@ -82,7 +86,12 @@ void prepForBuild(bool tools) {
   if (!exists(pathToRepo)) {
     print('Cloning project into $pathToRepo');
 
-    createDir(pathToRepo, recursive: true);
+    Shell.current.withPrivileges(() {
+      // create the directory and make certain we can write to it.
+      createDir(pathToRepo, recursive: true);
+      final user = Shell.current.loggedInUser;
+      'chown $user:$user $pathToRepo'.run;
+    });
     'git clone https://github.com/bsutton/IrrigationForPi.git'
         .start(workingDirectory: pathToPigation);
   } else {
@@ -161,9 +170,6 @@ void createZipImage(String versionDir, String projectRoot, String mvnTarget) {
   if (!exists(include)) {
     createDir(include, recursive: true);
   }
-
-  /// we are targeting arm so we have to do the compilation on the arm platform.
-  // copyTree(join(projectRoot, 'config/nginx/include'), include, overwrite: true);
 
   copyTree(join(projectRoot, 'config/nginx/include'), include, overwrite: true);
 
