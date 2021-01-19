@@ -1,3 +1,5 @@
+# 1.0.28
+Further tweaks to permissons.
 # 1.0.27
 Fixed permissions on the versiondir
 
