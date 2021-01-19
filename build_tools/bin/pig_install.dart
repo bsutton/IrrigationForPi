@@ -200,9 +200,11 @@ void install(String installSrc, PigationSettings settings) {
   pigStopPathTo.start(workingDirectory: pigationDir);
 
   // pull the docker containers
-  print(orange('Pulling the required containers'));
+  print(orange('Pulling docker containers'));
   // print('path to ${which('docker-compose').path}');
-  'docker-compose pull'.start(workingDirectory: pigationDir);
+  Shell.current.withPrivileges(() {
+    'docker-compose pull'.start(workingDirectory: pigationDir);
+  });
 
   print(orange('Installing nginx-le cli components'));
 
@@ -213,7 +215,9 @@ void install(String installSrc, PigationSettings settings) {
   deleteContainer(name: 'nginx-le');
   deleteContainer(name: 'tomcat');
 
-  'docker-compose up -d'.start(workingDirectory: pigationDir);
+  Shell.current.withPrivileges(() {
+    'docker-compose up -d'.start(workingDirectory: pigationDir);
+  });
 
   /// we have just created new container so...
   nginx.Containers().flushCache();
@@ -306,4 +310,12 @@ void installDocker() {
   print('Installing docker-compose');
   'apt install --no-install-recommends -y  docker-compose'
       .start(privileged: true, runInShell: true);
+
+  print(orange('Waiting for docker daemon to start'));
+
+  while ('systemctl show --property ActiveState docker'.firstLine !=
+      'ActiveState=active') {
+    sleep(5);
+    print('Check for docker daemon');
+  }
 }
