@@ -150,35 +150,37 @@ void install(String installSrc, PigationSettings settings) {
     createDir(pigationDir, recursive: true);
   }
 
-  var include = join('/', 'opt', 'nginx', 'include');
-  if (!exists(include)) {
-    createDir(include, recursive: true);
-  }
-
-  // rename the war to ROOT.war
-  var war = find('*.war', root: installSrc).toList().first;
-  var rootWar = join(dirname(war), 'ROOT.war');
-  move(war, rootWar, overwrite: true);
-
-  // Settings().setVerbose(enabled: true);
-
-  /// assumes we are running from the directory the zip was exanded into.
-  copyTree(join(installSrc, 'opt'), '/opt', recursive: true, overwrite: true);
-
-  /// allows us to re-run the install
-  move(rootWar, war);
-
   // move from the versioned directory into the active directory.
   copy(join(installSrc, 'docker-compose.yaml'), pigationDir, overwrite: true);
 
-  // copy the executables in.
-  /// removed as the executables have to be compiled on the arm.
-  /// copyTree(join(installSrc, 'bin'), pigationDir, overwrite: true);
+  Shell.current.withPrivileges(() {
+    var include = join('/', 'opt', 'nginx', 'include');
+    if (!exists(include)) {
+      createDir(include, recursive: true);
+    }
 
-  // create the pigation log directory
-  'mkdir -p /var/log/tomcat/pigation'.start(privileged: true);
+    // rename the war to ROOT.war
+    var war = find('*.war', root: installSrc).toList().first;
+    var rootWar = join(dirname(war), 'ROOT.war');
+    move(war, rootWar, overwrite: true);
 
-  'apt update'.start(privileged: true);
+    // Settings().setVerbose(enabled: true);
+
+    /// assumes we are running from the directory the zip was exanded into.
+    copyTree(join(installSrc, 'opt'), '/opt', recursive: true, overwrite: true);
+
+    /// allows us to re-run the install
+    move(rootWar, war);
+
+    // create the pigation log directory
+    createDir('/var/log/tomcat/pigation', recursive: true);
+
+    // copy the executables in.
+    /// removed as the executables have to be compiled on the arm.
+    /// copyTree(join(installSrc, 'bin'), pigationDir, overwrite: true);
+
+    'apt update'.start(privileged: true);
+  });
 
   setTimezone();
 
