@@ -1,3 +1,5 @@
+# 1.0.22
+Resolved issues with nginx-le docker upgrades.
 # 1.0.21
 Corrected mvn build directory.
 
