@@ -173,7 +173,9 @@ void install(String installSrc, PigationSettings settings) {
     move(rootWar, war);
 
     // create the pigation log directory
-    createDir('/var/log/tomcat/pigation', recursive: true);
+    if (!exists('/var/log/tomcat/pigation')) {
+      createDir('/var/log/tomcat/pigation', recursive: true);
+    }
 
     // copy the executables in.
     /// removed as the executables have to be compiled on the arm.
@@ -312,6 +314,8 @@ void installDocker() {
   print('Installing docker-compose');
   'apt install --no-install-recommends -y  docker-compose'
       .start(privileged: true, runInShell: true);
+
+  'service docker start'.start(privileged: true);
 
   print(orange('Waiting for docker daemon to start'));
 
