@@ -322,6 +322,6 @@ void installDocker() {
   while ('systemctl show --property ActiveState docker'.firstLine !=
       'ActiveState=active') {
     sleep(5);
-    print('Check for docker daemon');
+    print('Waiting for docker daemon to start...');
   }
 }
