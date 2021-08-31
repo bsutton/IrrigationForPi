@@ -1,0 +1,1 @@
+30 2 * * 1 certbot renew --pre-hook "/opt/stop_server" --post-hook "/root/start_server" >> /var/log/le-renew.log

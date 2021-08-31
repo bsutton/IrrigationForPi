@@ -1,0 +1,19 @@
+FROM: tomcat:9.0.5-jre8
+MAINTAINER bsutton@noojee.com.au
+
+RUN apt-get update && apt-get -y install cron
+
+
+    network_mode: "host"
+#    ports:
+#      - "80:8080"
+#      - "443:8443"
+    environment:
+      - BASE_DIR=/var/local/auditor
+      - TZ=Australia/Melbourne
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./server.xml:/usr/local/tomcat/conf/server.xml
+      - ./webapps:/usr/local/tomcat/webapps
+      - ./config:/var/local/auditor/config
+      - /var/log/tomcat/auditor:/usr/local/auditor/logs
