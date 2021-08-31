@@ -33,3 +33,4 @@ build_tools/bin/pig_start
 build_tools/bin/pig_stop
 build_tools/versions/
 build_tools/.dart_tool/package_config.json
+.factorypath
