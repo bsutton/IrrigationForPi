@@ -201,7 +201,8 @@ public class GardenBedView extends VerticalLayout
 			// Update the feature line
 			FeatureRunLayout line = findFeatureLine(feature);
 
-			line.showTimer(TimerControl.getTimer(feature));
+			if (line != null)
+				line.showTimer(TimerControl.getTimer(feature));
 		}
 	}
 
@@ -213,7 +214,7 @@ public class GardenBedView extends VerticalLayout
 		// Update the feature line
 		FeatureRunLayout line = findFeatureLine(feature);
 
-		line.timerFinished();
+		if (line != null) line.timerFinished();
 	}
 
 	@Override
@@ -223,7 +224,7 @@ public class GardenBedView extends VerticalLayout
 		FeatureRunLayout line = findFeatureLine(feature);
 
 		Timer timer = TimerControl.getTimer(feature);
-		line.showTimer(timer);
+		if (line != null) line.showTimer(timer);
 	}
 
 	@Override

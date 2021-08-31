@@ -1,0 +1,23 @@
+# taken from https://mvysny.github.io/Using-self-signed-OpenSSL-pem-with-Docker-Tomcat/
+# and https://mvysny.github.io/Lets-Encrypt-with-Docker-Tomcat/
+#
+# Lets encrypt renewals done via 
+# 30 2 * * 1 certbot renew --pre-hook "/root/stop_server" --post-hook "/root/start_server" >> /var/log/le-renew.log
+#
+version: '2'
+services:
+  web:
+    image: tomcat:9.0.5-jre8
+    network_mode: "host"
+#    ports:
+#      - "80:8080"
+#      - "443:8443"
+    environment:
+      - BASE_DIR=/var/local/auditor
+      - TZ=Australia/Melbourne
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./server.xml:/usr/local/tomcat/conf/server.xml
+      - ./webapps:/usr/local/tomcat/webapps
+      - ./config:/var/local/auditor/config
+      - /var/log/tomcat/auditor:/usr/local/auditor/logs
