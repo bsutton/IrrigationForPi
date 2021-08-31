@@ -1,3 +1,7 @@
+# 1.0.29
+Tweaked privilges when installing.
+released 1.0.28
+
 # 1.0.28
 Further tweaks to permissons.
 # 1.0.27

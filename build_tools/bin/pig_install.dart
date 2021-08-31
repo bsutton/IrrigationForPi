@@ -233,7 +233,7 @@ void install(String installSrc, PigationSettings settings) {
   print('Install complete and Pigation is running.');
   print('');
 
-  print("Run ${green('start/stop')} to start/stop the containers");
+  print("Run ${green('pig_start/pig_stop')} to start/stop the containers");
 }
 
 void deleteContainer({String name}) {

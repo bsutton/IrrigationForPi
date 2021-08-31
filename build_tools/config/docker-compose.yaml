@@ -7,7 +7,8 @@ volumes:
 services:
   tomcat:
     container_name: tomcat
-    image: tomcat:9-jdk11
+    # image: tomcat:9-jdk11
+    image: arm32v7/tomcat:9-jdk11-adoptopenjdk-hotspot
     restart: on-failure
     network_mode: "host"
 #    ports:
