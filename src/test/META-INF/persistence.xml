@@ -18,7 +18,7 @@
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver" />
 			<property name="javax.persistence.jdbc.url"
-				value="jdbc:derby:/home/pi/irrigationDbTest/IrrigationForPi;create=true" />
+				value="jdbc:derby:/opt/pigation/irrigationDbTest/IrrigationForPi;create=true" />
 			<property name="javax.persistence.jdbc.password" value="a password goes here" />
 			<property name="javax.persistence.jdbc.user" value="irrigation4pi" />
 			<property name="eclipselink.ddl-generation.output-mode"

@@ -1,0 +1,66 @@
+version: '3.3'
+
+volumes:
+  certificates:
+  derby:
+
+services:
+  tomcat:
+    container_name: tomcat
+    image: tomcat:9-jdk11
+    restart: on-failure
+    network_mode: "host"
+#    ports:
+#      - "80:8080"
+#      - "443:8443"
+    environment:
+      - BASE_DIR=/var/local/pigation
+      - TZ=Australia/Melbourne
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_SERVER_PORT=${SMTP_SERVER_PORT}
+      - pi_gation_db_username=${DB_USERNAME}
+      - pi_gation_db_password=${DB_PASSWORD}  # needs to be set in the host environment.
+    volumes:
+      - /opt/tomcat/config/context.xml:/usr/local/tomcat/conf/context.xml
+      - /opt/tomcat/config/server.xml:/usr/local/tomcat/conf/server.xml
+      - /opt/tomcat/webapps:/usr/local/tomcat/webapps
+      - /opt/pigation/config:/var/local/pigation/config
+      - /var/log/tomcat/pigation:/usr/local/pigation/logs
+      - derby:/opt/pigation/irrigationDb
+      
+
+    logging:
+      driver: "journald"
+
+  # Nginx with Lets Encrypt
+  nginx-le:
+    container_name: nginx-le
+    image: noojee/nginx-le:latest
+    restart: on-failure
+    ports:
+      - "80:80"
+      - "443:443"
+    network_mode: "host"
+    environment:
+      DEBUG: "false"
+      HOSTNAME: ${CERT_HOSTNAME} 
+      DOMAIN: ${CERT_DOMAIN} # irrigate.somedomain.org
+      TLD: ${CERT_TLD}  #org
+      EMAIL_ADDRESS: ${EMAIL_ADDRESS}
+      PRODUCTION: "true"
+      AUTO_ACQUIRE: "true"
+      AUTH_PROVIDER: "HTTP01Auth"
+      SMTP_SERVER: ${SMTP_SERVER}
+      SMTP_SERVER_PORT: ${SMTP_SERVER_PORT}
+      START_PAUSED: "false"
+     
+    volumes:
+      - certificates:/etc/letsencrypt
+      - /opt/nginx/include:/etc/nginx/include
+    logging:
+      driver: "journald"
+
+
+  
+## By default this config uses default local driver,
+## For custom volumes replace with volume driver configuration.

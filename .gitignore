@@ -23,4 +23,13 @@ hs_err_pid*
 /target/
 /.classpath
 /.project
-.factorypath
+.metadata
+build_tools/test/settings.yaml
+build_tools/tool/post_release_hook/settings.yaml
+build_tools/bin/pig_build
+build_tools/bin/pig_install
+build_tools/bin/pig_reconfigure
+build_tools/bin/pig_start
+build_tools/bin/pig_stop
+build_tools/versions/
+build_tools/.dart_tool/package_config.json

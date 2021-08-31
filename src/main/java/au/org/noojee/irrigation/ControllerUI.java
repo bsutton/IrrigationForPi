@@ -154,14 +154,7 @@ public class ControllerUI extends UI  implements ViewChangeListener
 
 	}
 	
-	private void logout()
-	{
-		UserDao.logout();
-
-		this.setNavigator(new PublicNavigator(this));
-		this.getNavigator().navigateTo(LoginView.NAME);
-	}
-
+	
 
 
 	void addView(SmartView view)

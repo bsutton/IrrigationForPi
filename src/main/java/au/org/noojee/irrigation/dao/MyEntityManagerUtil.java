@@ -41,20 +41,9 @@ public class MyEntityManagerUtil
 		{
 			if (emf == null)
 			{
-				/*
-				 * <property name="javax.persistence.jdbc.url"
-				 * value="jdbc:derby:/home/pi/irrigationDb/IrrigationForPi;create=true" /> <property
-				 * name="javax.persistence.jdbc.password" value="a password goes here" /> <property
-				 * name="javax.persistence.jdbc.user" value="irrigation4pi" />
-				 */
-
 				// Default path.
-				File rootPath = new File("/home/pi/irrigationDb");
+				File rootPath = new File("/opt/pigation/irrigationDb");
 
-				// If we are running under snap then use the snap data path
-				String snapPath = System.getenv("SNAP_DATA");
-				if (snapPath != null)
-					rootPath = new File(snapPath);
 
 				File dbPath = new File(rootPath, persistenceUnitName);
 
