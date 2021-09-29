@@ -35,12 +35,6 @@ void main(List<String> args) {
 
   var path = findDockerCompose();
 
-  if (path == null) {
-    printerr(red(
-        'Cannot find the docker-compose.yaml. It should be in the current directory or a parent directory'));
-    exit(1);
-  }
-
   print(orange('Starting ${truepath(path)}'));
 
   'docker-compose stop'.start(workingDirectory: path);
@@ -63,6 +57,7 @@ String findDockerCompose() {
 
     current = dirname(current);
   }
-
-  return '/opt/pigation';
+  printerr(red(
+      'Cannot find the docker-compose.yaml. It should be in the current directory or a parent directory'));
+  exit(1);
 }

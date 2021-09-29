@@ -4,20 +4,20 @@ import 'package:uuid/uuid.dart';
 
 class PigationSettings {
   static const SETTINGS_FILENAME = 'settings.yaml';
-  String dbPassword;
-  String dbUsername;
+  String? dbPassword;
+  String? dbUsername;
 
-  String hostname;
+  String? hostname;
 
-  String domain;
+  String? domain;
 
-  String tld;
+  String? tld;
 
-  String email;
+  String? email;
 
-  String smtpHost;
+  String? smtpHost;
 
-  int smtpPort;
+  int? smtpPort;
 
   static PigationSettings load() {
     if (!exists(dirname(path))) {
@@ -27,16 +27,16 @@ class PigationSettings {
 
     var settings = PigationSettings();
 
-    settings.hostname = yaml['hostname'] as String;
-    settings.domain = yaml['domain'] as String;
-    settings.tld = yaml['tld'] as String;
-    settings.dbUsername = yaml['dbUsername'] as String;
-    settings.dbPassword = yaml['dbPassword'] as String;
+    settings.hostname = yaml['hostname'] as String?;
+    settings.domain = yaml['domain'] as String?;
+    settings.tld = yaml['tld'] as String?;
+    settings.dbUsername = yaml['dbUsername'] as String?;
+    settings.dbPassword = yaml['dbPassword'] as String?;
 
-    settings.email = yaml['email'] as String;
+    settings.email = yaml['email'] as String?;
 
-    settings.smtpHost = yaml['smtpHost'] as String;
-    settings.smtpPort = yaml['smtpPort'] as int;
+    settings.smtpHost = yaml['smtpHost'] as String?;
+    settings.smtpPort = yaml['smtpPort'] as int?;
 
     settings.hostname ??= '';
     settings.domain ??= '';

@@ -9,7 +9,7 @@ import 'package:pigation/src/version/version.g.dart' as v;
 var pathToPigation = join(pwd, 'pigation');
 var pathToRepo = join(pathToPigation, 'IrrigationForPi');
 
-String projectRoot;
+  String? projectRoot;
 
 /// You can manually run this when doing local testing.
 ///
@@ -17,7 +17,7 @@ String projectRoot;
 void main(List<String> args) {
   if (!Shell.current.isPrivilegedProcess) {
     printerr(
-        'Please restart ${Script.current.exeName} using sudo: sudo env "PATH=\$PATH" pig_build');
+        'Please restart ${DartScript.self.exeName} using sudo: sudo env "PATH=\$PATH" pig_build');
     exit(1);
   }
 
@@ -55,7 +55,7 @@ void main(List<String> args) {
   var debug = results['debug'] as bool;
   var full = results['full'] as bool;
   var current = results['current'] as bool;
-  var tools = results['tools'] as bool;
+  var tools = results['tools'] as bool?;
 
   if (debug) {
     Settings().setVerbose(enabled: true);
@@ -64,18 +64,18 @@ void main(List<String> args) {
     print(orange('Use --quick to avoid repeating the java build phase'));
   }
 
-  projectRoot = Script.current.pathToProjectRoot;
+  projectRoot = DartScript.self.pathToProjectRoot;
 
   print('Pub-cache in ${PubCache().pathTo}');
 
-  if (Script.current.isPubGlobalActivated || Script.current.isCompiled) {
+  if (DartScript.self.isPubGlobalActivated || DartScript.self.isCompiled) {
     projectRoot = join(pathToRepo, 'build_tools');
   }
 
   print('building in : ${truepath(pathToPigation)}');
   print('Project root: $projectRoot');
   if (full) {
-    prepForBuild(tools);
+    prepForBuild(tools!);
   }
   var zip = build(quick: quick, current: current);
 
@@ -110,30 +110,30 @@ void prepForBuild(bool tools) {
   }
 }
 
-String build({bool quick, bool current}) {
+String build({ required bool quick,  required bool current}) {
   /// clean the dart_tool target directory
-  var target = join(projectRoot, 'target');
+  var target = join(projectRoot!, 'target');
   if (exists(target)) {
     deleteDir(target, recursive: true);
   }
 
-  Version selectedVersion;
+  Version? selectedVersion;
 
   if (current) {
     print('Building the pigation installer');
     selectedVersion = Version.parse(v.packageVersion);
   } else {
-    Version currentVersion;
+    Version? currentVersion;
     var pathToPubspec = findPubSpec();
     if (findPubSpec() == null) {
       print(red(
           'pubspec.yaml not found you can only build the the current version. Pass the --current flag'));
       exit(-1);
     } else {
-      var pubspec = PubSpec.fromFile(pathToPubspec);
+      var pubspec = PubSpec.fromFile(pathToPubspec!);
 
       currentVersion = pubspec.version;
-      selectedVersion = askForVersion(currentVersion);
+      selectedVersion = askForVersion(currentVersion!);
       updateVersion(currentVersion, pubspec, pathToPubspec);
     }
 
@@ -144,7 +144,7 @@ String build({bool quick, bool current}) {
   var versionDir = join(target, selectedVersion.toString());
 
   /// clean the maven target directory unless we are running with quick
-  var mvnTarget = join(join(projectRoot, '..', 'target'));
+  var mvnTarget = join(join(projectRoot!, '..', 'target'));
 
   Shell.current.withPrivileges(() {
     if (!quick && exists(mvnTarget)) {
@@ -164,7 +164,7 @@ String build({bool quick, bool current}) {
     print('Java build will be skipped as --quick specified');
   }
 
-  createZipImage(versionDir, projectRoot, mvnTarget);
+  createZipImage(versionDir, projectRoot!, mvnTarget);
 
   var zip = createZip(target);
   return zip;
@@ -189,7 +189,8 @@ void createZipImage(String versionDir, String projectRoot, String mvnTarget) {
       overwrite: true);
 
   /// copy in the war.
-  var srcWar = find('*.war', root: mvnTarget, recursive: true).firstLine;
+  var srcWar =
+      find('*.war', workingDirectory: mvnTarget, recursive: true).firstLine!;
   var webappDir = join(versionDir, 'opt', 'tomcat', 'webapps');
   if (!exists(webappDir)) {
     createDir(webappDir);
@@ -211,7 +212,7 @@ void showCompletedMessage(String zip) {
 
 String createZip(String target) {
   var zip =
-      join(projectRoot, 'releases', 'install_pigation-${v.packageVersion}.zip');
+      join(projectRoot!, 'releases', 'install_pigation-${v.packageVersion}.zip');
 
   if (!exists(dirname(zip))) {
     createDir(dirname(zip), recursive: true);
@@ -224,7 +225,7 @@ String createZip(String target) {
   return zip;
 }
 
-void buildWar(String projectRoot) {
+void buildWar(String? projectRoot) {
   print('building java code');
   //  -U forces an update of all snapshot jars
   'mvn -DskipTests install -U'.start(workingDirectory: pathToRepo);

@@ -2,12 +2,13 @@
 
 import 'dart:io';
 
+import 'package:collection/collection.dart' show IterableExtension;
+import 'package:docker2/docker2.dart';
 import 'package:pigation/src/pigation_settings.dart';
 import 'package:pigation/src/environment.dart';
 import 'package:dcli/dcli.dart';
-import 'package:nginx_le_shared/nginx_le_shared.dart' hide packageVersion;
 
-PigationSettings settings;
+PigationSettings? settings;
 
 /// Run this script to reconfigure the Pigation settings and re-create the containers
 ///
@@ -27,36 +28,36 @@ void main(List<String> args) {
 
   settings = PigationSettings.load();
 
-  settings.hostname = ask(
+  settings!.hostname = ask(
     'hostname',
-    defaultValue: settings.hostname,
+    defaultValue: settings!.hostname,
     // validator: AskMultiValidator([Ask.alphaNumeric, Ask.required]));
   );
-  settings.domain = ask(
+  settings!.domain = ask(
     'domain',
-    defaultValue: settings.domain,
+    defaultValue: settings!.domain,
     // validator: AskMultiValidator([Ask.fqdn, Ask.required]));
   );
-  settings.tld = ask(
+  settings!.tld = ask(
     'tld',
-    defaultValue: settings.tld,
+    defaultValue: settings!.tld,
     //  validator: AskMultiValidator([Ask.alphaNumeric, Ask.required]));
   );
 
-  settings.smtpHost = ask('SMTP Host',
-      defaultValue: settings.smtpHost, validator: Ask.required);
+  settings!.smtpHost = ask('SMTP Host',
+      defaultValue: settings!.smtpHost, validator: Ask.required);
 
-  settings.smtpPort =
-      int.tryParse(ask('SMTP Port', defaultValue: '${settings.smtpPort}'));
+  settings!.smtpPort =
+      int.tryParse(ask('SMTP Port', defaultValue: '${settings!.smtpPort}'));
   // validator: Ask.integer));
 
-  settings.save();
-  setEnvironment(settings);
+  settings!.save();
+  setEnvironment(settings!);
 
   reconfigure(settings);
 }
 
-void reconfigure(PigationSettings settings) {
+void reconfigure(PigationSettings? settings) {
   print(green('Reconfiguring Pigation'));
 
   var auditorDir = join('/', 'opt', 'auditor');
@@ -77,11 +78,8 @@ void reconfigure(PigationSettings settings) {
   /// recreate the containers
   'docker-compose up -d'.run;
 
-  /// we have just created new container so...
-  Containers().flushCache();
-
   // as we are running as root the pub-cache/bin path won't be on the path.
-  Env().addToPATHIfAbsent(
+  Env().appendToPATH(
       join('/home', Shell.current.loggedInUser, PubCache().cacheDir, 'bin'));
 
   print('nginx-le configure');
@@ -101,10 +99,10 @@ void reconfigure(PigationSettings settings) {
   print("Run ${green('start/stop')} to start/stop the containers");
 }
 
-void deleteContainer({String name}) {
+void deleteContainer({String? name}) {
   var target = Containers()
       .containers()
-      .firstWhere((container) => container.names == name, orElse: () => null);
+      .firstWhereOrNull((container) => container.name == name);
   if (target != null) {
     target.stop();
     target.delete();
@@ -114,7 +112,7 @@ void deleteContainer({String name}) {
 String get user {
   var user = env['SUDO_USER'];
   user ??= env['USER'];
-  return user;
+  return user!;
 }
 
 class NoLocalHost extends AskValidator {

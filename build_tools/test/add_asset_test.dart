@@ -5,7 +5,7 @@ import 'package:pub_release/pub_release.dart';
 import 'package:settings_yaml/settings_yaml.dart';
 
 void main() {
-  var project = DartProject.current;
+  var project = DartProject.self;
 
   var pathToSettings = join(
       project.pathToProjectRoot, 'tool', 'post_release_hook', 'settings.yaml');
@@ -23,7 +23,7 @@ void main() {
 
   sgh.auth();
 
-  final release = waitForEx(sgh.getByTagName(tagName: 'latest-linux'));
+  final release = sgh.getReleaseByTagName(tagName: 'latest-linux')!;
 
   print(pwd);
   addAsset(sgh, release, assetPath: join('bin', 'pig_build'));

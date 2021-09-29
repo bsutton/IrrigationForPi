@@ -16,7 +16,7 @@ void main(List<String> args) {
   final version = '1.0.12';
   // args[0];
 
-  var project = DartProject.current;
+  var project = DartProject.self;
 
   var pathToSettings = join(
       project.pathToProjectRoot, 'tool', 'post_release_hook', 'settings.yaml');
@@ -38,12 +38,12 @@ void main(List<String> args) {
 
   final tagName = '$version-${Platform.operatingSystem}';
 
-  var release = waitForEx(sgh.getByTagName(tagName: tagName));
+  var release = sgh.getReleaseByTagName(tagName: tagName);
 
   if (release != null) {
     print('Found release $tagName');
 
-    final zipPath = join(Script.current.pathToProjectRoot, 'releases',
+    final zipPath = join(DartScript.self.pathToProjectRoot, 'releases',
         'install_pigation-$version.zip');
 
     print('zipPath: $zipPath');
