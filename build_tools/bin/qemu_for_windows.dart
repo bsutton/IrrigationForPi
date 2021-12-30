@@ -11,7 +11,7 @@ void main(List<String> args) async {
   // final parser = ArgParser();
 
   final runner = CommandRunner<int>('qemu_for_pi',
-      'Installs and starts Qemu for doing Pigation buids for the raspberry PI on Windows')
+      'Installs and starts qemu for doing Pigation buids for the raspberry PI on Windows')
     ..addCommand(InstallCommand())
     ..addCommand(StartCommand());
 

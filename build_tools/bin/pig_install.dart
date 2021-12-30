@@ -136,7 +136,15 @@ void unzip(String zipFilePathTo, String expandIntoPathTo) {
     printerr(red('Run pig_build and then try again.'));
     exit(1);
   }
-  'unzip -o $zipFilePathTo'.start(workingDirectory: expandIntoPathTo);
+  if (!exists(expandIntoPathTo)) {
+    printerr(red('$expandIntoPathTo not found'));
+    printerr(red('Run pig_build and then try again.'));
+    exit(1);
+  }
+  verbose(() =>
+      'zip: ${truepath(zipFilePathTo)} expandTo: ${truepath(expandIntoPathTo)}');
+  'unzip -o ${truepath(zipFilePathTo)}'
+      .start(workingDirectory: expandIntoPathTo);
 
   // fix permissions
   // 'chown -R ${user}:${user} *'

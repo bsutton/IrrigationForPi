@@ -32,6 +32,12 @@ build_tools/bin/pig_reconfigure
 build_tools/bin/pig_start
 build_tools/bin/pig_stop
 build_tools/versions/
-build_tools/.dart_tool/package_config.json
+build_tools/.dart_tool
 .factorypath
 build_tools/tmp.txt
+build_tools/.packages
+build_tools/fetch
+build_tools/pubspec.lock
+build_tools/bin/clean_zfs
+build_tools/bin/pig_arm_builder
+build_tools/pi_image/2021-10-30-raspios-bullseye-armhf-lite.img
