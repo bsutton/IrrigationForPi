@@ -6,20 +6,17 @@ import 'package:dcli/dcli.dart';
 import 'package:pub_release/pub_release.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
 
-var pathToPigation = join(pwd, 'pigation');
-var pathToRepo = join(pathToPigation, 'IrrigationForPi');
-
-  String? projectRoot;
+String? projectRoot;
 
 /// You can manually run this when doing local testing.
 ///
 ///
 void main(List<String> args) {
-  if (!Shell.current.isPrivilegedProcess) {
-    printerr(
-        'Please restart ${DartScript.self.exeName} using sudo: sudo env "PATH=\$PATH" pig_build');
-    exit(1);
-  }
+  // if (!Shell.current.isPrivilegedProcess) {
+  //   printerr(
+  //       'Please restart ${DartScript.self.exeName} using sudo: sudo env "PATH=\$PATH" ./pig_build');
+  //   exit(1);
+  // }
 
   Shell.current.releasePrivileges();
 
@@ -57,47 +54,67 @@ void main(List<String> args) {
   var current = results['current'] as bool;
   var tools = results['tools'] as bool?;
 
-  if (debug) {
-    Settings().setVerbose(enabled: true);
-  }
-  if (!quick) {
-    print(orange('Use --quick to avoid repeating the java build phase'));
-  }
+  var originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
+  withEnvironment(() {
+    Settings().setVerbose(enabled: debug);
+    print('debug=$debug');
+    if (!quick) {
+      print(orange('Use --quick to avoid repeating the java build phase'));
+    }
 
-  projectRoot = DartScript.self.pathToProjectRoot;
+    projectRoot = DartScript.self.pathToProjectRoot;
 
-  print('Pub-cache in ${PubCache().pathTo}');
+    print('Pub-cache in ${PubCache().pathTo}');
 
-  if (DartScript.self.isPubGlobalActivated || DartScript.self.isCompiled) {
-    projectRoot = join(pathToRepo, 'build_tools');
-  }
+    if (DartScript.self.isPubGlobalActivated || DartScript.self.isCompiled) {
+      projectRoot = join(pathToJavaProject, 'build_tools');
+    }
 
-  print('building in : ${truepath(pathToPigation)}');
-  print('Project root: $projectRoot');
-  if (full) {
-    prepForBuild(tools!);
-  }
-  var zip = build(quick: quick, current: current);
+    print('building in : ${truepath(pathToPigation)}');
+    print('Project root: $projectRoot');
+    if (full) {
+      prepForBuild(tools!);
+    }
+    var zip = build(quick: quick, current: current);
 
-  showCompletedMessage(zip);
+    showCompletedMessage(zip);
+  }, environment: {
+    'USER': originalUser,
+    'HOME': join(HOME, originalUser),
+    'LOGNAME': originalUser
+  });
 }
 
+String get pathToJavaProject => join(pathToPigation, 'IrrigationForPi');
+String get pathToPigation =>
+    join(DartProject.self.pathToProjectRoot, 'pigation');
+
+/// clean the maven target directory unless we are running with quick
+
+String get mvnTarget => join(join(pathToJavaProject, 'target'));
+
 void prepForBuild(bool tools) {
-  if (!exists(pathToRepo)) {
-    print('Cloning project into $pathToRepo');
+  if (!exists(pathToJavaProject)) {
+    print('Cloning project into $pathToJavaProject');
 
     Shell.current.withPrivileges(() {
+      verbose(() => 'sudo user: ${env['USER']}');
       // create the directory and make certain we can write to it.
-      createDir(pathToRepo, recursive: true);
+      createDir(pathToJavaProject, recursive: true);
       final user = Shell.current.loggedInUser;
       'chown -R $user:$user $pathToPigation'.run;
-    });
+    }, allowUnprivileged: true);
+    verbose(() => 'user: ${env['USER']}');
     'git clone https://github.com/bsutton/IrrigationForPi.git'
         .start(workingDirectory: pathToPigation);
   } else {
-    print('Pulling latest version of project into $pathToRepo');
+    print('Pulling latest version of project into $pathToJavaProject');
+    verbose(() => 'user: ${env['USER']}');
+    verbose(() => 'home: ${env['HOME']}');
+    verbose(() => 'priviliged: ${Shell.current.isPrivilegedUser}');
+    verbose(() => 'env $envs');
 
-    'git pull'.start(workingDirectory: pathToRepo);
+    'git pull'.start(workingDirectory: pathToJavaProject);
   }
 
   if (tools) {
@@ -110,7 +127,7 @@ void prepForBuild(bool tools) {
   }
 }
 
-String build({ required bool quick,  required bool current}) {
+String build({required bool quick, required bool current}) {
   /// clean the dart_tool target directory
   var target = join(projectRoot!, 'target');
   if (exists(target)) {
@@ -143,9 +160,6 @@ String build({ required bool quick,  required bool current}) {
 
   var versionDir = join(target, selectedVersion.toString());
 
-  /// clean the maven target directory unless we are running with quick
-  var mvnTarget = join(join(projectRoot!, '..', 'target'));
-
   Shell.current.withPrivileges(() {
     if (!quick && exists(mvnTarget)) {
       deleteDir(mvnTarget, recursive: true);
@@ -154,7 +168,7 @@ String build({ required bool quick,  required bool current}) {
     createDir(versionDir, recursive: true);
     final user = Shell.current.loggedInUser;
     'chown -R $user:$user ${dirname(versionDir)}'.run;
-  });
+  }, allowUnprivileged: true);
 
   if (!quick) {
     print('building pigation');
@@ -211,8 +225,8 @@ void showCompletedMessage(String zip) {
 }
 
 String createZip(String target) {
-  var zip =
-      join(projectRoot!, 'releases', 'install_pigation-${v.packageVersion}.zip');
+  var zip = join(
+      projectRoot!, 'releases', 'install_pigation-${v.packageVersion}.zip');
 
   if (!exists(dirname(zip))) {
     createDir(dirname(zip), recursive: true);
@@ -228,5 +242,5 @@ String createZip(String target) {
 void buildWar(String? projectRoot) {
   print('building java code');
   //  -U forces an update of all snapshot jars
-  'mvn -DskipTests install -U'.start(workingDirectory: pathToRepo);
+  'mvn -DskipTests install -U'.start(workingDirectory: pathToJavaProject);
 }

@@ -2,6 +2,6 @@ import 'package:dcli/dcli.dart';
 
 String get qemuSystemArm => 'qemu-system-arm';
 
-String? get qemuSystemArmPath => join(qemuPath, qemuSystemArm);
+String? get qemuSystemArmPath => join(vmQemuPath, qemuSystemArm);
 
-String get qemuPath => 'C:\Program Files\qemu';
+String get vmQemuPath => 'C:\Program Files\qemu';
