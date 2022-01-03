@@ -82,7 +82,6 @@ void main(List<String> args) {
       prepForBuild(tools: tools);
     }
     final zip = build(quick: quick, current: current);
-
     showCompletedMessage(zip);
   }, environment: {
     'USER': originalUser,
@@ -141,9 +140,7 @@ String build({required bool quick, required bool current}) {
   }
 
   Version? selectedVersion;
-
   if (current) {
-    print('Building the pigation installer');
     selectedVersion = Version.parse(v.packageVersion);
   } else {
     Version? currentVersion;
@@ -186,7 +183,6 @@ String build({required bool quick, required bool current}) {
   }
 
   createZipImage(versionDir, projectRoot!, mvnTarget);
-
   final zip = createZip(target);
   return zip;
 }
@@ -248,5 +244,6 @@ String createZip(String target) {
 void buildWar(String? projectRoot) {
   print('building java code');
   //  -U forces an update of all snapshot jars
-  'mvn -DskipTests install -U'.start(workingDirectory: pathToJavaProject);
+  /// -T 1C runs mvn with multiple threads - 1 per core.
+  'mvn -T 1C -DskipTests install -U'.start(workingDirectory: pathToJavaProject);
 }
