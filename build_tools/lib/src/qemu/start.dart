@@ -1,6 +1,6 @@
 import 'package:args/command_runner.dart';
-import 'package:dcli/src/util/string_as_process.dart';
-import 'package:pigation/src/qemu/paths.dart';
+import 'package:dcli/dcli.dart';
+import 'paths.dart';
 
 class StartCommand extends Command<int> {
   @override
@@ -10,11 +10,7 @@ class StartCommand extends Command<int> {
   String get name => 'start';
 
   @override
-  int run() {
-    // start();
-
-    return 0;
-  }
+  int run() => 0;
 
 // 2017-03-02-raspbian-jessie.img
   void start(

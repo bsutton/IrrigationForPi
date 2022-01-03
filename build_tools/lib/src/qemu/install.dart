@@ -2,14 +2,12 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:dcli/dcli.dart';
-import 'package:pigation/src/qemu/paths.dart';
+import 'paths.dart';
 
 class InstallCommand extends Command<int> {
   InstallCommand() {
     argParser.addFlag('reset',
-        abbr: 'r',
-        defaultsTo: false,
-        help: 'Reset the install and download files from scratch');
+        abbr: 'r', help: 'Reset the install and download files from scratch');
   }
   @override
   String get description => 'Install Qemu and a Raspberry PI image';
@@ -24,7 +22,7 @@ class InstallCommand extends Command<int> {
     print('Installing Qemu into $pathToQemuDownloads');
 
     if (argResults!['reset'] as bool == true) {
-      deleteDir(pathToQemuDownloads, recursive: true);
+      deleteDir(pathToQemuDownloads);
     }
 
     if (!Shell.current.isPrivilegedUser) {
@@ -41,7 +39,7 @@ class InstallCommand extends Command<int> {
     }
     final qemuSetupExePath = downloadQEMU(pathToQemuDownloads);
     final pathToPiImage = downloadPiKernel(pathToQemuDownloads);
-    final dbtPath = downloadPiDbt(pathToQemuDownloads);
+    // final dbtPath = downloadPiDbt(pathToQemuDownloads);
 
     if (which(qemuSystemArm).notfound) {
       runSetup(
@@ -60,14 +58,14 @@ class InstallCommand extends Command<int> {
             '-redir tcp:2222::22'
         .start(workingDirectory: workingDirectory);
 
-    final pathToRules = '/etc/udev/rules.d/90-qemu.rules';
+    const pathToRules = '/etc/udev/rules.d/90-qemu.rules';
 
-    final rules_content = '''
+    const rulesContent = '''
 KERNEL=="sda", SYM  LINK+="mmcblk0" KERNEL=="sda?", SYMLINK+="mmcblk0p%n" KERNEL=="sda2", SYMLINK+="root"
       ''';
 
     withTempFile((rules) {
-      rules.write(rules_content);
+      rules.write(rulesContent);
       'scp rules localhost:2222:$pathToRules'.run;
     });
   }

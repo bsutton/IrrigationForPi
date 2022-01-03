@@ -3,22 +3,22 @@
 import 'dart:io';
 
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:docker2/docker2.dart';
-import 'package:pigation/src/pigation_settings.dart';
-import 'package:pigation/src/environment.dart';
 import 'package:dcli/dcli.dart';
+import 'package:docker2/docker2.dart';
+import 'package:pigation/src/environment.dart';
+import 'package:pigation/src/pigation_settings.dart';
 
 PigationSettings? settings;
 
-/// Run this script to reconfigure the Pigation settings and re-create the containers
+/// Run this script to reconfigure the Pigation settings and re-create
+/// the containers
 ///
 void main(List<String> args) {
-  var parser = ArgParser();
-  parser.addFlag('debug',
-      abbr: 'd', defaultsTo: false, help: 'Outputs verbose logging.');
+  final parser = ArgParser()
+    ..addFlag('debug', abbr: 'd', help: 'Outputs verbose logging.');
 
-  var results = parser.parse(args);
-  var debug = results['debug'] as bool;
+  final results = parser.parse(args);
+  final debug = results['debug'] as bool;
   Settings().setVerbose(enabled: debug);
 
   if (!Shell.current.isPrivilegedUser) {
@@ -60,7 +60,7 @@ void main(List<String> args) {
 void reconfigure(PigationSettings? settings) {
   print(green('Reconfiguring Pigation'));
 
-  var auditorDir = join('/', 'opt', 'auditor');
+  final auditorDir = join('/', 'opt', 'auditor');
   if (!exists(auditorDir)) {
     createDir(auditorDir, recursive: true);
   }
@@ -100,12 +100,13 @@ void reconfigure(PigationSettings? settings) {
 }
 
 void deleteContainer({String? name}) {
-  var target = Containers()
+  final target = Containers()
       .containers()
       .firstWhereOrNull((container) => container.name == name);
   if (target != null) {
-    target.stop();
-    target.delete();
+    target
+      ..stop()
+      ..delete();
   }
 }
 
@@ -120,7 +121,8 @@ class NoLocalHost extends AskValidator {
   String validate(String line) {
     if (line.trim() == 'localhost') {
       throw AskValidatorException(
-          "localhost won't work as MySql treats this as a socket connection rather than an IP connection. Use 127.0.0.1 instead");
+          "localhost won't work as MySql treats this as a socket connection "
+          'rather than an IP connection. Use 127.0.0.1 instead');
     }
     return line;
   }

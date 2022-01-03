@@ -3,8 +3,8 @@
 import 'dart:io';
 
 import 'package:dcli/dcli.dart';
-import 'package:pub_release/pub_release.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
+import 'package:pub_release/pub_release.dart';
 
 String? projectRoot;
 
@@ -20,46 +20,40 @@ void main(List<String> args) {
 
   Shell.current.releasePrivileges();
 
-  var parser = ArgParser();
+  final parser = ArgParser();
 
   print('pig_build ${v.packageVersion}');
 
-  parser.addFlag('debug',
-      abbr: 'd', defaultsTo: false, help: 'Enables debug output.');
+  parser
+    ..addFlag('debug', abbr: 'd', help: 'Enables debug output.')
+    ..addFlag('full',
+        abbr: 'f',
+        defaultsTo: true,
+        help: 'Does a full build including cloning the repo and installing '
+            'the dev chain.')
+    ..addFlag('quick', abbr: 'q', help: 'Skips rebuilding the war file.')
+    ..addFlag('current',
+        abbr: 'c',
+        defaultsTo: true,
+        help: 'If passed the current pubspec version no. is used.')
+    ..addFlag('tools',
+        abbr: 't',
+        defaultsTo: true,
+        help: 'If passed then the java build tools are installed. '
+            'Default to true.')
+    ..addFlag('docker',
+        abbr: 'd',
+        defaultsTo: true,
+        help: 'Use this switch when building in a docker container as used '
+            'by pig_arm_builder.');
 
-  parser.addFlag('full',
-      abbr: 'f',
-      defaultsTo: true,
-      help:
-          'Does a full build including cloning the repo and installing the dev chain.');
-
-  parser.addFlag('quick',
-      abbr: 'q', defaultsTo: false, help: 'Skips rebuilding the war file.');
-
-  parser.addFlag('current',
-      abbr: 'c',
-      defaultsTo: true,
-      help: 'If passed the current pubspec version no. is used.');
-
-  parser.addFlag('tools',
-      abbr: 't',
-      defaultsTo: true,
-      help:
-          'If passed then the java build tools are installed. Default to true.');
-
-  parser.addFlag('docker',
-      abbr: 'd',
-      defaultsTo: true,
-      help:
-          'Use this switch when building in a docker container as used by pig_arm_builder.');
-
-  var results = parser.parse(args);
-  var quick = results['quick'] as bool;
-  var debug = results['debug'] as bool;
-  var full = results['full'] as bool;
-  var current = results['current'] as bool;
-  var tools = results['tools'] as bool;
-  var docker = results['docker'] as bool;
+  final results = parser.parse(args);
+  final quick = results['quick'] as bool;
+  final debug = results['debug'] as bool;
+  final full = results['full'] as bool;
+  final current = results['current'] as bool;
+  final tools = results['tools'] as bool;
+  final docker = results['docker'] as bool;
 
   if (docker) {
     pathToJavaProject = join(DartProject.self.pathToProjectRoot, '..');
@@ -67,7 +61,7 @@ void main(List<String> args) {
     pathToJavaProject = join(pathToPigation, 'IrrigationForPi');
   }
 
-  var originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
+  final originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
   withEnvironment(() {
     Settings().setVerbose(enabled: debug);
     print('debug=$debug');
@@ -86,9 +80,9 @@ void main(List<String> args) {
     print('building in : ${truepath(pathToPigation)}');
     print('Project root: $projectRoot');
     if (full) {
-      prepForBuild(tools);
+      prepForBuild(tools: tools);
     }
-    var zip = build(quick: quick, current: current);
+    final zip = build(quick: quick, current: current);
 
     showCompletedMessage(zip);
   }, environment: {
@@ -106,7 +100,7 @@ String get pathToPigation =>
 
 String get mvnTarget => join(join(pathToJavaProject, 'target'));
 
-void prepForBuild(bool tools) {
+void prepForBuild({required bool tools}) {
   if (!exists(pathToJavaProject)) {
     print('Cloning project into $pathToJavaProject');
 
@@ -142,9 +136,9 @@ void prepForBuild(bool tools) {
 
 String build({required bool quick, required bool current}) {
   /// clean the dart_tool target directory
-  var target = join(projectRoot!, 'target');
+  final target = join(projectRoot!, 'target');
   if (exists(target)) {
-    deleteDir(target, recursive: true);
+    deleteDir(target);
   }
 
   Version? selectedVersion;
@@ -154,28 +148,29 @@ String build({required bool quick, required bool current}) {
     selectedVersion = Version.parse(v.packageVersion);
   } else {
     Version? currentVersion;
-    var pathToPubspec = findPubSpec();
+    final pathToPubspec = findPubSpec();
     if (findPubSpec() == null) {
       print(red(
-          'pubspec.yaml not found you can only build the the current version. Pass the --current flag'));
+          'pubspec.yaml not found you can only build the the current version. '
+          'Pass the --current flag'));
       exit(-1);
     } else {
-      var pubspec = PubSpec.fromFile(pathToPubspec!);
+      final pubspec = PubSpec.fromFile(pathToPubspec!);
 
       currentVersion = pubspec.version;
       selectedVersion = askForVersion(currentVersion!);
       updateVersion(currentVersion, pubspec, pathToPubspec);
     }
 
-    print(
-        'Building the pigation installer, selected version ${selectedVersion.toString()}');
+    print('Building the pigation installer, selected version '
+        '${selectedVersion.toString()}');
   }
 
-  var versionDir = join(target, selectedVersion.toString());
+  final versionDir = join(target, selectedVersion.toString());
 
   Shell.current.withPrivileges(() {
     if (!quick && exists(mvnTarget)) {
-      deleteDir(mvnTarget, recursive: true);
+      deleteDir(mvnTarget);
     }
 
     createDir(versionDir, recursive: true);
@@ -193,37 +188,36 @@ String build({required bool quick, required bool current}) {
 
   createZipImage(versionDir, projectRoot!, mvnTarget);
 
-  var zip = createZip(target);
+  final zip = createZip(target);
   return zip;
 }
 
 void createZipImage(String versionDir, String projectRoot, String mvnTarget) {
-  var include = join(versionDir, 'opt', 'nginx', 'include');
+  final include = join(versionDir, 'opt', 'nginx', 'include');
   if (!exists(include)) {
     createDir(include, recursive: true);
   }
 
   copyTree(join(projectRoot, 'config/nginx/include'), include, overwrite: true);
 
-  var tomcat_config = join(versionDir, 'opt', 'tomcat', 'config');
-  if (!exists(tomcat_config)) {
-    createDir(tomcat_config, recursive: true);
+  final tomcatConfig = join(versionDir, 'opt', 'tomcat', 'config');
+  if (!exists(tomcatConfig)) {
+    createDir(tomcatConfig, recursive: true);
   }
-  copyTree(join(projectRoot, 'config/tomcat/config'), tomcat_config,
+  copyTree(join(projectRoot, 'config/tomcat/config'), tomcatConfig,
       overwrite: true);
 
   copy(join(projectRoot, 'config/docker-compose.yaml'), versionDir,
       overwrite: true);
 
   /// copy in the war.
-  var srcWar =
-      find('*.war', workingDirectory: mvnTarget, recursive: true).firstLine!;
-  var webappDir = join(versionDir, 'opt', 'tomcat', 'webapps');
+  final srcWar = find('*.war', workingDirectory: mvnTarget).firstLine!;
+  final webappDir = join(versionDir, 'opt', 'tomcat', 'webapps');
   if (!exists(webappDir)) {
     createDir(webappDir);
   }
 
-  var warPath = join(webappDir, 'pigation.${v.packageVersion}.war');
+  final warPath = join(webappDir, 'pigation.${v.packageVersion}.war');
   print('copy srcDir $srcWar to warPath: $warPath');
   copy(srcWar, warPath);
 }
@@ -238,7 +232,7 @@ void showCompletedMessage(String zip) {
 }
 
 String createZip(String target) {
-  var zip = join(
+  final zip = join(
       projectRoot!, 'releases', 'install_pigation-${v.packageVersion}.zip');
 
   if (!exists(dirname(zip))) {

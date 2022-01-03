@@ -3,8 +3,6 @@ import 'package:test/test.dart';
 
 void main() {
   test('pigation settings ...', () async {
-    var settings = PigationSettings.load();
-
-    settings.save();
+    PigationSettings.load().save();
   });
 }

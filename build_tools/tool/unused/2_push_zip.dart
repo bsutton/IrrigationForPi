@@ -1,5 +1,7 @@
 #! /usr/bin/env dcli
 
+// ignore_for_file: file_names
+
 import 'dart:io';
 
 import 'package:dcli/dcli.dart';
@@ -13,32 +15,31 @@ import 'package:settings_yaml/settings_yaml.dart';
 ///
 
 void main(List<String> args) {
-  final version = '1.0.12';
+  const version = '1.0.12';
   // args[0];
 
-  var project = DartProject.self;
+  final project = DartProject.self;
 
-  var pathToSettings = join(
+  final pathToSettings = join(
       project.pathToProjectRoot, 'tool', 'post_release_hook', 'settings.yaml');
-  var settings = SettingsYaml.load(pathToSettings: pathToSettings);
-  var username = settings['username'] as String;
-  var apiToken = settings['apiToken'] as String;
-  var owner = settings['owner'] as String;
-  var repository = settings['repository'] as String;
+  final settings = SettingsYaml.load(pathToSettings: pathToSettings);
+  final username = settings['username'] as String;
+  final apiToken = settings['apiToken'] as String;
+  final owner = settings['owner'] as String;
+  final repository = settings['repository'] as String;
 
   print('$username $owner $repository');
 
-  var sgh = SimpleGitHub(
+  final sgh = SimpleGitHub(
       username: username,
       apiToken: apiToken,
       owner: owner,
-      repository: repository);
-
-  sgh.auth();
+      repository: repository)
+    ..auth();
 
   final tagName = '$version-${Platform.operatingSystem}';
 
-  var release = sgh.getReleaseByTagName(tagName: tagName);
+  final release = sgh.getReleaseByTagName(tagName: tagName);
 
   if (release != null) {
     print('Found release $tagName');

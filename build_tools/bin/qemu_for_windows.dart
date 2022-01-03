@@ -7,11 +7,13 @@ import 'package:dcli/dcli.dart';
 import 'package:pigation/src/qemu/install.dart';
 import 'package:pigation/src/qemu/start.dart';
 
-void main(List<String> args) async {
+Future<void> main(List<String> args) async {
   // final parser = ArgParser();
 
-  final runner = CommandRunner<int>('qemu_for_pi',
-      'Installs and starts qemu for doing Pigation buids for the raspberry PI on Windows')
+  final runner = CommandRunner<int>(
+      'qemu_for_pi',
+      'Installs and starts qemu for doing Pigation buids for the raspberry '
+          'PI on Windows')
     ..addCommand(InstallCommand())
     ..addCommand(StartCommand());
 
@@ -34,8 +36,8 @@ void main(List<String> args) async {
 // }
 
 void showUsage(ArgParser parser) {
-  print(
-      'Installs a Raspberry Pi emulator on Windows which can be used to build Pigation');
+  print('Installs a Raspberry Pi emulator on Windows which can be used to '
+      'build Pigation');
   print(green('Usage:'));
   print('qemu_for_windows.dart install|start');
   print(parser.usage);

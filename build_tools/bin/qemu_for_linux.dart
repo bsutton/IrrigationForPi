@@ -9,13 +9,13 @@ final pathToKernel = join(pathToPiImage, 'qemu-rpi-kernel');
 
 /// Update this based on the latest version available at
 /// https://downloads.raspberrypi.org/raspios_lite_armhf/images
-final imageReleaseDate = '2021-11-08';
-final imageBuildDate = '2021-10-30';
-final imageName = '$imageBuildDate-raspios-bullseye-armhf-lite';
+const imageReleaseDate = '2021-11-08';
+const imageBuildDate = '2021-10-30';
+const imageName = '$imageBuildDate-raspios-bullseye-armhf-lite';
 
 /// Installer for qemu on linux from:
 /// https://linuxconfig.org/how-to-run-the-raspberry-pi-os-in-a-virtual-machine-with-qemu-and-kvm
-void main(List<String> args) async {
+void main(List<String> args) {
   // final parser = ArgParser();
 
   'apt install qemu-utils qemu-system-arm'.start(privileged: true);
@@ -27,7 +27,7 @@ void main(List<String> args) async {
 
 void _buildImage() {
   // Settings().setVerbose(enabled: true);
-  final pathToZip = '$imageName.zip';
+  const pathToZip = '$imageName.zip';
 
   if (!exists(pathToZip)) {
     fetch(
@@ -54,13 +54,14 @@ void _buildKernal() {
   }
 }
 
-final vmName = 'RaspPi';
-final cpus = 8;
-final memory = 256; // in MB
-final machine = 'versatilepb'; // raspi3
+const vmName = 'RaspPi';
+const cpus = 8;
+const memory = 256; // in MB
+const machine = 'versatilepb'; // raspi3
 
 void _buildVM() {
-  '''virt-install 
+  '''
+virt-install 
   --name $vmName  
   --arch armv6l 
   --machine $machine
@@ -89,8 +90,8 @@ void _buildVM() {
 // }
 
 void showUsage(ArgParser parser) {
-  print(
-      'Installs a Raspberry Pi emulator on Windows which can be used to build Pigation');
+  print('Installs a Raspberry Pi emulator on Windows which can be used '
+      'to build Pigation');
   print(green('Usage:'));
   print('qemu_for_windows.dart install|start');
   print(parser.usage);

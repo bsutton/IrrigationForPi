@@ -3,7 +3,7 @@ import 'package:settings_yaml/settings_yaml.dart';
 import 'package:uuid/uuid.dart';
 
 class PigationSettings {
-  static const SETTINGS_FILENAME = 'settings.yaml';
+  static const settingsFilename = 'settings.yaml';
   String? dbPassword;
   String? dbUsername;
 
@@ -19,44 +19,37 @@ class PigationSettings {
 
   int? smtpPort;
 
+  // ignore: prefer_constructors_over_static_methods
   static PigationSettings load() {
     if (!exists(dirname(path))) {
       createDir(dirname(path));
     }
-    var yaml = SettingsYaml.load(pathToSettings: path);
+    final yaml = SettingsYaml.load(pathToSettings: path);
 
-    var settings = PigationSettings();
-
-    settings.hostname = yaml['hostname'] as String?;
-    settings.domain = yaml['domain'] as String?;
-    settings.tld = yaml['tld'] as String?;
-    settings.dbUsername = yaml['dbUsername'] as String?;
-    settings.dbPassword = yaml['dbPassword'] as String?;
-
-    settings.email = yaml['email'] as String?;
-
-    settings.smtpHost = yaml['smtpHost'] as String?;
-    settings.smtpPort = yaml['smtpPort'] as int?;
-
-    settings.hostname ??= '';
-    settings.domain ??= '';
-    settings.tld ??= '';
-
-    settings.smtpHost ??= '';
-    settings.smtpPort ??= 25;
-
-    settings.dbUsername ??= 'pigation';
-    settings.dbPassword ??= Uuid().v4();
+    final settings = PigationSettings()
+      ..hostname = yaml['hostname'] as String?
+      ..domain = yaml['domain'] as String?
+      ..tld = yaml['tld'] as String?
+      ..dbUsername = yaml['dbUsername'] as String?
+      ..dbPassword = yaml['dbPassword'] as String?
+      ..email = yaml['email'] as String?
+      ..smtpHost = yaml['smtpHost'] as String?
+      ..smtpPort = yaml['smtpPort'] as int?
+      ..hostname ??= ''
+      ..domain ??= ''
+      ..tld ??= ''
+      ..smtpHost ??= ''
+      ..smtpPort ??= 25
+      ..dbUsername ??= 'pigation'
+      ..dbPassword ??= const Uuid().v4();
 
     return settings;
   }
 
-  static String get path {
-    return join('/opt', 'pigation', SETTINGS_FILENAME);
-  }
+  static String get path => join('/opt', 'pigation', settingsFilename);
 
   void save() {
-    var yaml = SettingsYaml.load(pathToSettings: path);
+    final yaml = SettingsYaml.load(pathToSettings: path);
     yaml['hostname'] = hostname;
     yaml['domain'] = domain;
     yaml['tld'] = tld;

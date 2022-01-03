@@ -1,5 +1,7 @@
 #! /usr/bin/env dcli
 
+// ignore_for_file: file_names
+
 import 'dart:io';
 
 import 'package:dcli/dcli.dart';
@@ -11,8 +13,8 @@ import 'package:dcli/dcli.dart';
 
 void main() {
   if (!DartScript.self.isCompiled) {
-    printerr(red(
-        'You must use a compiled version of this script (because sudo will bugger things up'));
+    printerr(red('You must use a compiled version of this script '
+        '(because sudo will bugger things up'));
     exit(1);
   }
 
@@ -21,13 +23,13 @@ void main() {
     exit(1);
   }
 
-  var tmp = join(DartScript.self.pathToProjectRoot, 'tmp');
+  final tmp = join(DartScript.self.pathToProjectRoot, 'tmp');
   // var target = join(Script.current.projectRoot, 'target');
   if (exists(tmp)) {
     deleteDir(tmp);
   }
   createDir(tmp);
-  var zip = join(DartScript.self.pathToProjectRoot, 'install_auditor.zip');
+  final zip = join(DartScript.self.pathToProjectRoot, 'install_auditor.zip');
   copy(zip, tmp);
   'unzip $zip'.start(workingDirectory: tmp);
 

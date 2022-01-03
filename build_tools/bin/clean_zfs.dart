@@ -19,16 +19,17 @@ void main(List<String> args) {
   for (final container in containers) {
     if (container.status == 'Removal In Progress') {
       print('deleting ${container.name}');
-      final zpool_object =
-          "docker container inspect --format='{{.GraphDriver.Data.Dataset}}' ${container.containerid}"
+      final zpoolObject =
+          "docker container inspect --format='{{.GraphDriver.Data.Dataset}}' "
+                  '${container.containerid}'
               .toList()
               .first;
       container.delete();
-      print('deleting zfs pool $zpool_object');
-      "zfs destroy -R '$zpool_object'".run;
-      "zfs destroy -R '$zpool_object-init'".run;
-      "zfs create '$zpool_object'".run;
-      "zfs create '$zpool_object-init'".run;
+      print('deleting zfs pool $zpoolObject');
+      "zfs destroy -R '$zpoolObject'".run;
+      "zfs destroy -R '$zpoolObject-init'".run;
+      "zfs create '$zpoolObject'".run;
+      "zfs create '$zpoolObject-init'".run;
     }
   }
 }

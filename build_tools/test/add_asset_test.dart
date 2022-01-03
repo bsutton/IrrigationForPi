@@ -5,23 +5,22 @@ import 'package:pub_release/pub_release.dart';
 import 'package:settings_yaml/settings_yaml.dart';
 
 void main() {
-  var project = DartProject.self;
+  final project = DartProject.self;
 
-  var pathToSettings = join(
+  final pathToSettings = join(
       project.pathToProjectRoot, 'tool', 'post_release_hook', 'settings.yaml');
-  var settings = SettingsYaml.load(pathToSettings: pathToSettings);
-  var username = settings['username'] as String;
-  var apiToken = settings['apiToken'] as String;
-  var owner = settings['owner'] as String;
-  var repository = settings['repository'] as String;
+  final settings = SettingsYaml.load(pathToSettings: pathToSettings);
+  final username = settings['username'] as String;
+  final apiToken = settings['apiToken'] as String;
+  final owner = settings['owner'] as String;
+  final repository = settings['repository'] as String;
 
   final sgh = SimpleGitHub(
       username: username,
       apiToken: apiToken,
       owner: owner,
-      repository: repository);
-
-  sgh.auth();
+      repository: repository)
+    ..auth();
 
   final release = sgh.getReleaseByTagName(tagName: 'latest-linux')!;
 
