@@ -42,7 +42,6 @@ void main(List<String> args) {
         help: 'If passed then the java build tools are installed. '
             'Default to true.')
     ..addFlag('docker',
-        abbr: 'd',
         defaultsTo: true,
         help: 'Use this switch when building in a docker container as used '
             'by pig_arm_builder.');
