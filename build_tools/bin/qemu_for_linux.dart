@@ -56,7 +56,7 @@ void _buildKernal() {
 
 final vmName = 'RaspPi';
 final cpus = 8;
-final memory = 4000; // in MB
+final memory = 256; // in MB
 final machine = 'versatilepb'; // raspi3
 
 void _buildVM() {

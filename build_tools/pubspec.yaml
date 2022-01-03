@@ -15,8 +15,10 @@ dependencies:
   uuid: ^3.0.4
   pub_release: ^7.1.14
   collection: ^1.15.0-nullsafety.4
+  dcli_scripts: ^1.1.20
 dev_dependencies: 
   test: ^1.0.0
+  lint_hard: ^1.0.0
 executables: 
   pig_build: 
   pig_install: 

@@ -51,7 +51,7 @@ cd to the directory you downloaded the source code to and run:
 
 `mvn install`
 
-This generaates a .war file in the `targets` directory ready to install.
+This generates a .war file in the `targets` directory ready to install.
 
 
 Installation

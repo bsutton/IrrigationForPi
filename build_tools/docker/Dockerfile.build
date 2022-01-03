@@ -1,0 +1,42 @@
+# used to build the dart exes in a docker arm image
+# trying to build dart execs on a pi is just to slow
+# hence we do the build in a docker image on our
+# development box.
+
+# docker image instructions came from.
+# https://hub.docker.com/r/balenalib/raspberrypi4-64-debian
+
+
+# FROM balenalib/raspberrypi4-64-ubuntu:latest
+FROM balenalib/raspberrypi4-64-ubuntu-openjdk:latest
+# replace this with your application
+
+
+# install build tools
+# && apt install --no-install-recommends -y openjdk-8-jdk-headless maven git \
+
+RUN apt update \
+    && apt install --no-install-recommends -y \
+    wget \
+    git \
+    maven \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget https://storage.googleapis.com/dart-archive/channels/be/raw/latest/sdk/dartsdk-linux-arm64-release.zip --output-document=dart.zip
+RUN unzip dart.zip
+
+# add dart to the path.
+ENV PATH="$PATH:/dart-sdk/bin"
+
+
+
+RUN mkdir -p /BUILD_TOKEN/
+RUN git clone https://github.com/bsutton/IrrigationForPi.git
+
+
+
+WORKDIR IrrigationForPi/build_tools
+
+RUN dart pub get
+RUN dart bin/pig_build.dart --current --no-tools --no-full

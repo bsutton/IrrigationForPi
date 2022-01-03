@@ -47,12 +47,25 @@ void main(List<String> args) {
       help:
           'If passed then the java build tools are installed. Default to true.');
 
+  parser.addFlag('docker',
+      abbr: 'd',
+      defaultsTo: true,
+      help:
+          'Use this switch when building in a docker container as used by pig_arm_builder.');
+
   var results = parser.parse(args);
   var quick = results['quick'] as bool;
   var debug = results['debug'] as bool;
   var full = results['full'] as bool;
   var current = results['current'] as bool;
-  var tools = results['tools'] as bool?;
+  var tools = results['tools'] as bool;
+  var docker = results['docker'] as bool;
+
+  if (docker) {
+    pathToJavaProject = join(DartProject.self.pathToProjectRoot, '..');
+  } else {
+    pathToJavaProject = join(pathToPigation, 'IrrigationForPi');
+  }
 
   var originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
   withEnvironment(() {
@@ -73,7 +86,7 @@ void main(List<String> args) {
     print('building in : ${truepath(pathToPigation)}');
     print('Project root: $projectRoot');
     if (full) {
-      prepForBuild(tools!);
+      prepForBuild(tools);
     }
     var zip = build(quick: quick, current: current);
 
@@ -85,7 +98,7 @@ void main(List<String> args) {
   });
 }
 
-String get pathToJavaProject => join(pathToPigation, 'IrrigationForPi');
+late String pathToJavaProject;
 String get pathToPigation =>
     join(DartProject.self.pathToProjectRoot, 'pigation');
 
