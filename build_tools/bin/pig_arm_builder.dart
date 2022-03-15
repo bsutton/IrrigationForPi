@@ -4,14 +4,13 @@ import 'dart:io';
 
 import 'package:dcli/dcli.dart';
 import 'package:dcli_scripts/dcli_scripts.dart';
-import 'package:docker2/docker2.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
 import 'package:pub_release/pub_release.dart';
 
 /// This script is used to compile the dart scripts to arm
 /// ready for inclusing in the install zip file created
 /// by pig_build.dart
-/// 
+///
 /// Installs docker, creates the docker group
 /// and launches the qemu arm image and
 /// compiles each of the dart scripts
@@ -97,16 +96,14 @@ void main(List<String> args) {
 
   // 'docker run --rm --privileged docker/binfmt:820fdd95a9972a5308930a2bdfb8573dd4447ad3'
   // .run;
-  final pathToDockerFile =
-      join(DartProject.self.pathToProjectRoot, 'docker', 'Dockerfile.build');
+  final pathToDockerFile = join(
+      DartProject.self.pathToProjectRoot, 'docker', 'Dockerfile.arm.build');
   dockerPublish(
       pathToDockerFile: pathToDockerFile,
       push: false,
       repository: 'bsutton',
       fresh: fresh,
       buildArgs: ['--platform linux/arm64/v8']);
-
-  
 }
 
 void showUsage(ArgParser parser) {

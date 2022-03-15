@@ -3,12 +3,21 @@
 import 'dart:io';
 
 import 'package:dcli/dcli.dart';
+import 'package:docker2/docker2.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
 import 'package:pub_release/pub_release.dart';
 
 String? projectRoot;
 
-/// You can manually run this when doing local testing.
+/// pig_build build the pig install zip file.
+///
+/// pig_build operates differently depending on the target.
+///
+/// For local testing using `pig_build` which generates an install.zip
+/// appropriate for running on your local machine
+///
+/// Use `pig_build --arm` to build an install.zip ready to be
+/// deployed onto a raspberry pi.
 ///
 ///
 void main(List<String> args) {
@@ -41,10 +50,11 @@ void main(List<String> args) {
         defaultsTo: true,
         help: 'If passed then the java build tools are installed. '
             'Default to true.')
-    ..addFlag('docker',
+    ..addFlag('arm',
+        abbr: 'a',
         defaultsTo: true,
-        help: 'Use this switch when building in a docker container as used '
-            'by pig_arm_builder.');
+        help: 'Use this switch when creating an install.zip suitable to '
+            'install on a raspberry pi');
 
   final results = parser.parse(args);
   final quick = results['quick'] as bool;
@@ -193,16 +203,16 @@ void createZipImage(String versionDir, String projectRoot, String mvnTarget) {
     createDir(include, recursive: true);
   }
 
-  copyTree(join(projectRoot, 'config/nginx/include'), include, overwrite: true);
+  copyTree(join(projectRoot, 'docker/nginx/include'), include, overwrite: true);
 
   final tomcatConfig = join(versionDir, 'opt', 'tomcat', 'config');
   if (!exists(tomcatConfig)) {
     createDir(tomcatConfig, recursive: true);
   }
-  copyTree(join(projectRoot, 'config/tomcat/config'), tomcatConfig,
+  copyTree(join(projectRoot, 'docker/tomcat/config'), tomcatConfig,
       overwrite: true);
 
-  copy(join(projectRoot, 'config/docker-compose.yaml'), versionDir,
+  copy(join(projectRoot, 'docker/docker-compose.yaml'), versionDir,
       overwrite: true);
 
   /// copy in the war.
@@ -246,4 +256,17 @@ void buildWar(String? projectRoot) {
   //  -U forces an update of all snapshot jars
   /// -T 1C runs mvn with multiple threads - 1 per core.
   'mvn -T 1C -DskipTests install -U'.start(workingDirectory: pathToJavaProject);
+}
+
+void buildArmExes() {
+  final pathToBin = DartProject.self.pathToBinDir;
+  const pathToDockerBin = '/IrrigationForPi/build_tools/bin';
+  final container = Container.create(Image.fromName('bsutton/pigation:latest'));
+  final id = container.containerid;
+  'docker cp $id:$pathToDockerBin/pig_build.exe $pathToBin/pig_build'.run;
+  'docker cp $id:$pathToDockerBin/pig_install.exe $pathToBin/pig_install'.run;
+  'docker cp $id:$pathToDockerBin/pig_reconfigure.exe $pathToBin/pig_reconfigure'
+      .run;
+  'docker cp $id:$pathToDockerBin/pig_start.exe $pathToBin/pig_start'.run;
+  'docker cp $id:$pathToDockerBin/pig_stop.exe $pathToBin/pig_stop'.run;
 }

@@ -43,3 +43,4 @@ build_tools/bin/pig_arm_builder
 build_tools/pi_image/2021-10-30-raspios-bullseye-armhf-lite.img
 build_tools/dart_2.15.1-1_amd64.deb
 build_tools/dart.deb
+build_tools/pi_image/qemu-rpi-kernel

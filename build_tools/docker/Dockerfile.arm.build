@@ -1,5 +1,6 @@
-# used to build the dart exes in a docker arm image
-# trying to build dart execs on a pi is just to slow
+# used to build the dart exes required to install on a raspberry pi
+# 
+# Trying to build dart execs on a pi is just too slow
 # hence we do the build in a docker image on our
 # development box.
 
@@ -31,12 +32,24 @@ ENV PATH="$PATH:/dart-sdk/bin"
 
 
 
-RUN mkdir -p /BUILD_TOKEN/
+RUN mkdir -p /BUILD_TOKEN/60445f53676348309815e26a612faaff
 RUN git clone https://github.com/bsutton/IrrigationForPi.git
 
 
+# build the java webapp
+WORKDIR /IrrigationForPi
 
-WORKDIR IrrigationForPi/build_tools
+# RUN mvn -T 1C -B dependency:go-offline
+# RUN mvn -T 1C -B package -D skipTests
+
+WORKDIR /IrrigationForPi/build_tools
 
 RUN dart pub get
-RUN dart bin/pig_build.dart --current --no-tools --no-full
+RUN dart compile exe bin/pig_build.dart
+RUN dart compile exe bin/pig_install.dart
+RUN dart compile exe bin/pig_reconfigure.dart
+RUN dart compile exe bin/pig_start.dart
+RUN dart compile exe bin/pig_stop.dart
+# RUN dart bin/pig_build.dart --current --no-tools --no-full --docker --quick
+# RUN dart bin/pig_install.dart
+
