@@ -62,6 +62,7 @@ class PigationSettings {
     yaml['smtpHost'] = smtpHost;
     yaml['smtpPort'] = smtpPort;
 
-    yaml.save();
+    // ignore: discarded_futures
+    waitForEx(yaml.save());
   }
 }

@@ -15,7 +15,7 @@ class InstallCommand extends Command<int> {
   @override
   String get name => 'install';
 
-  static late final pathToQemuDownloads = join(HOME, 'qemu_for_pi');
+  static final pathToQemuDownloads = join(HOME, 'qemu_for_pi');
 
   @override
   int run() {
