@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:dcli/dcli.dart';
+
 import 'paths.dart';
 
 class InstallCommand extends Command<int> {
@@ -15,7 +16,7 @@ class InstallCommand extends Command<int> {
   @override
   String get name => 'install';
 
-  static late final pathToQemuDownloads = join(HOME, 'qemu_for_pi');
+  static final pathToQemuDownloads = join(HOME, 'qemu_for_pi');
 
   @override
   int run() {

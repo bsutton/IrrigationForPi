@@ -23,7 +23,7 @@ PigationSettings? settings;
 
 /// Run thi install script from the directory the zip file was exanded into.
 ///
-void main(List<String> args) {
+void main(List<String> args) async {
   print('pig_install ${v.packageVersion}');
   final parser = ArgParser()
     ..addFlag('debug', abbr: 'd', help: 'Outputs verbose logging.');
@@ -92,7 +92,7 @@ void main(List<String> args) {
   //     int.tryParse(ask('SMTP Port', defaultValue: '${settings.smtpPort}'));
   // validator: Ask.integer));
 
-  settings!.save();
+  await settings!.save();
   setEnvironment(settings!);
 
   install(join(expandIntoPathTo, v.packageVersion), settings);

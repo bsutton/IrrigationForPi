@@ -1,3 +1,15 @@
+# 1.0.30
+- wip arm build.
+- clean up of pig_arm_builder.
+- add multithread options to mvn.
+- fixed overlapping abbr for arg docker and debug.
+- applied lint_hard
+- wip docker build for arm.
+- updated dcli version
+- wip - build tools using qemu.
+- improved docker daemon wait message.
+- added test before creating log path. Added logic to start the docker service after installing it.
+
 # 1.0.29
 Tweaked privilges when installing.
 released 1.0.28

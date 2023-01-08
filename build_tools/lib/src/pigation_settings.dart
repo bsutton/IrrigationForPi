@@ -48,7 +48,7 @@ class PigationSettings {
 
   static String get path => join('/opt', 'pigation', settingsFilename);
 
-  void save() {
+  Future<void> save() async {
     final yaml = SettingsYaml.load(pathToSettings: path);
     yaml['hostname'] = hostname;
     yaml['domain'] = domain;
@@ -62,6 +62,6 @@ class PigationSettings {
     yaml['smtpHost'] = smtpHost;
     yaml['smtpPort'] = smtpPort;
 
-    yaml.save();
+    await yaml.save();
   }
 }

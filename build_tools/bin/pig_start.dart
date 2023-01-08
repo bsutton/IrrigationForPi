@@ -51,8 +51,8 @@ String findDockerCompose() {
 
     current = dirname(current);
   }
-  printerr(red(
-      'Cannot find the docker-compose.yaml. It should be in the current '
-      'directory or a parent directory'));
+  printerr(
+      red('Cannot find the docker-compose.yaml. It should be in the current '
+          'directory or a parent directory'));
   exit(1);
 }
