@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:dcli/dcli.dart';
+import 'package:dcli/posix.dart';
 import 'package:docker2/docker2.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
 import 'package:pub_release/pub_release.dart';
@@ -62,13 +63,13 @@ void main(List<String> args) {
   final full = results['full'] as bool;
   final current = results['current'] as bool;
   final tools = results['tools'] as bool;
-  final docker = results['docker'] as bool;
+//  final docker = results['docker'] as bool;
 
-  if (docker) {
-    pathToJavaProject = join(DartProject.self.pathToProjectRoot, '..');
-  } else {
-    pathToJavaProject = join(pathToPigation, 'IrrigationForPi');
-  }
+  // if (docker) {
+  //   pathToJavaProject = join(DartProject.self.pathToProjectRoot, '..');
+  // } else {
+  pathToJavaProject = join(pathToPigation, 'IrrigationForPi');
+  // }
 
   final originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
   withEnvironment(() {
@@ -117,7 +118,7 @@ void prepForBuild({required bool tools}) {
       // create the directory and make certain we can write to it.
       createDir(pathToJavaProject, recursive: true);
       final user = Shell.current.loggedInUser;
-      'chown -R $user:$user $pathToPigation'.run;
+      chown(pathToPigation, user: user, group: user);
     }, allowUnprivileged: true);
     verbose(() => 'user: ${env['USER']}');
     'git clone https://github.com/bsutton/IrrigationForPi.git'
