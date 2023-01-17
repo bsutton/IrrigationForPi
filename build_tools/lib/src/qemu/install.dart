@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:dcli/dcli.dart';
+
 import 'paths.dart';
 
 class InstallCommand extends Command<int> {
@@ -51,7 +52,7 @@ class InstallCommand extends Command<int> {
   }
 
   void init({required String pathToPiImage, required String workingDirectory}) {
-    '$qemuSystemArmPath -kernel kernel-qemu-4.4.34-jessie -cpu arm1176 '
+    '"$qemuSystemArmPath" -kernel kernel-qemu-4.4.34-jessie -cpu arm1176 '
             '-m 256 -M versatilepb -no-reboot -serial stdio '
             '-append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" '
             '-drive "file=$pathToPiImage,index=0,media=disk,format=raw" '

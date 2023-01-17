@@ -1,8 +1,8 @@
 import 'package:pigation/src/pigation_settings.dart';
 import 'package:test/test.dart';
 
-void main() {
+void main() async {
   test('pigation settings ...', () async {
-    PigationSettings.load().save();
+    await PigationSettings.load().save();
   });
 }

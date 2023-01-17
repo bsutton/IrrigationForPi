@@ -13,7 +13,7 @@ PigationSettings? settings;
 /// Run this script to reconfigure the Pigation settings and re-create
 /// the containers
 ///
-void main(List<String> args) {
+void main(List<String> args) async {
   final parser = ArgParser()
     ..addFlag('debug', abbr: 'd', help: 'Outputs verbose logging.');
 
@@ -51,7 +51,7 @@ void main(List<String> args) {
       int.tryParse(ask('SMTP Port', defaultValue: '${settings!.smtpPort}'));
   // validator: Ask.integer));
 
-  settings!.save();
+  await settings!.save();
   setEnvironment(settings!);
 
   reconfigure(settings);
