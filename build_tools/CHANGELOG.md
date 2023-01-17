@@ -1,3 +1,6 @@
+# 1.1.0
+- upgraded pacakges and fixed a few lints.
+
 # 1.0.29
 Tweaked privilges when installing.
 released 1.0.28
