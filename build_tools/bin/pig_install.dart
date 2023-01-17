@@ -76,8 +76,10 @@ void main(List<String> args) {
 
   print('Lets Encrypt requires an email address to send '
       'certificate notifications to.');
-  settings!.email =
-      ask('Email', defaultValue: settings!.email, validator: Ask.email);
+  settings!.email = ask('Email', defaultValue: settings!.email);
+
+  /// removed the valiator as it is causing a crash on rpi.
+  // , validator: Ask.email);
 
   // print(
   //     'If you have access to an smtp server then pigation can send
