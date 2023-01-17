@@ -182,7 +182,7 @@ String build({required bool quick, required bool current}) {
 
     createDir(versionDir, recursive: true);
     final user = Shell.current.loggedInUser;
-    'chown -R $user:$user ${dirname(versionDir)}'.run;
+    chown(user: user, group: user, dirname(versionDir));
   }, allowUnprivileged: true);
 
   if (!quick) {
