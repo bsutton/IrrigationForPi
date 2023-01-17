@@ -6,7 +6,7 @@ import 'package:dcli/dcli.dart';
 import 'package:pigation/src/environment.dart';
 import 'package:pigation/src/pigation_settings.dart';
 
-/// Use this command to start auditor.
+/// Use this command to start pi-gation.
 ///
 void main(List<String> args) {
   final parser = ArgParser()
@@ -51,8 +51,8 @@ String findDockerCompose() {
 
     current = dirname(current);
   }
-  printerr(red(
-      'Cannot find the docker-compose.yaml. It should be in the current '
-      'directory or a parent directory'));
+  printerr(
+      red('Cannot find the docker-compose.yaml. It should be in the current '
+          'directory or a parent directory'));
   exit(1);
 }

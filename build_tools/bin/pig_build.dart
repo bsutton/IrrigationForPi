@@ -62,13 +62,13 @@ void main(List<String> args) {
   final full = results['full'] as bool;
   final current = results['current'] as bool;
   final tools = results['tools'] as bool;
-  final docker = results['docker'] as bool;
+  // final docker = results['docker'] as bool;
 
-  if (docker) {
-    pathToJavaProject = join(DartProject.self.pathToProjectRoot, '..');
-  } else {
-    pathToJavaProject = join(pathToPigation, 'IrrigationForPi');
-  }
+  // if (docker) {
+  //   pathToJavaProject = join(DartProject.self.pathToProjectRoot, '..');
+  // } else {
+  pathToJavaProject = join(pathToPigation, 'IrrigationForPi');
+  // }
 
   final originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
   withEnvironment(() {
@@ -169,7 +169,7 @@ String build({required bool quick, required bool current}) {
     }
 
     print('Building the pigation installer, selected version '
-        '${selectedVersion.toString()}');
+        '$selectedVersion');
   }
 
   final versionDir = join(target, selectedVersion.toString());

@@ -50,7 +50,7 @@ void main(List<String> args) {
   }
 
   // final quick = results['quick'] as bool;
-  // final debug = results['debug'] as bool;
+  Settings().setVerbose(enabled: results['debug'] as bool);
   // final full = results['full'] as bool;
   // final current = results['current'] as bool;
   final tools = results['tools'] as bool;
