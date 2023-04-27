@@ -8,7 +8,15 @@ import 'package:docker2/docker2.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
 import 'package:pub_release/pub_release.dart';
 
-String? projectRoot;
+String projectRoot = DartProject.self.pathToProjectRoot;
+
+String pathToJavaProject = join(projectRoot, '..');
+// String get pathToPigation =>
+//     join(DartProject.self.pathToProjectRoot, '..');
+
+/// clean the maven target directory unless we are running with quick
+
+String get mvnTarget => join(join(pathToJavaProject, 'target'));
 
 /// pig_build build the pig install zip file.
 ///
@@ -68,7 +76,7 @@ void main(List<String> args) {
   // if (docker) {
   //   pathToJavaProject = join(DartProject.self.pathToProjectRoot, '..');
   // } else {
-  pathToJavaProject = join(pathToPigation, 'IrrigationForPi');
+  // pathToJavaProject = join(pathToPigation, 'IrrigationForPi');
   // }
 
   final originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
@@ -87,7 +95,7 @@ void main(List<String> args) {
       projectRoot = join(pathToJavaProject, 'build_tools');
     }
 
-    print('building in : ${truepath(pathToPigation)}');
+    print('building in : ${truepath(pathToJavaProject)}');
     print('Project root: $projectRoot');
     if (full) {
       prepForBuild(tools: tools);
@@ -100,14 +108,6 @@ void main(List<String> args) {
     'LOGNAME': originalUser
   });
 }
-
-late String pathToJavaProject;
-String get pathToPigation =>
-    join(DartProject.self.pathToProjectRoot, 'pigation');
-
-/// clean the maven target directory unless we are running with quick
-
-String get mvnTarget => join(join(pathToJavaProject, 'target'));
 
 void prepForBuild({required bool tools}) {
   if (!exists(pathToJavaProject)) {
@@ -145,7 +145,7 @@ void prepForBuild({required bool tools}) {
 
 String build({required bool quick, required bool current}) {
   /// clean the dart_tool target directory
-  final target = join(projectRoot!, 'target');
+  final target = join(projectRoot, 'target');
   if (exists(target)) {
     deleteDir(target);
   }
@@ -193,7 +193,7 @@ String build({required bool quick, required bool current}) {
     print('Java build will be skipped as --quick specified');
   }
 
-  createZipImage(versionDir, projectRoot!, mvnTarget);
+  createZipImage(versionDir, projectRoot, mvnTarget);
   final zip = createZip(target);
   return zip;
 }
@@ -238,8 +238,8 @@ void showCompletedMessage(String zip) {
 }
 
 String createZip(String target) {
-  final zip = join(
-      projectRoot!, 'releases', 'install_pigation-${v.packageVersion}.zip');
+  final zip =
+      join(projectRoot, 'releases', 'install_pigation-${v.packageVersion}.zip');
 
   if (!exists(dirname(zip))) {
     createDir(dirname(zip), recursive: true);
