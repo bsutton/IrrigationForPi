@@ -2,8 +2,10 @@
 
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
 import 'package:dcli_scripts/dcli_scripts.dart';
+import 'package:path/path.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
 import 'package:pub_release/pub_release.dart';
 
@@ -79,7 +81,7 @@ void main(List<String> args) {
   if (!current) {
     final version = askForVersion(DartProject.self.pubSpec.version!);
     DartProject.self.pubSpec.version = version;
-    DartProject.self.pubSpec.saveToFile(DartProject.self.pathToPubSpec);
+    DartProject.self.pubSpec.save(DartProject.self.pathToPubSpec);
   }
 
   // var projectRoot = DartProject.current.pathToProjectRoot;

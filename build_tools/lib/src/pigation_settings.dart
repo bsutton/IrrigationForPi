@@ -1,4 +1,5 @@
 import 'package:dcli/dcli.dart';
+import 'package:path/path.dart';
 import 'package:settings_yaml/settings_yaml.dart';
 import 'package:uuid/uuid.dart';
 
@@ -46,7 +47,7 @@ class PigationSettings {
     return settings;
   }
 
-  static String get path => join('/opt', 'pigation', settingsFilename);
+  static String get path => join(rootPath, 'opt', 'pigation', settingsFilename);
 
   Future<void> save() async {
     final yaml = SettingsYaml.load(pathToSettings: path);

@@ -1,6 +1,8 @@
 #! /usr/bin/env dcli
 
+import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
+import 'package:path/path.dart';
 
 import 'pig_install.dart';
 
@@ -89,6 +91,7 @@ virt-install
 //   exit(1);
 // }
 
+// ignore: unreachable_from_main
 void showUsage(ArgParser parser) {
   print('Installs a Raspberry Pi emulator on Windows which can be used '
       'to build Pigation');

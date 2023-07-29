@@ -1,3 +1,13 @@
+# 2.0.0
+- upgraded to dart 3.x
+- refreshed dependencies.
+- upgraded maven-war plugin to a version hat supports java 11.
+- removed the email validation as its causing a seg fault on the pi.
+- removed the docker build option for the moment as docker fails on zfs doing a cross platform build.
+- moved to using posix chown.
+- fixed path problems on windows
+- upgraded pacakges and fixed a few lints.
+
 # 1.1.0
 - upgraded pacakges and fixed a few lints.
 # 1.0.30

@@ -2,9 +2,11 @@
 
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
 import 'package:dcli/posix.dart';
 import 'package:docker2/docker2.dart';
+import 'package:path/path.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
 import 'package:pub_release/pub_release.dart';
 
@@ -21,7 +23,7 @@ String? projectRoot;
 /// deployed onto a raspberry pi.
 ///
 ///
-void main(List<String> args) {
+Future<void> main(List<String> args) async {
   // if (!Shell.current.isPrivilegedProcess) {
   //   printerr(
   //       'Please restart ${DartScript.self.exeName} using sudo: sudo env "PATH=\$PATH" ./pig_build');
@@ -72,7 +74,7 @@ void main(List<String> args) {
   // }
 
   final originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
-  withEnvironment(() {
+  await withEnvironment(() async {
     Settings().setVerbose(enabled: debug);
     print('debug=$debug');
     if (!quick) {
@@ -259,6 +261,7 @@ void buildWar(String? projectRoot) {
   'mvn -T 1C -DskipTests install -U'.start(workingDirectory: pathToJavaProject);
 }
 
+// ignore: unreachable_from_main
 void buildArmExes() {
   final pathToBin = DartProject.self.pathToBinDir;
   const pathToDockerBin = '/IrrigationForPi/build_tools/bin';

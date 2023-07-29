@@ -2,9 +2,11 @@
 
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dcli/dcli.dart';
 import 'package:docker2/docker2.dart';
+import 'package:path/path.dart';
 import 'package:pigation/src/environment.dart';
 import 'package:pigation/src/pigation_settings.dart';
 
@@ -110,12 +112,14 @@ void deleteContainer({String? name}) {
   }
 }
 
+// ignore: unreachable_from_main
 String get user {
   var user = env['SUDO_USER'];
   user ??= env['USER'];
   return user!;
 }
 
+// ignore: unreachable_from_main
 class NoLocalHost extends AskValidator {
   @override
   String validate(String line) {
