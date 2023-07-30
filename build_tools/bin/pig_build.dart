@@ -65,6 +65,12 @@ Future<void> main(List<String> args) async {
   final full = results['full'] as bool;
   final current = results['current'] as bool;
   final tools = results['tools'] as bool;
+
+  if (!Shell.current.isPrivilegedUser) {
+    printerr('pig_build needs to be run with priviledges');
+    printerr('sudo env "PATH=$PATH" pig_build');
+    exit(1);
+  }
   // final docker = results['docker'] as bool;
 
   // if (docker) {
