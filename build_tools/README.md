@@ -4,6 +4,14 @@ An irrigation and out door lighting controller for the Raspbery PI.
 
 To use Pi-gation you need a Raspberry PI, one or more relay boards wired up to digital IO pins and some solenoid valves or lights that you want to control.
 
+# DNS requirements
+Pigration use Let's Encrypt to obtain a SSL certificate.
+
+To support this process pigation requires tha that you have a registered domain name with an A record pointing to your home router.
+
+There are ways around this requirement but I don't currently have the time to document them.
+
+Contributions around this issue are welcomed.
 
 WARNING WARNING
 ===============
@@ -40,6 +48,132 @@ Contributes to this project are strongly encouraged so post your patches.
 
 You can read the Pi-gation [user manual here](https://github.com/bsutton/IrrigationForPi/wiki)
 
+# preparation
+Whilst you can build pigation on your raspberry PI we recommend that you run the build
+on your local PC as running the build on the PI is likey to take over an hour.
+
+If you are going to build directly on your raspberry PI then you don't need to install Dart on your desktop system.
+
+* install dart on your desktop system 
+* install dart on your raspberry PI
+* obtain a static IP address for your home router
+* obtain a domain name
+* add an A record to your DNS server pointing at your home static IP
+* configure your DHCP server to reserve a fixed IP address for the PI
+* Setup a NAT rules to port forward port 80 and port 443 (optional) to your PI.
+
+# Build
+To build pigation you need to have Dart 3.x installed
+
+Note: if you are using Windows to do a trial build you will need to use wsl2 (e.g. launch a Ubuntu terminal in Windows.) Once you have opened an wsl2 terminal you will need to follow the linux install instructions.
+
+Refer to the Dart install guide for details 
+
+https://dart.dev/get-dart
+
+Once is installed you can now activate pigation.
+
+Note: the activation process can take up to 10 minutes.
+
+```bash
+dart pub global activate pigation
+```
+
+To build pigation:
+
+Note: this is a lengthy process and you can expect it to take up to an hour on your PI.
+
+```bash
+sudo env "PATH=$PATH" pig_build
+```
+
+The core pigation web service is written in Java so the builder needs to install java and a number of other packages to build pigation.
+
+# install
+In order to run the install you need to have a DNS and NAT setup.
+
+# Static IP
+Run pigation you need a static ip with a DNS A record pointing to your IP address.
+
+# DNS
+Once pig_build completes you are now ready to install pigation.
+
+
+
+Run:
+```bash
+pig_install
+```
+
+## Certificates and remote access
+pigation runs as a web server that you can access from any browser.
+Modern browsers require that your web server provides an SSL certificate.
+
+pigation uses the free Let's Encrypt service to acquire an SSL certificate.
+
+These certificates need to be renewed every three months. Pigation automates the renewal process however you will need a static IP for the renewal process to work. 
+If you don't have a static IP then you can still obtain an SSL certificate but you will need to run pig-reconfigure every three months to manually re-acqure a certificate.
+
+
+# port 80 for certificate acquisition
+The pigation install process automates the acquisition of an SSL certificate, however to do so you need to open up port 80 on your home router and set up a NAT rule to forward requests to your PI.
+
+# port 443 to remotely water your garden
+By opening up port 443 you can remotely water your garden.
+For this to work you will need a static IP or use a dynamic DNS service.
+Ideally you would also acquire a domain name so that you can access d
+
+You will need to create a NAT rule on your router that forwards requests on port 443 to your raspberry PI.
+
+
+** SECURITY RISK **
+I should note that currently pigation is completely open.  If some knows the IP address of you home network then they can remotely water you garden.
+
+This does have the risk that someone could intentionally flood you property by remoting turning your irrigation system on.
+
+We really need to add at a least a simple password to the front end :)
+
+## Enable Port forward
+If you want to remotely control you raspberry pi you will need to enable 
+If you are running your raspberry pi on your home network you will need to set up a port forward on your router to the raspberry pi.
+
+
+
+
+
+You will need to port forward both port 80 and port 443.
+
+
+
+# start / stop
+
+You can start and stop pigation via:
+
+```bash
+pig_start
+pig_stop
+```
+
+
+Pi-gation is now running and waiting for you to configure your garden beds and lighting.
+
+ 
+Technology
+==========
+
+IrrigationForPi uses the following technology (if you care about such things). You don't need to know this to use or install the app.
+
+* Java 8
+* Tomcat 8
+* EclipseLink (JPA)
+* Derby (database).
+* Vaadin 8 framework.
+* Dart 3.x
+
+# Old install instructions
+The following is the original install instructions.
+We now have a build/install system written Dart which should allow even the most technically challenged person to get pigation up and running.
+
 Build
 =======
 download the source:
@@ -54,7 +188,7 @@ cd to the directory you downloaded the source code to and run:
 This generates a .war file in the `targets` directory ready to install.
 
 
-Installation
+Installation 
 ==========
 We use and recommend that you use [noobs](https://www.raspberrypi.org/downloads/noobs/) to install an OS on your raspberry pi.
 The following install guide assumes that you are running [raspbian](http://raspbian.org/) (an install option from noobs).
@@ -270,13 +404,3 @@ Once you have answered the questions you must restart tomcat or you PI.
 Pi-gation is now running and waiting for you to configure your garden beds and lighting.
 
  
-Technology
-==========
-
-IrrigationForPi uses the following technology (if you care about such things). You don't need to know this to use or install the app.
-
-* Java 8
-* Tomcat 8
-* EclipseLink (JPA)
-* Derby (database).
-* Vaadin 8 framework.

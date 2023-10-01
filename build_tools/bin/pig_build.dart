@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:archive/archive_io.dart';
 import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
 import 'package:dcli/posix.dart';
@@ -66,11 +67,11 @@ Future<void> main(List<String> args) async {
   final current = results['current'] as bool;
   final tools = results['tools'] as bool;
 
-  if (!Shell.current.isPrivilegedUser) {
-    printerr('pig_build needs to be run with priviledges');
-    printerr('sudo env "PATH=$PATH" pig_build');
-    exit(1);
-  }
+  // if (!Shell.current.isPrivilegedUser) {
+  //   printerr('pig_build needs to be run with priviledges');
+  //   printerr('sudo env "PATH=$PATH" pig_build');
+  //   exit(1);
+  // }`
   // final docker = results['docker'] as bool;
 
   // if (docker) {
@@ -202,7 +203,7 @@ String build({required bool quick, required bool current}) {
   }
 
   createZipImage(versionDir, projectRoot!, mvnTarget);
-  final zip = createZip(target);
+  final zip = createZip(versionDir);
   return zip;
 }
 
@@ -245,7 +246,7 @@ void showCompletedMessage(String zip) {
   print('run ${green('pig_install')}');
 }
 
-String createZip(String target) {
+String createZip(String versionDir) {
   final zip = join(
       projectRoot!, 'releases', 'install_pigation-${v.packageVersion}.zip');
 
@@ -256,7 +257,13 @@ String createZip(String target) {
     delete(zip);
   }
 
-  'zip  -r $zip *'.start(workingDirectory: target);
+  final encoder = ZipFileEncoder()..create(zip);
+  find('*', workingDirectory: versionDir).forEach((file) async {
+    await encoder.addFile(File(file));
+  });
+  encoder.close();
+
+  //'zip  -r $zip *'.start(workingDirectory: versionDir);
   return zip;
 }
 
