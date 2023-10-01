@@ -1,4 +1,4 @@
-import 'package:dcli/dcli.dart' hide equals;
+import 'package:dcli/dcli.dart';
 import 'package:pub_release/pub_release.dart';
 import 'package:test/test.dart';
 

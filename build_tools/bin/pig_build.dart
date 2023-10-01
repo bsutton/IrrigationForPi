@@ -2,15 +2,17 @@
 
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
 import 'package:dcli/posix.dart';
 import 'package:docker2/docker2.dart';
+import 'package:path/path.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
 import 'package:pub_release/pub_release.dart';
 
-String projectRoot = DartProject.self.pathToProjectRoot;
+String buildToolsRoot = DartProject.self.pathToProjectRoot;
 
-String pathToJavaProject = join(projectRoot, '..');
+String pathToJavaProject = truepath(buildToolsRoot, '..');
 // String get pathToPigation =>
 //     join(DartProject.self.pathToProjectRoot, '..');
 
@@ -80,23 +82,23 @@ void main(List<String> args) {
   // }
 
   final originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
-  withEnvironment(() {
+  withEnvironment(() async {
     Settings().setVerbose(enabled: debug);
     print('debug=$debug');
     if (!quick) {
       print(orange('Use --quick to avoid repeating the java build phase'));
     }
 
-    projectRoot = DartScript.self.pathToProjectRoot;
+    buildToolsRoot = DartScript.self.pathToProjectRoot;
 
     print('Pub-cache in ${PubCache().pathTo}');
 
     if (DartScript.self.isPubGlobalActivated || DartScript.self.isCompiled) {
-      projectRoot = join(pathToJavaProject, 'build_tools');
+      buildToolsRoot = join(pathToJavaProject, 'build_tools');
     }
 
     print('building in : ${truepath(pathToJavaProject)}');
-    print('Project root: $projectRoot');
+    print('Build Tools root: $buildToolsRoot');
     if (full) {
       prepForBuild(tools: tools);
     }
@@ -104,7 +106,7 @@ void main(List<String> args) {
     showCompletedMessage(zip);
   }, environment: {
     'USER': originalUser,
-    'HOME': join(HOME, originalUser),
+    'HOME': join(rootPath, 'home', originalUser),
     'LOGNAME': originalUser
   });
 }
@@ -118,11 +120,11 @@ void prepForBuild({required bool tools}) {
       // create the directory and make certain we can write to it.
       createDir(pathToJavaProject, recursive: true);
       final user = Shell.current.loggedInUser;
-      chown(pathToPigation, user: user, group: user);
+      chown(pathToJavaProject, user: user, group: user);
     }, allowUnprivileged: true);
     verbose(() => 'user: ${env['USER']}');
     'git clone https://github.com/bsutton/IrrigationForPi.git'
-        .start(workingDirectory: pathToPigation);
+        .start(workingDirectory: pathToJavaProject);
   } else {
     print('Pulling latest version of project into $pathToJavaProject');
     verbose(() => 'user: ${env['USER']}');
@@ -145,7 +147,7 @@ void prepForBuild({required bool tools}) {
 
 String build({required bool quick, required bool current}) {
   /// clean the dart_tool target directory
-  final target = join(projectRoot, 'target');
+  final target = join(buildToolsRoot, 'target');
   if (exists(target)) {
     deleteDir(target);
   }
@@ -188,12 +190,12 @@ String build({required bool quick, required bool current}) {
   if (!quick) {
     print('building pigation');
 
-    buildWar(projectRoot);
+    buildWar(buildToolsRoot);
   } else {
     print('Java build will be skipped as --quick specified');
   }
 
-  createZipImage(versionDir, projectRoot, mvnTarget);
+  createZipImage(versionDir, buildToolsRoot, mvnTarget);
   final zip = createZip(target);
   return zip;
 }
@@ -238,8 +240,8 @@ void showCompletedMessage(String zip) {
 }
 
 String createZip(String target) {
-  final zip =
-      join(projectRoot, 'releases', 'install_pigation-${v.packageVersion}.zip');
+  final zip = join(
+      buildToolsRoot, 'releases', 'install_pigation-${v.packageVersion}.zip');
 
   if (!exists(dirname(zip))) {
     createDir(dirname(zip), recursive: true);

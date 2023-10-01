@@ -1,6 +1,8 @@
 #! /usr/bin/env dcli
 
+import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
+import 'package:path/path.dart';
 
 import 'pig_install.dart';
 

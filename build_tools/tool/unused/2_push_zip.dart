@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:dcli/dcli.dart';
+import 'package:path/path.dart';
 import 'package:pub_release/pub_release.dart';
 import 'package:settings_yaml/settings_yaml.dart';
 

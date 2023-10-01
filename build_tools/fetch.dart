@@ -1,9 +1,7 @@
 #! /usr/bin/env dcli
 
-
-
 // ignore: prefer_relative_imports
-import 'package:dcli/dcli.dart' hide equals;
+import 'package:dcli/dcli.dart';
 
 String baseURl =
     'https://raw.githubusercontent.com/bsutton/dcli/master/test/src/functions/fetch_downloads';

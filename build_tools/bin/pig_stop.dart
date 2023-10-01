@@ -1,6 +1,7 @@
 #! /usr/bin/env dcli
 
 import 'package:dcli/dcli.dart';
+import 'package:path/path.dart';
 import 'package:pigation/src/environment.dart';
 import 'package:pigation/src/pigation_settings.dart';
 
