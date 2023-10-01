@@ -112,12 +112,14 @@ void deleteContainer({String? name}) {
   }
 }
 
+// ignore: unreachable_from_main
 String get user {
   var user = env['SUDO_USER'];
   user ??= env['USER'];
   return user!;
 }
 
+// ignore: unreachable_from_main
 class NoLocalHost extends AskValidator {
   @override
   String validate(String line) {

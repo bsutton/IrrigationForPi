@@ -1,4 +1,3 @@
-
 import 'package:path/path.dart';
 
 String get qemuSystemArm => 'qemu-system-arm';

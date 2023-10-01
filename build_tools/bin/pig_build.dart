@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:archive/archive_io.dart';
 import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
 import 'package:dcli/posix.dart';
@@ -31,7 +32,7 @@ String get mvnTarget => join(join(pathToJavaProject, 'target'));
 /// deployed onto a raspberry pi.
 ///
 ///
-void main(List<String> args) {
+Future<void> main(List<String> args) async {
   // if (!Shell.current.isPrivilegedProcess) {
   //   printerr(
   //       'Please restart ${DartScript.self.exeName} using sudo: sudo env "PATH=\$PATH" ./pig_build');
@@ -73,6 +74,12 @@ void main(List<String> args) {
   final full = results['full'] as bool;
   final current = results['current'] as bool;
   final tools = results['tools'] as bool;
+
+  // if (!Shell.current.isPrivilegedUser) {
+  //   printerr('pig_build needs to be run with priviledges');
+  //   printerr('sudo env "PATH=$PATH" pig_build');
+  //   exit(1);
+  // }`
   // final docker = results['docker'] as bool;
 
   // if (docker) {
@@ -82,7 +89,7 @@ void main(List<String> args) {
   // }
 
   final originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
-  withEnvironment(() async {
+  await withEnvironment(() async {
     Settings().setVerbose(enabled: debug);
     print('debug=$debug');
     if (!quick) {
@@ -196,7 +203,7 @@ String build({required bool quick, required bool current}) {
   }
 
   createZipImage(versionDir, buildToolsRoot, mvnTarget);
-  final zip = createZip(target);
+  final zip = createZip(versionDir);
   return zip;
 }
 
@@ -239,7 +246,7 @@ void showCompletedMessage(String zip) {
   print('run ${green('pig_install')}');
 }
 
-String createZip(String target) {
+String createZip(String versionDir) {
   final zip = join(
       buildToolsRoot, 'releases', 'install_pigation-${v.packageVersion}.zip');
 
@@ -250,7 +257,13 @@ String createZip(String target) {
     delete(zip);
   }
 
-  'zip  -r $zip *'.start(workingDirectory: target);
+  final encoder = ZipFileEncoder()..create(zip);
+  find('*', workingDirectory: versionDir).forEach((file) async {
+    await encoder.addFile(File(file));
+  });
+  encoder.close();
+
+  //'zip  -r $zip *'.start(workingDirectory: versionDir);
   return zip;
 }
 
@@ -261,6 +274,7 @@ void buildWar(String? projectRoot) {
   'mvn -T 1C -DskipTests install -U'.start(workingDirectory: pathToJavaProject);
 }
 
+// ignore: unreachable_from_main
 void buildArmExes() {
   final pathToBin = DartProject.self.pathToBinDir;
   const pathToDockerBin = '/IrrigationForPi/build_tools/bin';

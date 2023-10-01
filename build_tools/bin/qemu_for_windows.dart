@@ -36,6 +36,7 @@ Future<void> main(List<String> args) async {
 //   exit(1);
 // }
 
+// ignore: unreachable_from_main
 void showUsage(ArgParser parser) {
   print('Installs a Raspberry Pi emulator on Windows which can be used to '
       'build Pigation');

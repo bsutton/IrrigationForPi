@@ -47,7 +47,7 @@ class PigationSettings {
     return settings;
   }
 
-  static String get path => join('/opt', 'pigation', settingsFilename);
+  static String get path => join(rootPath, 'opt', 'pigation', settingsFilename);
 
   Future<void> save() async {
     final yaml = SettingsYaml.load(pathToSettings: path);
