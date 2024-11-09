@@ -8,17 +8,18 @@ dependencies:
   archive: ^3.3.7
   args: ^2.3.0
   collection: ^1.17.0
-  dcli: ^3.0.2
-  dcli_scripts: ^3.0.0
+  dcli: ^6.1.0
+  dcli_scripts: ^4.0.0
   docker2: ^4.0.3
   github: ^9.4.0
-  nginx_le_shared: ^9.0.4
+  # nginx_le_shared: ^10.0.3
   path: ^1.6.4
-  pub_release: ^9.0.2
-  settings_yaml: ^7.0.0
-  uuid: ^3.0.4
+  pub_release: ^11.2.0
+  pubspec_manager: ^1.0.0
+  settings_yaml: ^8.2.0
+  uuid: ^4.5.1
 dev_dependencies: 
-  lint_hard: ^4.0.0
+  lint_hard: ^5.0.0
   test: ^1.0.0
 executables: 
   pig_build: 

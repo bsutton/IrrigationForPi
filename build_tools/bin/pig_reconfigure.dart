@@ -122,7 +122,7 @@ String get user {
 // ignore: unreachable_from_main
 class NoLocalHost extends AskValidator {
   @override
-  String validate(String line) {
+  String validate(String line, {String? customErrorMessage}) {
     if (line.trim() == 'localhost') {
       throw AskValidatorException(
           "localhost won't work as MySql treats this as a socket connection "

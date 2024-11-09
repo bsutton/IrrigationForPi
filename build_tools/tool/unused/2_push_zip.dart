@@ -15,7 +15,7 @@ import 'package:settings_yaml/settings_yaml.dart';
 ///
 ///
 
-void main(List<String> args) {
+void main(List<String> args) async {
   const version = '1.0.12';
   // args[0];
 
@@ -40,7 +40,7 @@ void main(List<String> args) {
 
   final tagName = '$version-${Platform.operatingSystem}';
 
-  final release = sgh.getReleaseByTagName(tagName: tagName);
+  final release = await sgh.getReleaseByTagName(tagName: tagName);
 
   if (release != null) {
     print('Found release $tagName');

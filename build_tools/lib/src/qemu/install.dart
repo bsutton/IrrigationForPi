@@ -52,7 +52,8 @@ class InstallCommand extends Command<int> {
     init(pathToPiImage: pathToPiImage, workingDirectory: pathToQemuDownloads);
   }
 
-  void init({required String pathToPiImage, required String workingDirectory}) {
+  void init(
+      {required String pathToPiImage, required String workingDirectory}) async {
     '"$qemuSystemArmPath" -kernel kernel-qemu-4.4.34-jessie -cpu arm1176 '
             '-m 256 -M versatilepb -no-reboot -serial stdio '
             '-append "root=/dev/sda2 panic=1 rootfstype=ext4 rw init=/bin/bash" '
@@ -66,7 +67,7 @@ class InstallCommand extends Command<int> {
 KERNEL=="sda", SYM  LINK+="mmcblk0" KERNEL=="sda?", SYMLINK+="mmcblk0p%n" KERNEL=="sda2", SYMLINK+="root"
       ''';
 
-    withTempFile((rules) {
+    await withTempFileAsync((rules) async {
       rules.write(rulesContent);
       'scp rules localhost:2222:$pathToRules'.run;
     });

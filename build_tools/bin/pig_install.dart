@@ -295,7 +295,7 @@ void installCliTools() {
   // print('Run: pub global activate nginx_le');
 }
 
-void installDocker() {
+void installDocker() async {
   print(orange('Installing docker'));
   '''
 apt install 
@@ -310,7 +310,7 @@ apt install
       .start(privileged: true, runInShell: true);
 
   /// add the docker key
-  withTempFile((key) {
+  await withTempFileAsync((key) async {
     'curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o $key'.run;
     'apt-key add $key'.run;
   });

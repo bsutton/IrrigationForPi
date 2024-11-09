@@ -9,7 +9,8 @@ import 'package:dcli/posix.dart';
 import 'package:docker2/docker2.dart';
 import 'package:path/path.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
-import 'package:pub_release/pub_release.dart';
+import 'package:pub_release/pub_release.dart' hide Settings;
+import 'package:pubspec_manager/pubspec_manager.dart' as pm;
 
 String buildToolsRoot = DartProject.self.pathToProjectRoot;
 
@@ -89,7 +90,7 @@ Future<void> main(List<String> args) async {
   // }
 
   final originalUser = env['SUDO_USER'] ?? env['USERNAME'] ?? 'root';
-  await withEnvironment(() async {
+  await withEnvironmentAsync(() async {
     Settings().setVerbose(enabled: debug);
     print('debug=$debug');
     if (!quick) {
@@ -171,10 +172,10 @@ String build({required bool quick, required bool current}) {
           'Pass the --current flag'));
       exit(-1);
     } else {
-      final pubspec = PubSpec.fromFile(pathToPubspec!);
+      final pubspec = pm.PubSpec.loadFromPath(pathToPubspec!);
 
-      currentVersion = pubspec.version;
-      selectedVersion = askForVersion(currentVersion!);
+      currentVersion = pubspec.version.semVersion;
+      selectedVersion = askForVersion(currentVersion);
       updateVersion(currentVersion, pubspec, pathToPubspec);
     }
 
