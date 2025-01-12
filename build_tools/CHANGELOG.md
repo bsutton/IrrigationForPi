@@ -1,3 +1,11 @@
+# 2.1.0
+- upgrade all packages to the latest versions.
+- upgraded to dart 3.x
+- moved to using the archive library rather than relying on zip to be installed.
+- added check that pig_build is run with priviledges.
+- improvements to the build
+- moved to the dcli chown function.
+
 # 2.0.0
 - upgraded to dart 3.x
 - refreshed dependencies.

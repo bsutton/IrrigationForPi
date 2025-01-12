@@ -131,6 +131,7 @@ void prepForBuild({required bool tools}) {
       chown(pathToJavaProject, user: user, group: user);
     }, allowUnprivileged: true);
     verbose(() => 'user: ${env['USER']}');
+    print('Cloning the git project');
     'git clone https://github.com/bsutton/IrrigationForPi.git'
         .start(workingDirectory: pathToJavaProject);
   } else {
@@ -146,8 +147,8 @@ void prepForBuild({required bool tools}) {
   if (tools) {
     print('Installing build tools');
 
-    'apt install --no-install-recommends -y openjdk-8-jdk-headless maven'
-        .start(privileged: true, runInShell: true);
+    // 'apt install --no-install-recommends -y openjdk-8-jdk-headless maven'
+    //     .start(privileged: true, runInShell: true);
   } else {
     print('Build tools will not be installed as --no-tools specified.');
   }
@@ -185,15 +186,15 @@ String build({required bool quick, required bool current}) {
 
   final versionDir = join(target, selectedVersion.toString());
 
-  Shell.current.withPrivileges(() {
-    if (!quick && exists(mvnTarget)) {
-      deleteDir(mvnTarget);
-    }
+  // Shell.current.withPrivileges(() {
+  //   if (!quick && exists(mvnTarget)) {
+  //     deleteDir(mvnTarget);
+  //   }
 
-    createDir(versionDir, recursive: true);
-    final user = Shell.current.loggedInUser;
-    chown(user: user, group: user, dirname(versionDir));
-  }, allowUnprivileged: true);
+  //   createDir(versionDir, recursive: true);
+  //   final user = Shell.current.loggedInUser;
+  //   chown(user: user, group: user, dirname(versionDir));
+  // }, allowUnprivileged: true);
 
   if (!quick) {
     print('building pigation');

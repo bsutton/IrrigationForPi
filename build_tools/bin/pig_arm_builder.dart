@@ -7,8 +7,8 @@ import 'package:dcli/dcli.dart';
 import 'package:dcli_scripts/dcli_scripts.dart';
 import 'package:path/path.dart';
 import 'package:pigation/src/version/version.g.dart' as v;
-import 'package:pub_release/pub_release.dart' hide Settings;
-import 'package:pubspec_manager/pubspec_manager.dart';
+import 'package:pub_release/pub_release.dart' as pr hide Version;
+import 'package:pubspec_manager/pubspec_manager.dart' as pm;
 
 /// This script is used to compile the dart scripts to arm
 /// ready for inclusing in the install zip file created
@@ -80,9 +80,10 @@ void main(List<String> args) {
   }
 
   if (!current) {
-    final pubspec = PubSpec.load(directory: DartProject.self.pathToProjectRoot);
-    final version = askForVersion(pubspec.version.semVersion);
-    pubspec.version = version;
+    final pubspec =
+        pm.PubSpec.load(directory: DartProject.self.pathToProjectRoot);
+    final version = pr.askForVersion(pubspec.version.semVersion);
+    pubspec.version.setSemVersion(version);
     pubspec.save();
   }
 

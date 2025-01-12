@@ -23,7 +23,7 @@ import 'package:pigation/src/version/version.g.dart' as v;
 ///
 PigationSettings? settings;
 
-/// Run thi install script from the directory the zip file was exanded into.
+/// Run this install script from the directory the zip file was exanded into.
 ///
 void main(List<String> args) async {
   print('pig_install ${v.packageVersion}');
