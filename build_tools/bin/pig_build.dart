@@ -97,7 +97,28 @@ Future<void> main(List<String> args) async {
       print(orange('Use --quick to avoid repeating the java build phase'));
     }
 
-    buildToolsRoot = DartScript.self.pathToProjectRoot;
+    if (!exists('pubspec.yaml')) {
+      print(
+          '''You must run pig_build from a clone of the Irrigation for Pie git repo
+
+      cd to build_tools''');
+    }
+
+    if (exists('pubspec.yaml')) {
+      buildToolsRoot = truepath('.');
+      print('pigation will be built in ${dirname(dirname(buildToolsRoot))}');
+    } else if (exists('build_tools')) {
+      buildToolsRoot = truepath('build_tools');
+      print('pigation will be built in ${dirname(buildToolsRoot)}');
+    } else {
+      buildToolsRoot = truepath('.');
+      print(
+          'pigation will be built in ${truepath(buildToolsRoot, 'IrrigationForPi')}');
+    }
+
+    if (!confirm('Is this correct')) {
+      exit(1);
+    }
 
     print('Pub-cache in ${PubCache().pathTo}');
 
